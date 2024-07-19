@@ -96,7 +96,7 @@
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
         <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3 ">
-            <table id="Principal" class="table align-items-center mb-0" style="width:100% ">
+            <table id="Principal" class="table align-items-center mb-0 text-center " style="width:100% ">
                 <thead class="table-primary text-center">
                     <tr>
                         <th>#</th>
@@ -113,15 +113,20 @@
                         <th scope="row">{{ $key + 1 }}</th>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->departamento->nombre }}</td>
+                        <td>@if(isset($user->departamento))
+                            {{ $user->departamento->nombre }}
+                            @else
+                            <span>Sin departamento</span>
+                            @endif
+                        </td>
                         <td>
                             <div class="row gx-3">
                                 <div class="col">
-                                    <a href="{{ route('user.show', $user->id) }}" style="width: 100%" class="btn btn-cyan-800  mb-3"><i class='bx bxs-show'></i></a>
+                                    <a href="{{ route('user.show', $user->id) }}" class="btn btn-cyan-800  mb-3"><i class='bx bxs-show'></i></a>
                                 </div>
                                 @can('user.edit')
                                 <div class="col">
-                                    <a href="{{ route('user.edit', $user->id) }}" style="width: 100%" class="btn btn-green-600  mb-3"><i class='bx bxs-edit-alt'></i></a>
+                                    <a href="{{ route('user.edit', $user->id) }}" class="btn btn-green-600  mb-3"><i class='bx bxs-edit-alt'></i></a>
                                 </div>
                                 @endcan
                                 @can('user.destroy')
@@ -129,7 +134,7 @@
                                     <form method="POST" class="formulario-eliminar" action="{{ route('user.destroy', $user->id) }}">
                                         @method('DELETE')
                                         @csrf
-                                        <button style="width: 100%" class="btn btn-red-800" @if ($user->id === Auth::user()->id) disabled @endif><i class='bx bxs-trash'></i></button>
+                                        <button class="btn btn-red-800" @if ($user->id === Auth::user()->id) disabled @endif><i class='bx bxs-trash'></i></button>
                                     </form>
                                 </div>
                                 @endcan
@@ -145,7 +150,7 @@
     </div>
     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
         <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3 ">
-            <table id="restaurar" class="table align-items-center mb-0" style="width:100% ">
+            <table id="restaurar" class="table align-items-center mb-0 text-center" style="width:100% ">
                 <thead class="table-primary text-center">
                     <tr>
                         <th>#</th>
@@ -164,7 +169,7 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->deleted_at }}</td> <!-- Fecha de eliminación -->
                         <td>
-                            @can('user.create')
+                            @can('user.restore')
                             <!-- Formulario para restaurar el usuario -->
                             <form action="{{ route('user.restore', $user->id) }}" class="formulario-restaurar" method="POST">
                                 @csrf

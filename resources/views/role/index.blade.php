@@ -9,11 +9,11 @@
         </div>
         <div class="col-4 text-center mx-auto"></div>
         <div class="col-md-4 d-flex justify-content-center align-items-center">
-
+            @can('role.create')
             <div class="py-5 ">
                 <button type="button" class="btn btn-rounded btn-md btn-primary me-3 me-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Crear Role</button>
             </div>
-
+            @endcan
         </div>
     </div>
 </div>
@@ -38,7 +38,6 @@
                         </div>
                         @enderror
                     </div>
-
                     <div class="d-grid gap-2 col-6 mx-auto">
                         <button type="submit text-center" class="btn  btn-primary  " style="--bs-btn-opacity: .5;">REGISTRAR</button>
                     </div>
@@ -61,7 +60,7 @@
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
         <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3 ">
-            <table id="Principal" class="table align-items-center mb-0" style="width:100% ">
+            <table id="Principal" class="table align-items-center mb-0 text-center" style="width:100% ">
                 <thead class="table-primary text-center">
                     <tr>
                         <th class="w-25">#</th>
@@ -76,17 +75,20 @@
                         <td>{{ $role->name }}</td>
                         <td>
                             <div class="row gx-3">
-
+                                @can('role.edit')
                                 <div class="col">
-                                    <a href="{{ route('role.edit', $role->id) }}" style="width: 100%" class="btn btn-green-600  mb-3"><i class='bx bxs-edit-alt'></i></a>
+                                    <a href="{{ route('role.edit', $role->id) }}" class="btn btn-green-600  mb-3"><i class='bx bxs-edit-alt'></i></a>
                                 </div>
+                                @endcan
+                                @can('role.destroy')
                                 <div class="col">
                                     <form method="POST" class="formulario-eliminar" action="{{ route('role.destroy', $role->id) }}">
                                         @method('DELETE')
                                         @csrf
-                                        <button style="width: 100%" class="btn btn-red-800"><i class='bx bxs-trash'></i></button>
+                                        <button  class="btn btn-red-800"><i class='bx bxs-trash'></i></button>
                                     </form>
                                 </div>
+                                @endcan
                             </div>
                         </td>
                     </tr>
@@ -97,11 +99,11 @@
     </div>
     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
         <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3 ">
-            <table id="restaurar" class="table align-items-center mb-0" style="width:100% ">
+            <table id="restaurar" class="table align-items-center mb-0 text-center" style="width:100% ">
                 <thead class="table-primary text-center">
                     <tr>
-                        <th >#</th>
-                        <th >Role</th>
+                        <th>#</th>
+                        <th>Role</th>
                         <th>Fecha Eliminación</th>
                         <th class="w-15">ACCIONES</th>
                     </tr>
@@ -113,8 +115,8 @@
                         <td>{{ $role->name }}</td>
                         <td>{{ $role->deleted_at }}</td>
                         <td>
-                             <!-- Formulario para restaurar el role -->
-                             <form action="{{ route('role.restore', $role->id) }}" class="formulario-restaurar" method="POST">
+                            <!-- Formulario para restaurar el role -->
+                            <form action="{{ route('role.restore', $role->id) }}" class="formulario-restaurar" method="POST">
                                 @csrf
                                 @method('PUT')
                                 <button class="btn btn-cyan-800  mb-3" type="submit">Restaurar</button>

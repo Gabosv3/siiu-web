@@ -4,50 +4,63 @@
 <div class="container">
     <h1>Departamentos</h1>
     <a href="{{ route('departamentos.create') }}" class="btn btn-primary mb-3">Crear Departamento</a>
-   
-    <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3 ">
-        <table id="example" class="table align-items-center mb-0" style="width:100% ">
-            <thead class="table-primary text-center">
-                <tr>
-                <th class="w-25">#</th>
-                <th class="w-50">NOMBRE</th>
-                <th class="w-25">ACCIONES</th>
-                </tr>
-            </thead>
-            @foreach ($departamentos as $departamento)
-            <tr>
-                <td>{{ $departamento->id }}</td>
-                <td>{{ $departamento->nombre }}</td>
-                <td>
-                    <a href="{{ route('departamentos.show', $departamento->id) }}" class="btn btn-info">Ver</a>
-                    <a href="{{ route('departamentos.edit', $departamento->id) }}" class="btn btn-warning">Editar</a>
-                    <form action="{{ route('departamentos.destroy', $departamento->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </table>
+
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Usuarios</button>
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Eliminados</button>
+
         </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3 ">
+                <table id="example" class="table align-items-center mb-0 text-center">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th>#</th>
+                            <th>NOMBRE</th>
+                            <th class="w-15">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    @foreach ($departamentos as $departamento)
+                    <tr>
+                        <td>{{ $departamento->id }}</td>
+                        <td>{{ $departamento->nombre }}</td>
+                        <td>
+                            <a href="{{ route('departamentos.show', $departamento->id) }}" title="Mostrar departamento" class="btn btn-cyan-800"><i class='bx bxs-show'></i></a>
+                            <a href="{{ route('departamentos.edit', $departamento->id) }}" title="Editar departamento" class="btn btn-green-600"><i class='bx bxs-edit-alt'></i></a>
+                            <form action="{{ route('departamentos.destroy', $departamento->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" title="Eliminar departamento" class="btn btn-red-800"><i class='bx bxs-trash'></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+        </div>    
     </div>
+</div>
 
-    @if ($message = Session::get('success'))
-        <script>
-            $(document).ready(function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Éxito',
-                    text: '{{ $message }}',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            });
-        </script>
-    @endif
+@if (session('status'))
+<script>
+    $(document).ready(function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: 'Departamento actualizado exitosamente.',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    });
+</script>
+@endif
 
-    <script>
+<script>
     $(document).ready(function() {
         $('#example').DataTable({
             responsive: true,
@@ -79,26 +92,7 @@
                 }
             },
             dom: '<"top"Bf>rt<"bottom"lip><"clear">',
-            buttons: [{
-                    extend: 'excelHtml5',
-                    text: '<i class="fas fa-file-excel"></i> Exportar a Excel',
-                    titleAttr: 'Exportar a Excel',
-                    className: 'btn btn-success'
-                },
-                {
-                    extend: 'csvHtml5',
-                    text: '<i class="fas fa-file-csv"></i> Exportar a CSV',
-                    titleAttr: 'Exportar a CSV',
-                    className: 'btn btn-info'
-                },
-                {
-                    extend: 'pdfHtml5',
-                    text: '<i class="fas fa-file-pdf"></i> Exportar a PDF',
-                    titleAttr: 'Exportar a PDF',
-                    className: 'btn btn-danger'
-                }
-            ]
         });
     });
 </script>
-    @endsection
+@endsection

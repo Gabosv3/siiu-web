@@ -49,7 +49,7 @@ class DepartamentoController extends Controller
         $departamento->update($request->all());
 
         return redirect()->route('departamentos.index')
-                         ->with('success', 'Departamento actualizado exitosamente.');
+                         ->with('status', 'Departamento actualizado exitosamente.');
     }
 
     public function destroy(Departamento $departamento)
@@ -57,6 +57,6 @@ class DepartamentoController extends Controller
         $departamento->delete();
 
         return redirect()->route('departamentos.index')
-                         ->with('success', 'Departamento eliminado exitosamente.');
+                         ->with('eliminado', 'Departamento eliminado exitosamente.');
     }
 }

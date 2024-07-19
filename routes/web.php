@@ -24,13 +24,13 @@ use Spatie\Permission\Models\Role as ModelsRole;
 Route::get('/', function () {
     return redirect()->route('login');
 });
-//Iniciar session
-Route::get('Login', [AuthController::class, 'login'])->name('login');
-//Verficar datos de session
-Route::post('Login', [AuthController::class, 'loginVerify'])->name('login.verify');
-//Cerrar session
-Route::post('signOut', [AuthController::class, 'signOut'])->name('signOut');
-
+Route::group(['middleware' => 'guest'], function () {
+    //Iniciar session
+    Route::get('Login', [AuthController::class, 'login'])->name('login');
+    //Verficar datos de session
+    Route::post('Login', [AuthController::class, 'loginVerify'])->name('login.verify');
+    
+});
 
 
 
@@ -42,8 +42,10 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     //usuario
     Route::resource('user', UserController::class);
     Route::put('/user/{id}/restore', [UserController::class, 'restore'])->name('user.restore');
+    route::get('/user/{id}/one_edit',[UserController::class, 'one_edit'])->name('user.one_edit');
+    Route::match(['put', 'patch'], '/user/one_update/{user}', [UserController::class, 'one_update'])->name('user.one_update');
     //Roles
-    Route::resource('role',RoleController::class);
+    Route::resource('role', RoleController::class);
     Route::put('/role/{role}/restore', [RoleController::class, 'restore'])->name('role.restore');
     //Departamentos
     Route::resource('departamentos', DepartamentoController::class);
@@ -51,4 +53,6 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/forbidden', function () {
         throw new AuthorizationException();
     });
+    //Cerrar session
+    Route::post('signOut', [AuthController::class, 'signOut'])->name('signOut');
 });

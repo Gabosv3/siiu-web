@@ -83,6 +83,14 @@
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="fa fa-object-group ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1">Categorias</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-cubes ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Inventario</span>
@@ -96,14 +104,7 @@
           <span class="nav-link-text ms-1">Tickets</span>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
-          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-history ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
-          </div>
-          <span class="nav-link-text ms-1">Categoria</span>
-        </a>
-      </li>
+
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
