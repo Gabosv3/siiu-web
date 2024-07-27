@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Http\Requests\UserRequest;
 use App\Models\Departamento;
 use App\Models\InformacionPersonal;
-use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
 /**
@@ -130,74 +127,75 @@ class UserController extends Controller
     }
 
     // Método para actualizar un usuario en la base de datos
-public function actualizar(Request $request, User $user, $validateRoles = true)
-{
-    // Validación de los datos
-    $request->validate([
-        'email' => 'required|unique:users,email,' . $user->id,
-        'password' => 'nullable|min:8',
-        'password_confirmation' => 'nullable|same:password',
-        'name' => 'required',
-        'departamento_id' => 'required|exists:departamentos,id',
-        'apellidos' => 'required',
-        'nombres' => 'required',
-        'fecha_nacimiento' => 'required|date',
-        'genero' => 'required',
-        'dui' => 'required|unique:informacion_personals,dui,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
-        'telefono' => 'required|unique:informacion_personals,telefono,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
-    ], [
-        'email.required' => 'El correo es requerido',
-        'email.unique' => 'El correo ya ha sido usado',
-        'password.min' => 'La contraseña debe tener al menos 8 caracteres',
-        'password_confirmation.same' => 'Las contraseñas no coinciden',
-        'name.required' => 'El nombre es requerido',
-        'departamento_id.required' => 'El departamento es requerido',
-        'departamento_id.exists' => 'El departamento no es válido',
-        'apellidos.required' => 'Los apellidos son requeridos',
-        'nombres.required' => 'Los nombres son requeridos',
-        'fecha_nacimiento.required' => 'La fecha de nacimiento es requerida',
-        'fecha_nacimiento.date' => 'La fecha de nacimiento no es válida',
-        'genero.required' => 'El género es requerido',
-        'dui.required' => 'El DUI es requerido',
-        'dui.unique' => 'El DUI ya ha sido usado',
-        'telefono.required' => 'El teléfono es requerido',
-        'telefono.unique' => 'El teléfono ya ha sido usado',
-    ]);
+    public function actualizar(Request $request, User $user, $validateRoles = true)
+    {
+        // Validación de los datos
+        $request->validate([
+            'email' => 'required|unique:users,email,' . $user->id,
+            'password' => 'nullable|min:8',
+            'password_confirmation' => 'nullable|same:password',
+            'name' => 'required',
+            'departamento_id' => 'required|exists:departamentos,id',
+            'apellidos' => 'required',
+            'nombres' => 'required',
+            'fecha_nacimiento' => 'required|date',
+            'genero' => 'required',
+            'dui' => 'required|unique:informacion_personals,dui,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
+            'telefono' => 'required|unique:informacion_personals,telefono,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
+        ], [
+            'email.required' => 'El correo es requerido',
+            'email.unique' => 'El correo ya ha sido usado',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres',
+            'password_confirmation.same' => 'Las contraseñas no coinciden',
+            'name.required' => 'El nombre es requerido',
+            'departamento_id.required' => 'El departamento es requerido',
+            'departamento_id.exists' => 'El departamento no es válido',
+            'apellidos.required' => 'Los apellidos son requeridos',
+            'nombres.required' => 'Los nombres son requeridos',
+            'fecha_nacimiento.required' => 'La fecha de nacimiento es requerida',
+            'fecha_nacimiento.date' => 'La fecha de nacimiento no es válida',
+            'genero.required' => 'El género es requerido',
+            'dui.required' => 'El DUI es requerido',
+            'dui.unique' => 'El DUI ya ha sido usado',
+            'telefono.required' => 'El teléfono es requerido',
+            'telefono.unique' => 'El teléfono ya ha sido usado',
+        ]);
 
-    // Preparar los datos del usuario para actualizar
-    $userData = $request->only('name', 'email', 'departamento_id');
-    if ($request->filled('password')) {
-        $userData['password'] = bcrypt($request->password);
+        // Preparar los datos del usuario para actualizar
+        $userData = $request->only('name', 'email', 'departamento_id');
+        if ($request->filled('password')) {
+            $userData['password'] = bcrypt($request->password);
+        }
+        $user->update($userData);
+
+        // Sincronizar roles al usuario si la bandera validateRoles es verdadera
+        if ($validateRoles) {
+            $user->syncRoles($request->roles);
+        }
+
+        // Preparar los datos de información personal para actualizar
+        $informacionPersonalData = $request->only('apellidos', 'nombres', 'fecha_nacimiento', 'genero', 'dui', 'telefono');
+        $informacionPersonal = $user->informacionPersonal;
+        if ($informacionPersonal) {
+            $informacionPersonal->update($informacionPersonalData);
+        } else {
+            $informacionPersonalData['user_id'] = $user->id;
+            InformacionPersonal::create($informacionPersonalData);
+        }
     }
-    $user->update($userData);
 
-    // Sincronizar roles al usuario si la bandera validateRoles es verdadera
-    if ($validateRoles) {
-        $user->syncRoles($request->roles);
+    public function update(Request $request, User $user)
+    {
+        $this->actualizar($request, $user, true); // Valida y actualiza roles
+        return redirect()->back()->with('Actualizado', 'SI');
     }
 
-    // Preparar los datos de información personal para actualizar
-    $informacionPersonalData = $request->only('apellidos', 'nombres', 'fecha_nacimiento', 'genero', 'dui', 'telefono');
-    $informacionPersonal = $user->informacionPersonal;
-    if ($informacionPersonal) {
-        $informacionPersonal->update($informacionPersonalData);
-    } else {
-        $informacionPersonalData['user_id'] = $user->id;
-        InformacionPersonal::create($informacionPersonalData);
+    public function one_update(Request $request, User $user)
+    {
+        $this->actualizar($request, $user, false); // No valida ni actualiza roles
+        return redirect()->back()->with('status', 'Usuario actualizado');
     }
-}
 
-public function update(Request $request, User $user)
-{
-    $this->actualizar($request, $user, true); // Valida y actualiza roles
-    return redirect()->back()->with('Actualizado', 'SI');
-}
-
-public function one_update(Request $request, User $user)
-{
-    $this->actualizar($request, $user, false); // No valida ni actualiza roles
-    return redirect()->back()->with('status', 'Usuario actualizado');
-}
     // Método para eliminar un usuario
     public function destroy($id)
     {

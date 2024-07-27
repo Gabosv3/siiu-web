@@ -30,4 +30,10 @@ class DashboardController extends Controller
         // Retorna la vista 'dashboard.Secundario'
         return view('dashboard.Secundario');
     }
+
+    public function Nosotros()
+
+    {
+        return view('components.nosotros'); 
+    }
 }

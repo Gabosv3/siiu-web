@@ -9,6 +9,7 @@
         'edit' => 'Editar',
         'create' => 'Crear',
         'one_edit' => 'Editar',
+        'two_factor_auth' => 'Autenticación de dos factores',
 
         // Añade más traducciones según sea necesario
     ];
@@ -30,6 +31,8 @@
     $translatedPath = implode(' / ', $segments);
 
 @endphp
+
+
 
 <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4  border-radius-xl " id="navbarBlur" >
     <div class="container-fluid py-1 px-3">

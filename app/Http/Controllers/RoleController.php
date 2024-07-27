@@ -117,7 +117,6 @@ class RoleController extends Controller
         }
     }
 
-    // Método para restaurar un rol eliminado
     public function restore($id)
     {
         // Buscar el rol eliminado por su ID

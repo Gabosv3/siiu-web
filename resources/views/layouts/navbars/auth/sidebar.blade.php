@@ -56,7 +56,8 @@
           <span class="nav-link-text ms-1">Usuarios</span>
         </a>
 
-      </li>@endcan
+      </li>
+      @endcan
       @can('role.index')
       <li class="nav-item pb-2">
 
@@ -69,9 +70,22 @@
       </li>
       @endcan
 
+      
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Administracion</h6>
       </li>
+    
+      
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('SQL-Mantenimiento') ? 'active' : '') }}" href="{{ url('SQL-Mantenimiento') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="fa fa-cogs ps-2 pe-2 text-center text-dark {{ (Request::is('SQL-Mantenimiento') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1">Mantenimiento</span>
+        </a>
+      </li>
+   
+      @can('departamentos.index')
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('departamentos') ? 'active' : '') }}" href="{{ url('departamentos') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -80,14 +94,18 @@
           <span class="nav-link-text ms-1">Departamentos</span>
         </a>
       </li>
+      @endcan
+      @can('categorias.index')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
+        <a class="nav-link {{ (Request::is('categorias') ? 'active' : '') }}" href="{{ url('categorias') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-object-group ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-object-group ps-2 pe-2 text-center text-dark {{ (Request::is('categorias') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Categorias</span>
         </a>
       </li>
+      @endcan
+    
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">

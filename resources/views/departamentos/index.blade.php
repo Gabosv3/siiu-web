@@ -15,24 +15,27 @@
     <div class="tab-content" id="nav-tabContent">
         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
             <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3 ">
-                <table id="example" class="table align-items-center mb-0 text-center">
+                <table id="Principal" class="table align-items-center mb-0 text-center">
                     <thead class="table-primary text-center">
                         <tr>
                             <th>#</th>
-                            <th>NOMBRE</th>
+                            <th>Nombre</th>
+                            <th>Código</th>
                             <th class="w-15">ACCIONES</th>
                         </tr>
                     </thead>
                     @foreach ($departamentos as $departamento)
                     <tr>
                         <td>{{ $departamento->id }}</td>
+                    
                         <td>{{ $departamento->nombre }}</td>
+                         <td>{{ $departamento->codigo }}</td>
                         <td>
                             <a href="{{ route('departamentos.show', $departamento->id) }}" title="Mostrar departamento" class="btn btn-cyan-800"><i class='bx bxs-show'></i></a>
                             <a href="{{ route('departamentos.edit', $departamento->id) }}" title="Editar departamento" class="btn btn-green-600"><i class='bx bxs-edit-alt'></i></a>
-                            <form action="{{ route('departamentos.destroy', $departamento->id) }}" method="POST" style="display:inline;">
-                                @csrf
+                            <form action="{{ route('departamentos.destroy', $departamento->id) }}" method="POST" style="display:inline;" class="formulario-eliminar">
                                 @method('DELETE')
+                                @csrf
                                 <button type="submit" title="Eliminar departamento" class="btn btn-red-800"><i class='bx bxs-trash'></i></button>
                             </form>
                         </td>
@@ -42,9 +45,39 @@
             </div>
         </div>
         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-        </div>    
+            <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3 ">
+                <table id="restaurar" class="table align-items-center mb-0 text-center" style="width:100%">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th>#</th>
+                            <th>CODIGO</th>
+                            <th>NOMBRE</th>
+                            <th class="w-15">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    @foreach ($departamentos as $departamento)
+                    <tr>
+                        <td>{{ $departamento->id }}</td>
+                        <td>{{ $departamento->codigo }}</td>
+                        <td>{{ $departamento->nombre }}</td>
+                        <td>
+                            <a href="{{ route('departamentos.show', $departamento->id) }}" title="Mostrar departamento" class="btn btn-cyan-800"><i class='bx bxs-show'></i></a>
+                            <a href="{{ route('departamentos.edit', $departamento->id) }}" title="Editar departamento" class="btn btn-green-600"><i class='bx bxs-edit-alt'></i></a>
+                            <form action="{{ route('departamentos.destroy', $departamento->id) }}" method="POST" style="display:inline;" class="formulario-eliminar">
+                                @method('DELETE')
+                                @csrf
+                                <button type="submit" title="Eliminar departamento" class="btn btn-red-800"><i class='bx bxs-trash'></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </table>
+            </div>
+        </div>
     </div>
 </div>
+
+<script src="{{ asset('assets/js/Tablas/tablas.js') }}"></script>
 
 @if (session('status'))
 <script>
@@ -60,39 +93,4 @@
 </script>
 @endif
 
-<script>
-    $(document).ready(function() {
-        $('#example').DataTable({
-            responsive: true,
-            language: {
-                "sProcessing": "Procesando...",
-                "sLengthMenu": "Mostrar _MENU_ registros",
-                "sZeroRecords": "No se encontraron resultados",
-                "sEmptyTable": "Ningún dato disponible en esta tabla",
-                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-                "sSearch": "Buscar:",
-                "sInfoThousands": ",",
-                "sLoadingRecords": "Cargando...",
-                "oPaginate": {
-                    "sFirst": '<i class="fas fa-angle-double-left"></i>',
-                    "sLast": '<i class="fas fa-angle-double-right"></i>',
-                    "sNext": '<i class="fas fa-angle-right"></i>',
-                    "sPrevious": '<i class="fas fa-angle-left"></i>'
-
-                },
-                "oAria": {
-                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-                },
-                "buttons": {
-                    "copy": "Copiar",
-                    "colvis": "Visibilidad"
-                }
-            },
-            dom: '<"top"Bf>rt<"bottom"lip><"clear">',
-        });
-    });
-</script>
 @endsection

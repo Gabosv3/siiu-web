@@ -15,11 +15,11 @@
 -->
 <!DOCTYPE html>
 
-@if (\Request::is('rtl'))
-<html dir="rtl" lang="ar">
-@else
+
+
+
 <html lang="en">
-@endif
+
 
 <head>
   <meta charset="utf-8" />
@@ -30,8 +30,7 @@
   @endif
   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}">
   <link rel="icon" type="image/png" href="{{ asset('img/v45_145.png') }}">
-  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../img/v45_145.png">
+
 
   <title>
     SIIU
@@ -41,8 +40,7 @@
   <!-- Nucleo Icons -->
   <link rel="stylesheet" href="{{ asset('assets/css/nucleo-icons.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/nucleo-svg.css') }}">
-  <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
-  <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+ 
   <!-- Font Awesome Icons -->
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
   <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />

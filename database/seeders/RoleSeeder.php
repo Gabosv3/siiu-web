@@ -40,6 +40,12 @@ class RoleSeeder extends Seeder
         Permission::create(['name'=> 'departamentos.edit','description' => 'Editar departamentos'])->syncRoles([$role1]);
         Permission::create(['name'=> 'departamentos.destroy','description' => 'Eliminar departamentos'])->syncRoles([$role1]);
         Permission::create(['name'=> 'departamentos.restore','description' => 'restaura departamentos'])->syncRoles([$role1]);
+        
+        Permission::create(['name'=> 'categorias.index','description' => 'Ver categorias'])->syncRoles([$role1,$role2]);
+        Permission::create(['name'=> 'categorias.create','description' => 'Crear categorias'])->syncRoles([$role1,$role2]);
+        Permission::create(['name'=> 'categorias.edit','description' => 'Editar categorias'])->syncRoles([$role1]);
+        Permission::create(['name'=> 'categorias.destroy','description' => 'Eliminar categorias'])->syncRoles([$role1]);
+        Permission::create(['name'=> 'categorias.restore','description' => 'restaura categorias'])->syncRoles([$role1]);
 
         
         Permission::create(['name'=> 'dashboard','description' => 'Ver dashboard'])->syncRoles([$role1,$role2]);
