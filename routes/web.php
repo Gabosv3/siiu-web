@@ -7,9 +7,12 @@ use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SQLMaintenanceController;
 use App\Http\Controllers\LoginSecurityController;
+use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\UserController;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 
 /*
@@ -26,46 +29,64 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
 Route::group(['middleware' => 'guest'], function () {
-    //Iniciar session
+    // Iniciar sesión
     Route::get('Login', [AuthController::class, 'login'])->name('login');
-    //Verficar datos de session
+    // Verificar datos de sesión
     Route::post('Login', [AuthController::class, 'loginVerify'])->name('login.verify');
 });
 
+// Verificación de correo electrónico
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
 
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect('/dashboard');
+    })->middleware(['signed'])->name('verification.verify');
 
-Route::middleware(['auth', 'prevent-back-history', 'two_fa'])->group(function () {
-    //DASHBOAR
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('message', 'Verification link sent!');
+    })->name('verification.send');
+});
+
+Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group(function () {
+    // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/Administrativo', [DashboardController::class, 'Principal'])->middleware('can:dashboard')->name('Permisos');
     Route::get('/dashboard/Operativo', [DashboardController::class, 'Secundario'])->name('Secundario');
     Route::get('/nosotros', [DashboardController::class, 'Nosotros'])->name('Nosotros');
-    //usuario
+    
+    // Usuario
     Route::resource('user', UserController::class);
     Route::put('/user/{id}/restore', [UserController::class, 'restore'])->name('user.restore');
-    route::get('/user/{id}/one_edit', [UserController::class, 'one_edit'])->name('user.one_edit');
+    Route::get('/user/{id}/one_edit', [UserController::class, 'one_edit'])->name('user.one_edit');
     Route::match(['put', 'patch'], '/user/one_update/{user}', [UserController::class, 'one_update'])->name('user.one_update');
 
-
-    //Roles
+    Route::post('/password/update', [PasswordController::class, 'update'])->name('password.update');
+    
+    // Roles
     Route::resource('role', RoleController::class);
     Route::put('/role/{role}/restore', [RoleController::class, 'restore'])->name('role.restore');
-
-    //Departamentos
+    
+    // Departamentos
     Route::resource('departamentos', DepartamentoController::class);
     Route::put('/departamentos/{departamento}/restore', [DepartamentoController::class, 'restore'])->name('departamento.restore');
-    //
+    
+    // Categorias
     Route::resource('categorias', CategoriaController::class);
     Route::put('/categorias/{categorias}/restore', [CategoriaController::class, 'restore'])->name('categorias.restore');
-
-    Route::get('/forbidden', function () {
-        throw new AuthorizationException();
-    });
+    
+    // SQL Mantenimiento
     Route::get('/SQL-Mantenimiento', [SQLMaintenanceController::class, 'index'])->name('sql');
     Route::get('/sql/download', [SQLMaintenanceController::class, 'download'])->name('sql.download');
     Route::post('/sql/upload', [SQLMaintenanceController::class, 'upload'])->name('sql.upload');
-
+    
+    // Two Factor Authentication
     Route::prefix('two_factor_auth')->group(function () {
         Route::get('/', [LoginSecurityController::class, 'show2faForm'])->name('show2FASettings');
         Route::post('generateSecret', [LoginSecurityController::class, 'generate2faSecret'])->name('generate2faSecret');
@@ -73,12 +94,11 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa'])->group(function ()
         Route::post('disable2fa', [LoginSecurityController::class, 'disable2fa'])->name('disable2fa');
         Route::middleware('two_fa')->post('/2faVerify', [LoginSecurityController::class, 'verify2fa'])->name('2faVerify');
     });
-
-    //Cerrar session
+    
+    // Cerrar sesión
     Route::post('signOut', [AuthController::class, 'signOut'])->name('signOut');
 });
 
-
-
-
-// test middleware
+Route::get('/forbidden', function () {
+    throw new AuthorizationException();
+});

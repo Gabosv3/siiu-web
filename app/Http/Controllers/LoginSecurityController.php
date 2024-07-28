@@ -24,6 +24,9 @@ class LoginSecurityController extends Controller
 
     /**
      * Mostrar el formulario de configuración de 2FA
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
      */
     public function show2faForm(Request $request)
     {
@@ -58,6 +61,9 @@ class LoginSecurityController extends Controller
 
     /**
      * Generar la llave secreta de 2FA
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function generate2faSecret(Request $request)
     {
@@ -81,6 +87,9 @@ class LoginSecurityController extends Controller
 
     /**
      * Habilitar 2FA
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function enable2fa(Request $request)
     {
@@ -104,6 +113,9 @@ class LoginSecurityController extends Controller
 
     /**
      * Deshabilitar 2FA
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function disable2fa(Request $request)
     {
@@ -123,12 +135,18 @@ class LoginSecurityController extends Controller
         return redirect()->route('show2FASettings')->with('success', "2FA deshabilitado.");
     }
 
+    /**
+     * Verificar el código 2FA
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function verify2fa(Request $request)
-{
-    // Lógica para verificar el código 2FA
-    // ...
+    {
+        // Lógica para verificar el código 2FA
+        // ...
 
-    // Redirige a la página anterior o a una ruta específica
-    return redirect()->route('dashboard'); // Asegúrate de reemplazar con la ruta correcta
-}
+        // Redirige a la página anterior o a una ruta específica
+        return redirect()->route('dashboard'); // Asegúrate de reemplazar con la ruta correcta
+    }
 }

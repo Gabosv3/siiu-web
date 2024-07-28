@@ -15,41 +15,63 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        //
-        $role1 = Role::create(['name'=> 'SuperAdmin']);
-        $role2 = Role::create(['name'=> 'Administrador']);
-        Role::create(['name'=> 'Usuario']);
+        // Definir roles
+        $roles = [
+            'SuperAdmin',
+            'Administrador',
+            'Usuario'
+        ];
 
-        
-      
+        // Crear o actualizar roles
+        $roleInstances = [];
+        foreach ($roles as $roleName) {
+            $roleInstances[$roleName] = Role::updateOrCreate(['name' => $roleName]);
+        }
 
-        Permission::create(['name'=> 'user.index','description' => 'Ver Usuarios'])->syncRoles([$role1,$role2]);
-        Permission::create(['name'=> 'user.create','description' => 'Crear Usuario'])->syncRoles([$role1,$role2]);
-        Permission::create(['name'=> 'user.edit','description' => 'Editar Usuario'])->syncRoles([$role1]);
-        Permission::create(['name'=> 'user.destroy','description' => 'Eliminar Usuario'])->syncRoles([$role1]);
-        Permission::create(['name'=> 'user.restore','description' => 'restaurar Usuario'])->syncRoles([$role1]);
+        // Definir permisos con sus descripciones y roles asociados
+        $permissions = [
+            ['name' => 'user.index', 'description' => 'Ver Usuarios', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'user.create', 'description' => 'Crear Usuario', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'user.edit', 'description' => 'Editar Usuario', 'roles' => ['SuperAdmin']],
+            ['name' => 'user.destroy', 'description' => 'Eliminar Usuario', 'roles' => ['SuperAdmin']],
+            ['name' => 'user.restore', 'description' => 'Restaurar Usuario', 'roles' => ['SuperAdmin']],
 
-        Permission::create(['name'=> 'role.index','description' => 'Ver Roles'])->syncRoles([$role1,$role2]);
-        Permission::create(['name'=> 'role.create','description' => 'Crear Roles'])->syncRoles([$role1,$role2]);
-        Permission::create(['name'=> 'role.edit','description' => 'Editar Roles'])->syncRoles([$role1]);
-        Permission::create(['name'=> 'role.destroy','description' => 'Eliminar Roles'])->syncRoles([$role1]);
-        Permission::create(['name'=> 'role.restore','description' => 'restaura Usuario'])->syncRoles([$role1]);
+            ['name' => 'role.index', 'description' => 'Ver Roles', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'role.create', 'description' => 'Crear Roles', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'role.edit', 'description' => 'Editar Roles', 'roles' => ['SuperAdmin']],
+            ['name' => 'role.destroy', 'description' => 'Eliminar Roles', 'roles' => ['SuperAdmin']],
+            ['name' => 'role.restore', 'description' => 'Restaurar Roles', 'roles' => ['SuperAdmin']],
 
-        Permission::create(['name'=> 'departamentos.index','description' => 'Ver departamentos'])->syncRoles([$role1,$role2]);
-        Permission::create(['name'=> 'departamentos.create','description' => 'Crear departamentos'])->syncRoles([$role1,$role2]);
-        Permission::create(['name'=> 'departamentos.edit','description' => 'Editar departamentos'])->syncRoles([$role1]);
-        Permission::create(['name'=> 'departamentos.destroy','description' => 'Eliminar departamentos'])->syncRoles([$role1]);
-        Permission::create(['name'=> 'departamentos.restore','description' => 'restaura departamentos'])->syncRoles([$role1]);
-        
-        Permission::create(['name'=> 'categorias.index','description' => 'Ver categorias'])->syncRoles([$role1,$role2]);
-        Permission::create(['name'=> 'categorias.create','description' => 'Crear categorias'])->syncRoles([$role1,$role2]);
-        Permission::create(['name'=> 'categorias.edit','description' => 'Editar categorias'])->syncRoles([$role1]);
-        Permission::create(['name'=> 'categorias.destroy','description' => 'Eliminar categorias'])->syncRoles([$role1]);
-        Permission::create(['name'=> 'categorias.restore','description' => 'restaura categorias'])->syncRoles([$role1]);
+            ['name' => 'departamentos.index', 'description' => 'Ver Departamentos', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'departamentos.create', 'description' => 'Crear Departamentos', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'departamentos.edit', 'description' => 'Editar Departamentos', 'roles' => ['SuperAdmin']],
+            ['name' => 'departamentos.destroy', 'description' => 'Eliminar Departamentos', 'roles' => ['SuperAdmin']],
+            ['name' => 'departamentos.restore', 'description' => 'Restaurar Departamentos', 'roles' => ['SuperAdmin']],
 
-        
-        Permission::create(['name'=> 'dashboard','description' => 'Ver dashboard'])->syncRoles([$role1,$role2]);
-        Permission::create(['name'=> 'tabla','description' => 'botones de tablas'])->syncRoles([$role1,$role2]);
-        
+            ['name' => 'categorias.index', 'description' => 'Ver Categorías', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'categorias.create', 'description' => 'Crear Categorías', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'categorias.edit', 'description' => 'Editar Categorías', 'roles' => ['SuperAdmin']],
+            ['name' => 'categorias.destroy', 'description' => 'Eliminar Categorías', 'roles' => ['SuperAdmin']],
+            ['name' => 'categorias.restore', 'description' => 'Restaurar Categorías', 'roles' => ['SuperAdmin']],
+
+            ['name' => 'dashboard', 'description' => 'Ver Dashboard', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'export.copy', 'description' => 'Boton copiar', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'export.excel', 'description' => 'Boton excel', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'export.csv', 'description' => 'Boton csv', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'export.print', 'description' => 'Boton print', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'export.pdf', 'description' => 'Boton pdf', 'roles' => ['SuperAdmin', 'Administrador']],
+        ];
+
+        // Crear o actualizar permisos y asignar roles
+        foreach ($permissions as $permissionData) {
+            $permission = Permission::updateOrCreate(
+                ['name' => $permissionData['name']],
+                ['description' => $permissionData['description']]
+            );
+
+            foreach ($permissionData['roles'] as $roleName) {
+                $roleInstances[$roleName]->givePermissionTo($permission);
+            }
+        }
     }
 }

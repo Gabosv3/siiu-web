@@ -126,27 +126,29 @@ class UserController extends Controller
         return view('Auth.user_edit', $data);
     }
 
-    // Método para actualizar un usuario en la base de datos
-    public function actualizar(Request $request, User $user, $validateRoles = true)
+    public function actualizar(Request $request, User $user, $validateRoles = true, $validateDepartamento = true)
     {
-        // Validación de los datos
-        $request->validate([
+        // Definir las reglas de validación
+        $rules = [
             'email' => 'required|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:8',
-            'password_confirmation' => 'nullable|same:password',
             'name' => 'required',
-            'departamento_id' => 'required|exists:departamentos,id',
             'apellidos' => 'required',
             'nombres' => 'required',
             'fecha_nacimiento' => 'required|date',
             'genero' => 'required',
             'dui' => 'required|unique:informacion_personals,dui,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
             'telefono' => 'required|unique:informacion_personals,telefono,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
-        ], [
+        ];
+
+        // Agregar la regla de validación para departamento_id si es necesario
+        if ($validateDepartamento) {
+            $rules['departamento_id'] = 'required|exists:departamentos,id';
+        }
+
+        // Mensajes de validación personalizados
+        $messages = [
             'email.required' => 'El correo es requerido',
             'email.unique' => 'El correo ya ha sido usado',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres',
-            'password_confirmation.same' => 'Las contraseñas no coinciden',
             'name.required' => 'El nombre es requerido',
             'departamento_id.required' => 'El departamento es requerido',
             'departamento_id.exists' => 'El departamento no es válido',
@@ -159,12 +161,15 @@ class UserController extends Controller
             'dui.unique' => 'El DUI ya ha sido usado',
             'telefono.required' => 'El teléfono es requerido',
             'telefono.unique' => 'El teléfono ya ha sido usado',
-        ]);
+        ];
+
+        // Validar los datos
+        $request->validate($rules, $messages);
 
         // Preparar los datos del usuario para actualizar
-        $userData = $request->only('name', 'email', 'departamento_id');
-        if ($request->filled('password')) {
-            $userData['password'] = bcrypt($request->password);
+        $userData = $request->only('name', 'email');
+        if ($validateDepartamento) {
+            $userData['departamento_id'] = $request->departamento_id;
         }
         $user->update($userData);
 
@@ -186,13 +191,13 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $this->actualizar($request, $user, true); // Valida y actualiza roles
+        $this->actualizar($request, $user, true, true); // Valida y actualiza roles y departamento
         return redirect()->back()->with('Actualizado', 'SI');
     }
 
     public function one_update(Request $request, User $user)
     {
-        $this->actualizar($request, $user, false); // No valida ni actualiza roles
+        $this->actualizar($request, $user, false, false); // No valida ni actualiza roles ni departamento
         return redirect()->back()->with('status', 'Usuario actualizado');
     }
 

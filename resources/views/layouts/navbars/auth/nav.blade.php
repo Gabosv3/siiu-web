@@ -1,40 +1,40 @@
 <!-- Navbar -->
 
 @php
-    // Mapa de traducción de rutas
-    $translations = [
-        'home' => 'Inicio',
-        'user' => 'Usuarios',
-        'role' => 'Roles',
-        'edit' => 'Editar',
-        'create' => 'Crear',
-        'one_edit' => 'Editar',
-        'two_factor_auth' => 'Autenticación de dos factores',
+// Mapa de traducción de rutas
+$translations = [
+'home' => 'Inicio',
+'user' => 'Usuarios',
+'role' => 'Roles',
+'edit' => 'Editar',
+'create' => 'Crear',
+'one_edit' => 'Editar',
+'two_factor_auth' => 'Autenticación de dos factores',
 
-        // Añade más traducciones según sea necesario
-    ];
+// Añade más traducciones según sea necesario
+];
 
-    // Obtén la ruta actual
-    $currentPath = Request::path();
+// Obtén la ruta actual
+$currentPath = Request::path();
 
-    // Divide la ruta en segmentos
-    $segments = explode('/', $currentPath);
+// Divide la ruta en segmentos
+$segments = explode('/', $currentPath);
 
-    // Traduce cada segmento si existe en el mapa
-    foreach ($segments as &$segment) {
-        if (array_key_exists($segment, $translations)) {
-            $segment = $translations[$segment];
-        }
-    }
+// Traduce cada segmento si existe en el mapa
+foreach ($segments as &$segment) {
+if (array_key_exists($segment, $translations)) {
+$segment = $translations[$segment];
+}
+}
 
-    // Junta los segmentos de nuevo en una cadena
-    $translatedPath = implode(' / ', $segments);
+// Junta los segmentos de nuevo en una cadena
+$translatedPath = implode(' / ', $segments);
 
 @endphp
 
 
 
-<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4  border-radius-xl " id="navbarBlur" >
+<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4  border-radius-xl " id="navbarBlur">
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
@@ -44,15 +44,23 @@
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4 d-flex justify-content-end" id="navbar">
             <ul class="navbar-nav  justify-content-end">
-                <li class="nav-item d-flex align-items-center">                        
-                        <form method="POST" action="{{route('signOut')}}">
+                <li class="nav-item dropdown d-flex align-items-center">
+                    <a class="nav-link dropdown-toggle text-body p-0 mx-4" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-user me-sm-1"></i> Usuario
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a href="{{ route('user.one_edit', Auth::user()->id) }}" class="dropdown-item text-center">
+                            <i class="fa fa-pencil cursor-pointer"></i> Editar perfil
+                        </a>
+                        <form method="POST" action="{{route('signOut')}}" style="display: inline;">
                             @csrf
-                            <button type="submit" style="
-                            background: none;border: none;padding: 0;text-decoration: none;color: gray;">
-                                <i class="fa fa-user me-sm-1"></i> Cerrar sesion
+                            <button type="submit" class="dropdown-item text-center" style="background: none;border: none;padding: 0;text-decoration: none;color: inherit;">
+                                <i class="fa fa-sign-out" aria-hidden="true"></i> Cerrar sesión
                             </button>
                         </form>
+                    </div>
                 </li>
+
                 <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
                     <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                         <div class="sidenav-toggler-inner">
@@ -60,11 +68,6 @@
                             <i class="sidenav-toggler-line"></i>
                             <i class="sidenav-toggler-line"></i>
                         </div>
-                    </a>
-                </li>
-                <li class="nav-item px-3 d-flex align-items-center">
-                    <a href="{{ route('user.one_edit', Auth::user()->id) }}" class="nav-link text-body p-0">
-                        <i class="fa fa-pencil cursor-pointer"></i>
                     </a>
                 </li>
                 <li class="nav-item dropdown pe-2 d-flex align-items-center">
