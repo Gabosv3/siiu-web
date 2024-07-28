@@ -1,14 +1,16 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DepartamentoController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SQLMaintenanceController;
-use App\Http\Controllers\LoginSecurityController;
-use App\Http\Controllers\PasswordController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Modulos\CategoriaController;
+use App\Http\Controllers\Modulos\DashboardController;
+use App\Http\Controllers\Modulos\DepartamentoController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Modulos\RoleController;
+use App\Http\Controllers\Modulos\SQLMaintenanceController;
+use App\Http\Controllers\Modulos\LoginSecurityController;
+use App\Http\Controllers\Modulos\PasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Modulos\UserController;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +55,14 @@ Route::middleware('auth')->group(function () {
         return back()->with('message', 'Verification link sent!');
     })->name('verification.send');
 });
+
+// Rutas para solicitud de restablecimiento de contraseña
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+// Rutas para restablecimiento de contraseña
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/resets', [ResetPasswordController::class, 'reset'])->name('password.update.foremail');
 
 Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group(function () {
     // DASHBOARD

@@ -2,119 +2,190 @@
 
 @section('content')
 <div>
-
     <main id="main" class="main">
-
         <div class="pagetitle">
             <h1>Perfil</h1>
-        </div><!-- End Page Title -->
-
+        </div>
         <section class="section profile">
             <div class="row">
                 <div class="col-xl-4">
-
+                    <!-- Tarjeta de perfil -->
                     <div class="card">
+                        <!-- Cuerpo de la tarjeta -->
                         <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-
-                            <h2>{{$user->name}}</h2>
-                            <h3> @if ($user->roles->isNotEmpty())
+                            <!-- Nombre del usuario -->
+                            <h2>{{ $user->name }}</h2>
+                            <!-- Título que muestra el rol del usuario -->
+                            <h3>
+                                <!-- Verificar si el usuario tiene roles asignados -->
+                                @if ($user->roles->isNotEmpty())
+                                <!-- Mostrar el primer rol del usuario -->
                                 {{ $user->roles->first()->name }}
                                 @else
+                                <!-- Mostrar mensaje si no hay roles asignados -->
                                 No role assigned
                                 @endif
                             </h3>
                         </div>
                     </div>
-
                 </div>
-
                 <div class="col-xl-8">
-
                     <div class="card">
                         <div class="card-body pt-3">
-                            <!-- Bordered Tabs -->
+                            <!-- Pestañas con bordes -->
                             <ul class="nav nav-tabs nav-tabs-bordered">
-
+                                <!-- Elemento de la pestaña 1: Descripción general -->
                                 <li class="nav-item">
-                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">descripción general</button>
+                                    <!-- Botón para activar la pestaña de descripción general -->
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview" id="btn-nav-general">
+                                        General
+                                    </button>
                                 </li>
-
+                                <!-- Elemento de la pestaña 2: Editar Perfil -->
                                 <li class="nav-item">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Editar Perfil</button>
+                                    <!-- Botón para activar la pestaña de edición de perfil -->
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit" id="btn-nav-editar-Perfil">
+                                        Editar Perfil
+                                    </button>
                                 </li>
-
+                                <!-- Elemento de la pestaña 3: Opciones -->
                                 <li class="nav-item">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Opciones</button>
+                                    <!-- Botón para activar la pestaña de opciones -->
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings" id="btn-nav-opciones">
+                                        Opciones
+                                    </button>
                                 </li>
-
+                                <!-- Elemento de la pestaña 4: Cambiar contraseña -->
                                 <li class="nav-item">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Cambiar contraseña</button>
+                                    <!-- Botón para activar la pestaña de cambio de contraseña -->
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password" id="btn-nav-contraseña">
+                                        Contraseña
+                                    </button>
                                 </li>
-
                             </ul>
                             <div class="tab-content pt-2">
+                                <!-- Contenido de la pestaña "Descripción General del Perfil" -->
+                                <div class="tab-pane fade show active profile-overview" id="profile-overview" >
 
-                                <div class="tab-pane fade show active profile-overview" id="profile-overview">
-
+                                    <!-- Título de la sección -->
                                     <h3 class="card-title">Detalles del perfil</h3>
 
-                                    <h5 class="card-title">informacion del perfil</h5>
+                                    <!-- Subtítulo de la sección -->
+                                    <h5 class="card-title mt-3">Información del perfil</h5>
+
+                                    <!-- Fila: Nombre de usuario -->
                                     <div class="row">
-                                        <div class="col-lg-3 col-md-4 label">Nombre de usuario</div>
-                                        <div class="col-lg-9 col-md-8">{{ $user->name }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-4 label">Correo Electrónico</div>
-                                        <div class="col-lg-9 col-md-8">{{ $user->email }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-4 label">Departamento</div>
-                                        <div class="col-lg-9 col-md-8">{{ $user->departamento ? $user->departamento->nombre : 'No disponible' }}</div>
+                                        <!-- Etiqueta -->
+                                        <div class="col-lg-3 col-md-4 fw-bold mt-3">Nombre de usuario</div>
+                                        <!-- Valor del nombre de usuario -->
+                                        <div class="col-lg-9 col-md-8 mt-3 text-dark">{{ $user->name }}</div>
                                     </div>
 
-                                    <h5 class="card-title">informacion Personal</h5>
-
+                                    <!-- Fila: Correo Electrónico -->
                                     <div class="row">
-                                        <div class="col-lg-3 col-md-4 label ">Nombre </div>
-                                        <div class="col-lg-9 col-md-8">@isset($user->informacionPersonal->nombres) {{ $user->informacionPersonal->nombres }} @else No disponible @endisset</div>
+                                        <!-- Etiqueta -->
+                                        <div class="col-lg-3 col-md-4 fw-bold mt-3">Correo Electrónico</div>
+                                        <!-- Valor del correo electrónico -->
+                                        <div class="col-lg-9 col-md-8 mt-3 text-dark">{{ $user->email }}</div>
                                     </div>
 
+                                    <!-- Fila: Departamento -->
                                     <div class="row">
-                                        <div class="col-lg-3 col-md-4 label">Apellido</div>
-                                        <div class="col-lg-9 col-md-8">@isset($user->informacionPersonal->apellidos) {{ $user->informacionPersonal->apellidos }} @else No disponible @endisset</div>
+                                        <!-- Etiqueta -->
+                                        <div class="col-lg-3 col-md-4 fw-bold mt-3">Departamento</div>
+                                        <!-- Valor del departamento (si está disponible) -->
+                                        <div class="col-lg-9 col-md-8 mt-3 text-dark">{{ $user->departamento ? $user->departamento->nombre : 'No disponible' }}</div>
                                     </div>
 
+                                    <!-- Subtítulo de la sección -->
+                                    <h5 class="card-title mt-3">Información Personal</h5>
 
-
+                                    <!-- Fila: Nombre -->
                                     <div class="row">
-                                        <div class="col-lg-3 col-md-4 label">Fecha de nacimiento </div>
-                                        <div class="col-lg-9 col-md-8">@isset($user->informacionPersonal->fecha_nacimiento) {{ $user->informacionPersonal->fecha_nacimiento }} @else No disponible @endisset</div>
+                                        <!-- Etiqueta -->
+                                        <div class="col-lg-3 col-md-4 fw-bold mt-3">Nombre</div>
+                                        <!-- Valor del nombre personal (si está disponible) -->
+                                        <div class="col-lg-9 col-md-8 mt-3 text-dark">
+                                            @isset($user->informacionPersonal->nombres)
+                                            {{ $user->informacionPersonal->nombres }}
+                                            @else
+                                            No disponible
+                                            @endisset
+                                        </div>
                                     </div>
-
+                                    <!-- Fila: Apellido -->
                                     <div class="row">
-                                        <div class="col-lg-3 col-md-4 label">Genero</div>
-                                        <div class="col-lg-9 col-md-8">@isset($user->informacionPersonal->genero) {{ $user->informacionPersonal->genero }} @else No disponible @endisset</div>
+                                        <!-- Etiqueta -->
+                                        <div class="col-lg-3 col-md-4 fw-bold mt-3">Apellido</div>
+                                        <!-- Valor del apellido personal (si está disponible) -->
+                                        <div class="col-lg-9 col-md-8 mt-3 text-dark">
+                                            @isset($user->informacionPersonal->apellidos)
+                                            {{ $user->informacionPersonal->apellidos }}
+                                            @else
+                                            No disponible
+                                            @endisset
+                                        </div>
                                     </div>
-
+                                    <!-- Fila: Fecha de nacimiento -->
                                     <div class="row">
-                                        <div class="col-lg-3 col-md-4 label">DUI:</div>
-                                        <div class="col-lg-9 col-md-8">@isset($user->informacionPersonal->dui) {{ $user->informacionPersonal->dui }} @else No disponible @endisset</div>
+                                        <!-- Etiqueta -->
+                                        <div class="col-lg-3 col-md-4 fw-bold mt-3">Fecha de nacimiento</div>
+                                        <!-- Valor de la fecha de nacimiento (si está disponible) -->
+                                        <div class="col-lg-9 col-md-8 mt-3 text-dark">
+                                            @isset($user->informacionPersonal->fecha_nacimiento)
+                                            {{ $user->informacionPersonal->fecha_nacimiento }}
+                                            @else
+                                            No disponible
+                                            @endisset
+                                        </div>
                                     </div>
-
+                                    <!-- Fila: Género -->
                                     <div class="row">
-                                        <div class="col-lg-3 col-md-4 label">TELEFONO:</div>
-                                        <div class="col-lg-9 col-md-8">@isset($user->informacionPersonal->telefono) {{ $user->informacionPersonal->telefono }} @else No disponible @endisset</div>
+                                        <!-- Etiqueta -->
+                                        <div class="col-lg-3 col-md-4 fw-bold mt-3">Género</div>
+                                        <!-- Valor del género (si está disponible) -->
+                                        <div class="col-lg-9 col-md-8 mt-3 text-dark">
+                                            @isset($user->informacionPersonal->genero)
+                                            {{ $user->informacionPersonal->genero }}
+                                            @else
+                                            No disponible
+                                            @endisset
+                                        </div>
                                     </div>
-
+                                    <!-- Fila: DUI -->
+                                    <div class="row">
+                                        <!-- Etiqueta -->
+                                        <div class="col-lg-3 col-md-4 fw-bold mt-3">DUI</div>
+                                        <!-- Valor del DUI (si está disponible) -->
+                                        <div class="col-lg-9 col-md-8 mt-3 text-dark">
+                                            @isset($user->informacionPersonal->dui)
+                                            {{ $user->informacionPersonal->dui }}
+                                            @else
+                                            No disponible
+                                            @endisset
+                                        </div>
+                                    </div>
+                                    <!-- Fila: Teléfono -->
+                                    <div class="row">
+                                        <!-- Etiqueta -->
+                                        <div class="col-lg-3 col-md-4 fw-bold mt-3">Teléfono</div>
+                                        <!-- Valor del teléfono (si está disponible) -->
+                                        <div class="col-lg-9 col-md-8 mt-3 text-dark">
+                                            @isset($user->informacionPersonal->telefono)
+                                            {{ $user->informacionPersonal->telefono }}
+                                            @else
+                                            No disponible
+                                            @endisset
+                                        </div>
+                                    </div>
                                 </div>
-
+                                <!-- Contenido de la pestaña "Editar Perfil" -->
                                 <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-
-                                    <!-- Profile Edit Form -->
-                                    <form class="needs-validation " action="{{ route('user.one_update', $user->id) }}" method="POST" id="updateForm" novalidate>
+                                    <!-- Formulario para editar el perfil -->
+                                    <form class="needs-validation" action="{{ route('user.one_update', $user->id) }}" method="POST" id="updateForm" novalidate>
                                         @csrf
                                         @method('PUT')
-
+                                        <!-- Fila: Usuario -->
                                         <div class="row mb-3">
                                             <label for="name" class="col-md-4 col-lg-4 col-form-label">Usuario</label>
                                             <div class="col-md-6 col-lg-6">
@@ -125,7 +196,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-
+                                        <!-- Fila: Correo Electrónico -->
                                         <div class="row mb-3">
                                             <label for="email" class="col-md-4 col-lg-4 col-form-label">Correo Electrónico</label>
                                             <div class="col-md-6 col-lg-6">
@@ -136,7 +207,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-
+                                        <!-- Fila: Nombres -->
                                         <div class="row mb-3">
                                             <label for="nombres" class="col-md-4 col-lg-4 col-form-label">Nombres</label>
                                             <div class="col-md-6 col-lg-6">
@@ -147,7 +218,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-
+                                        <!-- Fila: Apellidos -->
                                         <div class="row mb-3">
                                             <label for="apellidos" class="col-md-4 col-lg-4 col-form-label">Apellidos</label>
                                             <div class="col-md-6 col-lg-6">
@@ -158,7 +229,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-
+                                        <!-- Fila: Fecha de Nacimiento -->
                                         <div class="row mb-3">
                                             <label for="fecha_nacimiento" class="col-md-4 col-lg-4 col-form-label">Fecha de Nacimiento</label>
                                             <div class="col-md-6 col-lg-6">
@@ -169,7 +240,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-
+                                        <!-- Fila: Género -->
                                         <div class="row mb-3">
                                             <label for="genero" class="col-md-4 col-lg-4 col-form-label">Género</label>
                                             <div class="col-md-6 col-lg-6">
@@ -185,7 +256,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-
+                                        <!-- Fila: DUI -->
                                         <div class="row mb-3">
                                             <label for="dui" class="col-md-4 col-lg-4 col-form-label">DUI</label>
                                             <div class="col-md-6 col-lg-6">
@@ -196,7 +267,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-
+                                        <!-- Fila: Teléfono -->
                                         <div class="row mb-3">
                                             <label for="telefono" class="col-md-4 col-lg-4 col-form-label">Teléfono</label>
                                             <div class="col-md-6 col-lg-6">
@@ -207,59 +278,50 @@
                                                 @enderror
                                             </div>
                                         </div>
-
+                                        <!-- Botón de actualización -->
                                         <div class="row mb-3">
                                             <div class="col-md-12 text-end">
                                                 <button class="btn bg-gradient-dark mt-3 mb-0" type="submit" id="btn-actualizar-usuario-autentificado">Actualizar Usuario</button>
                                             </div>
                                         </div>
                                     </form>
-
                                 </div>
-
+                                <!-- Contenedor de la pestaña "Opciones" -->
                                 <div class="tab-pane fade pt-3" id="profile-settings">
-
-                                    <!-- Settings Form -->
-                                    <form>
-
-                                        <div class="row mb-3">
-                                            <label for="fullName" class="col-md-4 col-lg-4 col-form-label">Email Notifications</label>
-                                            <div class="col-md-6 col-lg-6">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="changesMade" checked>
-                                                    <label class="form-check-label" for="changesMade">
-                                                        Changes made to your account
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="newProducts" checked>
-                                                    <label class="form-check-label" for="newProducts">
-                                                        Information on new products and services
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="proOffers">
-                                                    <label class="form-check-label" for="proOffers">
-                                                        Marketing and promo offers
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled>
-                                                    <label class="form-check-label" for="securityNotify">
-                                                        Security alerts
-                                                    </label>
-                                                </div>
-                                            </div>
+                                    <!-- Verificación de la configuración de 2FA -->
+                                    @if(isset($user->loginSecurity) && $user->loginSecurity->google2fa_enable)
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h4>2FA</h4>
                                         </div>
-
-                                        <div class="text-center">
-                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                        <div class="col-md-6">
+                                            <span class="badge bg-success">Activado</span> <!-- Indicador de 2FA activado -->
                                         </div>
-                                    </form><!-- End settings Form -->
-
+                                    </div>
+                                    @else
+                                    <span class="badge bg-danger">Desactivado</span> <!-- Indicador de 2FA desactivado -->
+                                    @endif
+                                    <!-- Enlace para configurar 2FA -->
+                                    <a class="btn bg-gradient-dark mt-3 mb-0" href="{{ route('show2FASettings') }}">
+                                        <span class="ms-1">{{ __('Configurar 2FA') }}</span>
+                                    </a>
+                                    <!-- Verificación de correo electrónico -->
+                                    @if (Auth::user()->hasVerifiedEmail())
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <h4>Correo Electrónico</h4>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <span class="badge bg-success">Verificado</span> <!-- Indicador de correo verificado -->
+                                        </div>
+                                    </div>
+                                    @else
+                                    <span class="badge bg-danger">No Verificado</span> <!-- Indicador de correo no verificado -->
+                                    @endif
                                 </div>
-
+                                <!-- Contenedor de la pestaña "Cambiar contraseña" -->
                                 <div class="tab-pane fade pt-3 " id="profile-change-password">
+                                    <!-- Mostrar mensajes de error si existen -->
                                     @if ($errors->any())
                                     <div class="alert alert-danger">
                                         <ul>
@@ -269,11 +331,10 @@
                                         </ul>
                                     </div>
                                     @endif
-
-
+                                    <!-- Formulario para actualizar la contraseña -->
                                     <form method="POST" action="{{ route('password.update') }}" id="passwordUpdateForm">
                                         @csrf
-
+                                        <!-- Campo para la contraseña actual -->
                                         <div class="row mb-3">
                                             <label for="currentPassword" class="col-md-4 col-lg-4 col-form-label">Contraseña Actual</label>
                                             <div class="col-md-6 col-lg-6">
@@ -281,10 +342,9 @@
                                                 @error('current_password')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
-
                                             </div>
                                         </div>
-
+                                        <!-- Campo para la nueva contraseña -->
                                         <div class="row mb-3">
                                             <label for="newPassword" class="col-md-4 col-lg-4 col-form-label">Nueva Contraseña</label>
                                             <div class="col-md-6 col-lg-6">
@@ -294,37 +354,29 @@
                                                 @enderror
                                             </div>
                                         </div>
-
+                                        <!-- Campo para confirmar la nueva contraseña -->
                                         <div class="row mb-3">
                                             <label for="renewPassword" class="col-md-4 col-lg-4 col-form-label">Confirmar Nueva Contraseña</label>
                                             <div class="col-md-6 col-lg-6">
                                                 <input name="new_password_confirmation" type="password" class="form-control" id="renewPassword" required>
                                             </div>
                                         </div>
-
+                                        <!-- Botón para actualizar la contraseña -->
                                         <div class="row mb-3">
                                             <div class="col-md-12 text-end">
                                                 <button class="btn bg-gradient-dark mt-3 mb-0" type="submit" id="btn-actualizar-contraseña">Actualizar Contraseña</button>
                                             </div>
                                         </div>
                                     </form>
-
-
                                 </div>
-
-                            </div><!-- End Bordered Tabs -->
-
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
-
     </main><!-- End #main -->
-
     <script src="{{ asset('assets/js/Usuarios/UserOneEdit.js') }}"></script>
-
     @if (session('status'))
     <script>
         document.addEventListener('DOMContentLoaded', function() {

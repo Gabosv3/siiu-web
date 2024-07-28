@@ -1,9 +1,7 @@
 <?php
+namespace App\Http\Controllers\Modulos;
 
-namespace App\Http\Controllers;
-
-use App\Http\Requests\RoleRequest;
-use Exception;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;

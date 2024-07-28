@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Modulos;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Departamento;
 use App\Models\InformacionPersonal;
@@ -226,4 +227,6 @@ class UserController extends Controller
             return redirect()->back()->with('Restaurado', 'NO');
         }
     }
+
+    
 }
