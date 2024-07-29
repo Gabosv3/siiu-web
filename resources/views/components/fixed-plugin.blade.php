@@ -46,7 +46,7 @@
           <h6 class="mb-0">Barra de navegación fija</h6>
         </div>
         <div class="form-check form-switch ps-0">
-          <input class="form-check-input mt-1 ms-auto  {{ (Request::is('rtl') ? 'float-end' : '') }}"" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
+          <input class="form-check-input mt-1 ms-auto  {{ (Request::is('rtl') ? 'float-end' : '') }}" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
         </div>
         
       </div>

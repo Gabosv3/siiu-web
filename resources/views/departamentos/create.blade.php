@@ -7,7 +7,7 @@
         @csrf
         <div class="form-group">
             <label for="nombre">Nombre:</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" required>
+            <input type="text" class="form-control" id="nombre" name="nombre" required pattern="[A-Za-z\s]+" title="Ingrese solo letras y espacios" >
         </div>
         <button type="submit" class="btn btn-primary">Guardar</button>
     </form>

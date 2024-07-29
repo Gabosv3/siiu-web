@@ -15,6 +15,16 @@ class Departamento extends Model
      // Especifica los campos que se pueden asignar masivamente
      protected $fillable = ['nombre'];
 
+     protected static function boot()
+     {
+         parent::boot();
+ 
+         static::creating(function ($departamento) {
+             $maxId = self::max('id') + 1;
+             $departamento->codigo = 'DEP-' . $maxId;
+         });
+     }
+
      public function users()
      {
          return $this->hasMany(User::class);

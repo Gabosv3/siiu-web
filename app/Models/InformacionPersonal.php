@@ -19,6 +19,9 @@ class InformacionPersonal extends Model
         'user_id',
     ];
 
+     /**
+     * Relación muchos a uno con la clase User.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

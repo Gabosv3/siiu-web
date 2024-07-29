@@ -1,5 +1,8 @@
 @extends('layouts.user_type.auth')
 
+@section('title','SIIU-asd' )
+
+
 @section('content')
 <?php
 $fechaActual = date("j M, Y"); // M: mes (e.g. Jan), j: día del mes (1-31), Y: año (4 dígitos)

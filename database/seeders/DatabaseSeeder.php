@@ -43,6 +43,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'Gabriel@example.com',
             'password' => Hash::make('1234'), // Recuerda cambiar esto por la contraseña real
             'departamento_id' => 1,
+        ])->assignRole('Administrador');
+
+        User::create([
+            'name' => 'Azucena',
+            'email' => 'Azucena@example.com',
+            'password' => Hash::make('1234'), // Recuerda cambiar esto por la contraseña real
+            'departamento_id' => 1,
         ])->assignRole('Usuario');
 
         

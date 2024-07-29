@@ -58,3 +58,7 @@
 .btn-gray-800:hover {
     background-color: #2f3943; /* Color para el estado hover */
 }
+
+.bg-gradient-1{
+    background-image: linear-gradient(310deg, #fff, #6E0000);
+}
