@@ -13,7 +13,7 @@
         <div class="col-md-4 d-flex justify-content-center align-items-center">
             @can('user.create')
             <div>
-                <button type="button" class="btn btn-rounded btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Crear Usuario</button>
+                <button type="button" class="btn btn-rounded btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="btn-abrir-modal-crear-usuario">Crear Usuario</button>
             </div>
             @endcan
         </div>
@@ -28,7 +28,7 @@
                 <!-- Título del modal -->
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Crear Usuario</h1>
                 <!-- Botón de cerrar el modal -->
-                <button type="button" class="btn-close bg-primary" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close bg-primary" data-bs-dismiss="modal" aria-label="Close" id="btn-cerrar-modal-crear-usuario"></button>
             </div>
             <!-- Formulario para crear Usuario -->
             <form class="row g-3 text-dark text-center" action="{{ route('user.store') }}" method="POST" onsubmit="return validateForm()">

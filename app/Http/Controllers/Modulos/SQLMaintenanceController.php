@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Storage;
 
 class SQLMaintenanceController extends Controller
 {
+    public function __construct()
+    {
+        // Middleware para verificar permisos antes de ejecutar los métodos específicos
+        $this->middleware('can:Mantenimiento')->only('index','download','upload');
+       
+    }
 
     public function index()
     {

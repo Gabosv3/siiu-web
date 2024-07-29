@@ -75,8 +75,8 @@
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Administracion</h6>
       </li>
     
-      
-      <li class="nav-item">
+      @can('Mantenimiento')
+        <li class="nav-item">
         <a class="nav-link {{ (Request::is('SQL-Mantenimiento') ? 'active' : '') }}" href="{{ url('SQL-Mantenimiento') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-cogs ps-2 pe-2 text-center text-dark {{ (Request::is('SQL-Mantenimiento') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
@@ -84,7 +84,7 @@
           <span class="nav-link-text ms-1">Mantenimiento</span>
         </a>
       </li>
-   
+      @endcan
       @can('departamentos.index')
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('departamentos') ? 'active' : '') }}" href="{{ url('departamentos') }}">

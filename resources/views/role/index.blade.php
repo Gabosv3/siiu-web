@@ -14,7 +14,7 @@
         <div class="col-md-4 d-flex justify-content-center align-items-center">
             @can('role.create')
             <div class="py-5">
-                <button type="button" class="btn btn-rounded btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#createRoleModal">Crear Role</button>
+                <button type="button" class="btn btn-rounded btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#createRoleModal" id="btn-modal-crear-role">Crear Role</button>
             </div>
             @endcan
         </div>
@@ -28,7 +28,7 @@
             <!-- Encabezado del modal -->
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="createRoleModalLabel">Crear Role</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-activar-modal-role"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-cerrar-modal-role"></button>
             </div>
             <!-- Cuerpo del modal -->
             <div class="modal-body">
@@ -46,13 +46,13 @@
                     </div>
                     <!-- Botón para registrar el nuevo rol -->
                     <div class="d-grid gap-2 col-6 mx-auto">
-                        <button type="submit" class="btn btn-primary" id="btn-activar-modal-role">REGISTRAR</button>
+                        <button type="submit" class="btn btn-primary" id="btn-crear-role">REGISTRAR</button>
                     </div>
                 </form>
             </div>
             <!-- Pie del modal -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-crear-role">Cerrar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-cerrar-modal-role">Cerrar</button>
             </div>
         </div>
     </div>

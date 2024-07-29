@@ -39,7 +39,7 @@
                 <p class="card-text">{{ __('Si no has recibido el correo electrónico') }},
                 <form class="d-inline" method="POST" action="{{ route('verification.send') }}">
                     @csrf
-                    <button type="submit" class="btn btn-link p-0 m-0 align-baseline" >{{ __('haz clic aquí para solicitar otro') }}</button>.
+                    <button type="submit" class="btn btn-link p-0 m-0 align-baseline" id="btn-solicitar-link">{{ __('haz clic aquí para solicitar otro') }}</button>.
                 </form>
                 </p>
             </div>

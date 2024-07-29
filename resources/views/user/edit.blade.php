@@ -106,21 +106,6 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <!-- Campo para ingresar  la contraseña-->
-                    <div class="col-md-4 mb-3">
-                        <label for="password" class="form-label">Contraseña (opcional)</label>
-                        <input name="password" type="password" class="border-dark form-control @error('password') is-invalid @enderror" id="password" minlength="8" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$">
-                        <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres, incluir letras mayúsculas y minúsculas, números y caracteres especiales, y no debe contener espacios en blanco.</div>
-                        @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <!-- Campo para ingresar la contraseña y verificar que este sean igual al otro campo-->
-                    <div class="col-md-4 mb-3">
-                        <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>
-                        <input name="password_confirmation" type="password" class="border-dark form-control" id="password_confirmation">
-                        <div class="invalid-feedback">Las contraseñas no coinciden.</div>
-                    </div>
                     <!-- Campo para ingresar los apellidos del usuario-->
                     <div class="col-md-4 mb-3">
                         <label for="apellidos" class="form-label">Apellidos</label>
@@ -204,7 +189,7 @@
                     </div>
                     <!-- Boton para hacer los cambios al usuario -->
                     <div class="col-md-12 text-end">
-                        <button class="btn bg-gradient-dark mt-3 mb-0" type="submit" id="actualizar_usuario">Actualizar Usuario</button>
+                        <button class="btn bg-gradient-dark mt-3 mb-0" type="submit" id="btn-actualizar_usuario">Actualizar Usuario</button>
                     </div>
                 </form>
             </div>

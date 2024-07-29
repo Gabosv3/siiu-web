@@ -55,6 +55,7 @@ class RoleSeeder extends Seeder
             ['name' => 'categorias.restore', 'description' => 'Restaurar Categorías', 'roles' => ['SuperAdmin']],
 
             ['name' => 'dashboard', 'description' => 'Ver Dashboard', 'roles' => ['SuperAdmin', 'Administrador']],
+            ['name' => 'Mantenimiento', 'description' => 'Ver Mantenimiento', 'roles' => ['SuperAdmin', 'Administrador']],
             ['name' => 'export.copy', 'description' => 'Boton copiar', 'roles' => ['SuperAdmin', 'Administrador']],
             ['name' => 'export.excel', 'description' => 'Boton excel', 'roles' => ['SuperAdmin', 'Administrador']],
             ['name' => 'export.csv', 'description' => 'Boton csv', 'roles' => ['SuperAdmin', 'Administrador']],

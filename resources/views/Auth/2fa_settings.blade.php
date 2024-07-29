@@ -48,7 +48,7 @@
                                         </span>
                                     @endif
                                 </div>
-                                <button type="submit" class="btn btn-primary" id="btn-habilita-2fa">
+                                <button type="submit" class="btn btn-primary" id="btn-habilitar-2fa">
                                     Habilitar 2FA
                                 </button>
                             </form>
