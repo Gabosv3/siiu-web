@@ -1,7 +1,7 @@
 <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 " id="sidenav-main">
   <div class="sidenav-header">
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-    <a class="align-items-center d-flex m-0 navbar-brand text-wrap" href="{{ route('dashboard') }}">
+    <a class="align-items-center d-flex m-0 navbar-brand text-wrap" href="{{ route('dashboard') }}" id="btn-module-dashboard">
       <img src="{{ asset('assets/img/v45_145.png') }}" class="navbar-brand-img h-100" alt="...">
       <span class="ms-3 font-weight-bold">SIIU</span>
     </a>
@@ -10,7 +10,7 @@
   <div class="collapse navbar-collapse  w-auto" id="sidenav-collapse-main">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('dashboard') ? 'active' : '') }}" href="{{ url('dashboard') }}">
+        <a class="nav-link {{ (Request::is('dashboard') ? 'active' : '') }}" href="{{ url('dashboard') }}" id="btn-module-dashboard">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <svg width="12px" height="12px" viewBox="0 0 45 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <title>shop </title>
@@ -36,10 +36,10 @@
       @endif
       @can('user.index')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('user') ? 'active' : '') }} " href="{{ url('user') }}">
+        <a class="nav-link {{ (Request::is('user') ? 'active' : '') }} " href="{{ url('user') }}" id="btn-module-user">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <svg width="12px" height="12px" viewBox="0 0 46 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <title>customer-support</title>
+              <title>Usuarios</title>
               <g id="Basic-Elements" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <g id="Rounded-Icons" transform="translate(-1717.000000, -291.000000)" fill="#FFFFFF" fill-rule="nonzero">
                   <g id="Icons-with-opacity" transform="translate(1716.000000, 291.000000)">
@@ -60,8 +60,7 @@
       @endcan
       @can('role.index')
       <li class="nav-item pb-2">
-
-        <a class="nav-link {{ (Request::is('role') ? 'active' : '') }}" href="{{ url('role') }}">
+        <a class="nav-link {{ (Request::is('role') ? 'active' : '') }}" href="{{ url('role') }}" id="btn-module-role">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-users ps-2 pe-2 text-center text-dark {{ (Request::is('role') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
@@ -70,14 +69,14 @@
       </li>
       @endcan
 
-      
+
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Administracion</h6>
       </li>
-    
+
       @can('Mantenimiento')
-        <li class="nav-item">
-        <a class="nav-link {{ (Request::is('SQL-Mantenimiento') ? 'active' : '') }}" href="{{ url('SQL-Mantenimiento') }}">
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('SQL-Mantenimiento') ? 'active' : '') }}" href="{{ url('SQL-Mantenimiento') }}" id="btn-module-mantenimiento">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-cogs ps-2 pe-2 text-center text-dark {{ (Request::is('SQL-Mantenimiento') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
@@ -87,7 +86,7 @@
       @endcan
       @can('departamentos.index')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('departamentos') ? 'active' : '') }}" href="{{ url('departamentos') }}">
+        <a class="nav-link {{ (Request::is('departamentos') ? 'active' : '') }}" href="{{ url('departamentos') }}" id="btn-module-departamentos">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-university ps-2 pe-2 text-center text-dark {{ (Request::is('departamentos') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
@@ -105,7 +104,7 @@
         </a>
       </li>
       @endcan
-    
+
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -115,13 +114,15 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
+        <a class="nav-link {{ (Request::is('') ? 'active' : '') }} " href="{{ url('') }}" id="btn-module-user">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-ticket ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Tickets</span>
         </a>
       </li>
+
+
 
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">

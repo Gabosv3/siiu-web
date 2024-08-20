@@ -121,7 +121,7 @@
                         <th>Correo</th> <!-- Correo electrónico del usuario -->
                         <th>Departamento</th> <!-- Departamento del usuario -->
                         <th>2FA</th> <!-- Estado de autenticación de dos factores -->
-                        <th class="w-15">ACCIONES</th> <!-- Acciones disponibles para cada usuario -->
+                        <th class="w-20">ACCIONES</th> <!-- Acciones disponibles para cada usuario -->
                     </tr>
                 </thead>
                 <!-- Cuerpo de la tabla -->
@@ -146,7 +146,7 @@
                             @endif
                         </td>
                         <td>
-                            <div class="row gx-3">
+                            <div class="row gx-3 text-md-start">
                                 <!-- Botón para redireccionar a ver los usuarios -->
                                 @can('user.index')
                                 <div class="col">

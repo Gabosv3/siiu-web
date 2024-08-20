@@ -35,7 +35,7 @@
                         <ul class="nav nav-pills nav-fill p-1 bg-transparent" role="tablist">
                             <!-- Elemento de la pestaña para el perfil -->
                             <li class="nav-item">
-                                <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="javascript:;" role="tab" aria-controls="overview" aria-selected="true">
+                                <p class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="javascript:;" role="tab" aria-controls="overview" aria-selected="true">
                                     <!-- Icono de perfil -->
                                     <svg class="text-dark" width="16px" height="16px" viewBox="0 0 42 42" version="1.1" xmlns="http://www.w3.org/2000/svg">
                                         <g id="Basic-Elements" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -52,7 +52,7 @@
                                     </svg>
                                     <!-- Texto de la pestaña -->
                                     <span class="ms-1">{{ __('Perfil') }}</span>
-                                </a>
+                                </p>
                             </li>
                         </ul>
                     </div>
@@ -160,7 +160,7 @@
                     <div class="col-md-4 mb-3">
                         <label for="telefono" class="form-label">Teléfono</label>
                         <input name="telefono" type="text" class="border-dark form-control @error('telefono') is-invalid @enderror" id="telefono" value="{{ old('telefono', $user->informacionPersonal->telefono ?? '') }}" required pattern="\d{4}-\d{4}" title="El teléfono debe tener el formato 0000-0000.">
-                        <div class="invalid-feedback">El teléfono debe tener el formato 0000-0000.</div>
+                        <div class="invalid-feedback">El teléfono debe tener el formato 0000-0000 y no puede ser 0000-0000.</div>
                         @error('telefono')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
