@@ -12,7 +12,7 @@
             Por favor, ingrese un nombre válido (solo letras y espacios).
         </div>
     </div>
-    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <button type="submit" class="btn btn-primary" id="">Actualizar</button>
 </form>
 
 <script>

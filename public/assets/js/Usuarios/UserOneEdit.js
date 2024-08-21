@@ -24,17 +24,22 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     });
 
-    // Phone input mask and validation
     const telefonoInput = document.getElementById("telefono");
     telefonoInput.addEventListener("input", function () {
         let value = telefonoInput.value.replace(/\D/g, "");
+
+        // Aplica la máscara si la longitud es mayor a 4 caracteres
         if (value.length > 4) {
             value = value.slice(0, 4) + "-" + value.slice(4);
         }
+
         telefonoInput.value = value;
-        telefonoInput.setCustomValidity(
-            /^\d{4}-\d{4}$/.test(telefonoInput.value) ? "" : "Invalid"
-        );
+
+        // Valida el formato del teléfono y que no sea 0000-0000
+        const isValid =
+            /^\d{4}-\d{4}$/.test(telefonoInput.value) &&
+            telefonoInput.value !== "0000-0000";
+        telefonoInput.setCustomValidity(isValid ? "" : "Invalid");
     });
 
     // Age validation
