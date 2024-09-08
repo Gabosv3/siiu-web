@@ -10,7 +10,10 @@ use App\Http\Controllers\Modulos\SQLMaintenanceController;
 use App\Http\Controllers\Modulos\LoginSecurityController;
 use App\Http\Controllers\Modulos\PasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Modulos\FabricanteController;
+use App\Http\Controllers\Modulos\HardwareController;
 use App\Http\Controllers\Modulos\UserController;
+use App\Http\Controllers\Modulos\SoftwareController;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
@@ -85,10 +88,11 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     
     // Departamentos
     Route::resource('departamentos', DepartamentoController::class);
-    Route::put('/departamentos/{departamento}/restore', [DepartamentoController::class, 'restore'])->name('departamento.restore');
+    Route::put('/departamentos/{departamentos}/restore', [DepartamentoController::class, 'restore'])->name('departamentos.restore');
     
     // Categorias
     Route::resource('categorias', CategoriaController::class);
+    Route::get('inventarios', [CategoriaController::class, 'Categoriasvistas'])->name('categorias.restore');
     Route::put('/categorias/{categorias}/restore', [CategoriaController::class, 'restore'])->name('categorias.restore');
     
     // SQL Mantenimiento
@@ -104,7 +108,13 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
         Route::post('disable2fa', [LoginSecurityController::class, 'disable2fa'])->name('disable2fa');
         Route::middleware('two_fa')->post('/2faVerify', [LoginSecurityController::class, 'verify2fa'])->name('2faVerify');
     });
-    
+
+    //Inventario
+    //Inventario software y hardware
+    Route::resource('inventarios/softwares', SoftwareController::class);
+    Route::resource('inventarios/hardwares', HardwareController::class);
+    //proveedor
+    Route::post('/fabricantes', [FabricanteController::class, 'store'])->name('fabricantes.store');
     // Cerrar sesión
     Route::post('signOut', [AuthController::class, 'signOut'])->name('signOut');
 });

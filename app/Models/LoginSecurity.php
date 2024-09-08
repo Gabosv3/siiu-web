@@ -12,7 +12,7 @@ class LoginSecurity extends Model
     
     protected $fillable = [
         'user_id',
-        'google2fa_secret', 
+        'google2fa_secret',
         'google2fa_enable',
     ];
     

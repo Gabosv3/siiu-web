@@ -33,8 +33,7 @@ class DashboardController extends Controller
     }
 
     public function Nosotros()
-
     {
-        return view('components.nosotros'); 
+        return view('components.nosotros');
     }
 }

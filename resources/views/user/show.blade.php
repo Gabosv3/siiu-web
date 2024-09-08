@@ -5,7 +5,7 @@
     <!-- Sección de información del usuario -->
     <div class="shadow-lg p-3 mb-5 rounded rounded-3">
         <!-- Encabezado de la sección con estilo -->
-        <div class="bg-primary rounded rounded-3 p-2 m-2">
+        <div class="bg-gradient-2 rounded rounded-3 p-2 m-2">
             <h4 class="text-white">INFORMACION USUARIO</h4>
         </div>
         <!-- Tabla con información básica del usuario -->
@@ -33,7 +33,7 @@
     <!-- Sección de información general del usuario -->
     <div class="shadow-lg p-3 mb-5 rounded rounded-3">
         <!-- Encabezado de la sección con estilo -->
-        <div class="bg-primary rounded rounded-3 p-2 m-2">
+        <div class="bg-gradient-2 rounded rounded-3 p-2 m-2">
             <h4 class="text-white">INFORMACION GENERAL</h4>
         </div>
         <!-- Tabla con información personal general del usuario -->
