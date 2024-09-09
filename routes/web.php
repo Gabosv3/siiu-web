@@ -10,8 +10,10 @@ use App\Http\Controllers\Modulos\SQLMaintenanceController;
 use App\Http\Controllers\Modulos\LoginSecurityController;
 use App\Http\Controllers\Modulos\PasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\CsvController;
 use App\Http\Controllers\Modulos\FabricanteController;
 use App\Http\Controllers\Modulos\HardwareController;
+use App\Http\Controllers\Modulos\ModeloController;
 use App\Http\Controllers\Modulos\UserController;
 use App\Http\Controllers\Modulos\SoftwareController;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -113,8 +115,13 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     //Inventario software y hardware
     Route::resource('inventarios/softwares', SoftwareController::class);
     Route::resource('inventarios/hardwares', HardwareController::class);
+    Route::get('/config-form', [CsvController::class, 'showForm'])->name('csv.form');
+Route::post('/upload-csv', [CsvController::class, 'upload'])->name('csv.upload');
     //proveedor
     Route::post('/fabricantes', [FabricanteController::class, 'store'])->name('fabricantes.store');
+    //modelos
+    Route::post('/modelos/store', [ModeloController::class, 'store'])->name('modelos.store');
+Route::get('/modelos/por-fabricante/{fabricante}', [ModeloController::class, 'getModelosPorFabricante']);
     // Cerrar sesión
     Route::post('signOut', [AuthController::class, 'signOut'])->name('signOut');
 });
