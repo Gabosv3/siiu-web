@@ -28,17 +28,41 @@ class HardwareController extends Controller
         return view('inventario.hardware.index', compact('hardwares', 'viewType'));
     }
 
-    public function create()
-    {
-        $usuarios = User::all();
-        $departamentos = Departamento::all();
-        $categorias = Categoria::all();
-        $fabricantes = Fabricante::all();
-        $modelos = Modelo::all();
-        $tags = Tag::all();
-        $sistemas = Software::all();
-        return view('inventario.hardware.create', compact('categorias', 'fabricantes', 'modelos', 'tags', 'sistemas','usuarios','departamentos'));
+    public function create(Request $request)
+{
+    // Obtener las variables necesarias
+    $fabricantes = Fabricante::all();
+    $categorias = Categoria::all();
+    $usuarios = User::all();
+    $departamentos = Departamento::all();
+    $modelos = Modelo::all();
+    $tags = Tag::all();
+    $sistemas = Software::all();
+
+    // Obtener la categoría con base en el ID proporcionado en la solicitud (si existe)
+    $categoria = Categoria::find($request->input('categoria_id'));
+
+    // Verifica si se ha enviado un archivo CSV
+    $csvData = null;
+    if ($request->session()->has('csv_data')) {
+        $csvData = $request->session()->get('csv_data');
     }
+
+    return view('inventario.hardware.create', [
+        'categoria' => $categoria,
+        'fabricantes' => $fabricantes,
+        'categorias' => $categorias,
+        'usuarios' => $usuarios,
+        'departamentos' => $departamentos,
+        'modelos' => $modelos,
+        'tags' => $tags,
+        'sistemas' => $sistemas,
+        'csv_data' => $csvData
+    ]);
+
+    
+}
+    
 
     public function store(Request $request)
     {

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Dotenv\Store\File\Reader;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CsvController extends Controller
 {
@@ -15,33 +17,37 @@ class CsvController extends Controller
 
     public function upload(Request $request)
     {
+        // Validar el archivo CSV
         $request->validate([
-            'file' => 'required|mimes:csv,txt'
+            'csv_file' => 'required|file|mimes:csv,txt|max:2048',
         ]);
 
-        $file = $request->file('file');
-        $filePath = $file->getRealPath();
+        if ($request->hasFile('csv_file')) {
+            // Obtener el archivo
+            $file = $request->file('csv_file');
+            $path = $file->getRealPath(); // Obtener la ruta real del archivo
 
-        // Leer el archivo CSV
-        $csvData = $this->parseCsv($filePath);
-        
-        return view('inventario.hardware.upload', [
-            'csv_data' => $csvData
-        ]);
-    }
+            try {
+                // Crear el lector CSV
+                $csv = Reader::createFromPath($path, 'r');
+                $csv->setHeaderOffset(0); // Asume que la primera fila contiene encabezados
 
-    private function parseCsv($filePath)
-    {
-        $csvArray = ['header' => [], 'data' => []];
-        if (($handle = fopen($filePath, 'r')) !== FALSE) {
-            $header = fgetcsv($handle); // Leer encabezado
-            $csvArray['header'] = $header;
+                // Leer las filas del CSV
+                $records = $csv->getRecords(); // Esto devuelve un iterable de registros
 
-            while (($data = fgetcsv($handle)) !== FALSE) {
-                $csvArray['data'][] = array_combine($header, $data);
+                // Procesar los datos del CSV
+                $data = [];
+                foreach ($records as $record) {
+                    $data[] = $record; // Puedes procesar y almacenar estos datos como desees
+                }
+
+                return response()->json(['data' => $data], 200);
+            } catch (\Exception $e) {
+                Log::error('CSV upload error: ' . $e->getMessage());
+                return response()->json(['error' => 'Error processing file: ' . $e->getMessage()], 500);
             }
-            fclose($handle);
         }
-        return $csvArray;
+
+        return response()->json(['error' => 'No file uploaded'], 400);
     }
 }

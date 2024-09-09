@@ -3,7 +3,10 @@
 @section('content')
 <div class="row mb-3">
     <div class="col-sm-6">
-        <a href="{{ route('hardwares.create') }}" class="btn btn-primary">Agregar Hardware</a>
+        {{-- Solo muestra el botón si existe una categoría válida --}}
+        @if(request()->has('categoria_id') && request()->input('categoria_id') !== 'all')
+            <a href="{{ route('hardwares.create', ['categoria_id' => request()->input('categoria_id')]) }}" class="btn btn-primary">Agregar Hardware</a>
+        @endif
     </div>
     <div class="col-sm-6 text-end">
         <form method="GET" action="{{ route('hardwares.index') }}">
@@ -59,7 +62,6 @@
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <button class="nav-link active" id="nav-software-tab" data-bs-toggle="tab" data-bs-target="#nav-software" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Software</button>
         <button class="nav-link" id="nav-desactivados-tab" data-bs-toggle="tab" data-bs-target="#nav-desactivados" type="button" role="tab" aria-controls="nav-desactivados" aria-selected="false">Desactivados</button>
-
     </div>
 </nav>
 <div class="tab-content" id="nav-tabContent">
@@ -117,10 +119,10 @@
                     @endforeach
                 </tbody>
             </table>
-            @endif
         </div>
     </div>
 </div>
+@endif
 
 @include('components.script-btn')
 
