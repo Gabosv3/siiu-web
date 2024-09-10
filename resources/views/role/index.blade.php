@@ -14,7 +14,7 @@
         <div class="col-md-4 d-flex justify-content-center align-items-center">
             @can('role.create')
             <div class="py-5">
-                <button type="button" class="btn btn-rounded btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#createRoleModal" id="btn-modal-crear-role">Crear Role</button>
+                <button type="button" class="btn btn-rounded btn-md bg-gradient-2" data-bs-toggle="modal" data-bs-target="#createRoleModal" id="btn-modal-crear-role">Crear Role</button>
             </div>
             @endcan
         </div>
@@ -23,7 +23,7 @@
 
 <!-- Modal para crear un nuevo rol -->
 <div class="modal fade" id="createRoleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createRoleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <!-- Encabezado del modal -->
             <div class="modal-header">
@@ -46,7 +46,7 @@
                     </div>
                     <!-- Botón para registrar el nuevo rol -->
                     <div class="d-grid gap-2 col-6 mx-auto">
-                        <button type="submit" class="btn btn-primary" id="btn-crear-role">REGISTRAR</button>
+                        <button type="submit" class="btn bg-gradient-2" id="btn-crear-role">REGISTRAR</button>
                     </div>
                 </form>
             </div>
@@ -72,11 +72,11 @@
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
         <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
             <table id="Principal" class="table align-items-center mb-0 text-center" style="width:100%">
-                <thead class="table-primary text-center">
+                <thead class="bg-gradient-2 text-center">
                     <tr>
-                        <th class="w-25">#</th>
-                        <th class="w-50">ROLES</th>
-                        <th class="w-15">ACCIONES</th>
+                        <th>#</th>
+                        <th>ROLES</th>
+                        <th>ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -86,24 +86,25 @@
                         <th scope="row">{{ $key + 1 }}</th>
                         <td>{{ $role->name }}</td>
                         <td>
-                            <div class="row gx-3">
-                                <!-- Botón para editar el rol (visible solo para usuarios con permiso) -->
-                                @can('role.edit')
-                                <div class="col">
-                                    <a href="{{ route('role.edit', $role->id) }}" class="btn btn-green-600 mb-3" id="btn-redireccionar-editar-rol"><i class='bx bxs-edit-alt'></i></a>
-                                </div>
-                                @endcan
-                                <!-- Botón para eliminar el rol (visible solo para usuarios con permiso) -->
-                                @can('role.destroy')
-                                <div class="col">
-                                    <form method="POST" class="formulario-eliminar" action="{{ route('role.destroy', $role->id) }}">
-                                        @method('DELETE')
-                                        @csrf
-                                        <button class="btn btn-red-800"><i class='bx bxs-trash' id="btn-eliminar-rol"></i></button>
-                                    </form>
-                                </div>
-                                @endcan
-                            </div>
+                            <!-- Verificar si el rol es "SuperAdmin" -->
+                            @if($role->name !== 'SuperAdmin')
+                            <!-- Botón para editar el rol (visible solo para usuarios con permiso) -->
+                            @can('role.edit')
+                            <a title="Editar rol"  href="{{ route('role.edit', $role->id) }}" class="btn btn-green-600 mb-3" id="btn-redireccionar-editar-rol"><i class='bx bxs-edit-alt'></i></a>
+                            @endcan
+                            <!-- Botón para eliminar el rol (visible solo para usuarios con permiso) -->
+                            @can('role.destroy')
+                            <form method="POST" class="formulario-eliminar" style="display:inline;" action="{{ route('role.destroy', $role->id) }}">
+                                @method('DELETE')
+                                @csrf
+                                <button title="Eliminar rol" class="btn btn-red-800"><i class='bx bxs-trash' id="btn-eliminar-rol"></i></button>
+                            </form>
+                            @endcan
+                            @else
+                            <!-- Botones desactivados o no visibles para el rol "SuperAdmin" -->
+                            <button class="btn btn-green-600 mb-3" disabled><i class='bx bxs-edit-alt'></i></button>
+                            <button class="btn btn-red-800" disabled><i class='bx bxs-trash'></i></button>
+                            @endif
                         </td>
                     </tr>
                     @endforeach
@@ -116,7 +117,7 @@
     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
         <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
             <table id="restaurar" class="table align-items-center mb-0 text-center" style="width:100%">
-                <thead class="table-primary text-center">
+                <thead class="bg-gradient-2 text-center">
                     <tr>
                         <th>#</th>
                         <th>Rol</th>
@@ -132,8 +133,8 @@
                         <td>{{ $role->name }}</td>
                         <td>{{ $role->deleted_at }}</td>
                         <td>
-                            <!-- Formulario para restaurar el rol --> 
-                             @can('role.restore')
+                            <!-- Formulario para restaurar el rol -->
+                            @can('role.restore')
                             <form action="{{ route('role.restore', $role->id) }}" class="formulario-restaurar" method="POST">
                                 @csrf
                                 @method('PUT')
@@ -150,15 +151,7 @@
 </div>
 
 <!-- Definir permisos en una variable global -->
-<script>
-    window.permissions = {
-        copy: {{ json_encode(auth()->user()->can('export.copy')) }},
-        excel: {{ json_encode(auth()->user()->can('export.excel')) }},
-        csv: {{ json_encode(auth()->user()->can('export.csv')) }},
-        pdf: {{ json_encode(auth()->user()->can('export.pdf')) }},
-        print: {{ json_encode(auth()->user()->can('export.print')) }}
-    };
-</script>
+@include('components.script-btn')
 
 <script src="{{ asset('assets/js/Tablas/tablas.js') }}"></script>
 <script src="{{ asset('assets/js/Roles/RolesIndex.js') }}"></script>
@@ -182,29 +175,29 @@
 
 <!-- Iterar sobre los tipos de sesión: agregado, eliminado, Actualizado, Restaurado -->
 @foreach (['agregado', 'eliminado', 'Actualizado', 'Restaurado'] as $sessionKey)
-    <!-- Verificar si la sesión tiene el valor 'SI' -->
-    @if (session($sessionKey) == 'SI')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success', // Ícono de éxito
-                    title: '{{ ucfirst($sessionKey) }}', // Título con la primera letra en mayúscula
-                    text: 'Usuario {{ strtolower($sessionKey) }} correctamente.' // Texto con la acción en minúscula
-                });
-            });
-        </script>
-    <!-- Verificar si la sesión tiene el valor 'NO' -->
-    @elseif (session($sessionKey) == 'NO')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'error', // Ícono de error
-                    title: 'Error', // Título de error
-                    text: 'Usuario no se pudo {{ strtolower($sessionKey) }}' // Texto con la acción en minúscula
-                });
-            });
-        </script>
-    @endif
+<!-- Verificar si la sesión tiene el valor 'SI' -->
+@if (session($sessionKey) == 'SI')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'success', // Ícono de éxito
+            title: '{{ ucfirst($sessionKey) }}', // Título con la primera letra en mayúscula
+            text: 'Usuario {{ strtolower($sessionKey) }} correctamente.' // Texto con la acción en minúscula
+        });
+    });
+</script>
+<!-- Verificar si la sesión tiene el valor 'NO' -->
+@elseif (session($sessionKey) == 'NO')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'error', // Ícono de error
+            title: 'Error', // Título de error
+            text: 'Usuario no se pudo {{ strtolower($sessionKey) }}' // Texto con la acción en minúscula
+        });
+    });
+</script>
+@endif
 @endforeach
 
 

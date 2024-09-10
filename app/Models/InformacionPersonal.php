@@ -9,6 +9,8 @@ class InformacionPersonal extends Model
 {
     use HasFactory;
 
+    protected $table = 'informacion_personals';
+
     protected $fillable = [
         'apellidos',
         'nombres',
@@ -26,4 +28,5 @@ class InformacionPersonal extends Model
     {
         return $this->belongsTo(User::class);
     }
+
 }

@@ -3,14 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use PragmaRX\Google2FA\Google2FA;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -45,7 +43,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function departamento()
     {
-        return $this->belongsTo(Departamento::class);
+        return $this->belongsTo(Departamento::class)->withTrashed();
     }
 
     /**
@@ -54,5 +52,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function loginSecurity()
     {
         return $this->hasOne(LoginSecurity::class);
+    }
+
+    public function hardwareAsignado()
+    {
+        return $this->hasMany(Hardware::class, 'dueño_id');
     }
 }

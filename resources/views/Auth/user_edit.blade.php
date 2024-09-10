@@ -80,7 +80,7 @@
                                         <!-- Fila: Nombre de usuario -->
                                         <div class="row">
                                             <!-- Etiqueta -->
-                                            <div class="col-lg-3 col-md-4 fw-bold mt-3">Nombre de usuario</div>
+                                            <div class="col-lg-3 col-md-4  mt-3">Nombre de usuario</div>
                                             <!-- Valor del nombre de usuario -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">{{ $user->name }}</div>
                                         </div>
@@ -88,7 +88,7 @@
                                         <!-- Fila: Correo Electrónico -->
                                         <div class="row">
                                             <!-- Etiqueta -->
-                                            <div class="col-lg-3 col-md-4 fw-bold mt-3">Correo Electrónico</div>
+                                            <div class="col-lg-3 col-md-4  mt-3">Correo Electrónico</div>
                                             <!-- Valor del correo electrónico -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">{{ $user->email }}</div>
                                         </div>
@@ -96,7 +96,7 @@
                                         <!-- Fila: Departamento -->
                                         <div class="row">
                                             <!-- Etiqueta -->
-                                            <div class="col-lg-3 col-md-4 fw-bold mt-3">Departamento</div>
+                                            <div class="col-lg-3 col-md-4  mt-3">Departamento</div>
                                             <!-- Valor del departamento (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
                                                 {{ $user->departamento ? $user->departamento->nombre : 'No disponible' }}
@@ -109,7 +109,7 @@
                                         <!-- Fila: Nombre -->
                                         <div class="row">
                                             <!-- Etiqueta -->
-                                            <div class="col-lg-3 col-md-4 fw-bold mt-3">Nombre</div>
+                                            <div class="col-lg-3 col-md-4  mt-3">Nombre</div>
                                             <!-- Valor del nombre personal (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
                                                 @isset($user->informacionPersonal->nombres)
@@ -122,7 +122,7 @@
                                         <!-- Fila: Apellido -->
                                         <div class="row">
                                             <!-- Etiqueta -->
-                                            <div class="col-lg-3 col-md-4 fw-bold mt-3">Apellido</div>
+                                            <div class="col-lg-3 col-md-4  mt-3">Apellido</div>
                                             <!-- Valor del apellido personal (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
                                                 @isset($user->informacionPersonal->apellidos)
@@ -135,7 +135,7 @@
                                         <!-- Fila: Fecha de nacimiento -->
                                         <div class="row">
                                             <!-- Etiqueta -->
-                                            <div class="col-lg-3 col-md-4 fw-bold mt-3">Fecha de nacimiento</div>
+                                            <div class="col-lg-3 col-md-4  mt-3">Fecha de nacimiento</div>
                                             <!-- Valor de la fecha de nacimiento (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
                                                 @isset($user->informacionPersonal->fecha_nacimiento)
@@ -148,7 +148,7 @@
                                         <!-- Fila: Género -->
                                         <div class="row">
                                             <!-- Etiqueta -->
-                                            <div class="col-lg-3 col-md-4 fw-bold mt-3">Género</div>
+                                            <div class="col-lg-3 col-md-4  mt-3">Género</div>
                                             <!-- Valor del género (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
                                                 @isset($user->informacionPersonal->genero)
@@ -161,7 +161,7 @@
                                         <!-- Fila: DUI -->
                                         <div class="row">
                                             <!-- Etiqueta -->
-                                            <div class="col-lg-3 col-md-4 fw-bold mt-3">DUI</div>
+                                            <div class="col-lg-3 col-md-4  mt-3">DUI</div>
                                             <!-- Valor del DUI (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
                                                 @isset($user->informacionPersonal->dui)
@@ -174,7 +174,7 @@
                                         <!-- Fila: Teléfono -->
                                         <div class="row">
                                             <!-- Etiqueta -->
-                                            <div class="col-lg-3 col-md-4 fw-bold mt-3">Teléfono</div>
+                                            <div class="col-lg-3 col-md-4  mt-3">Teléfono</div>
                                             <!-- Valor del teléfono (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
                                                 @isset($user->informacionPersonal->telefono)

@@ -54,7 +54,7 @@ class RoleController extends Controller
         ]);
 
         // Creación del nuevo rol
-        $role = Role::create($request->all());
+        Role::create($request->all());
 
         // Redireccionamiento con mensaje de éxito
         return redirect()->route('role.index')->with('agregado', 'SI');

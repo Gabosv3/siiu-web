@@ -13,7 +13,7 @@
         <div class="col-md-4 d-flex justify-content-center align-items-center">
             @can('user.create')
             <div>
-                <button type="button" class="btn btn-rounded btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="btn-abrir-modal-crear-usuario">Crear Usuario</button>
+                <button type="button" class="btn btn-rounded btn-md bg-gradient-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="btn-abrir-modal-crear-usuario">Crear Usuario</button>
             </div>
             @endcan
         </div>
@@ -28,7 +28,7 @@
                 <!-- Título del modal -->
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Crear Usuario</h1>
                 <!-- Botón de cerrar el modal -->
-                <button type="button" class="btn-close bg-primary" data-bs-dismiss="modal" aria-label="Close" id="btn-cerrar-modal-crear-usuario"></button>
+                <button type="button" class="btn-close bg-gradient-2" data-bs-dismiss="modal" aria-label="Close" id="btn-cerrar-modal-crear-usuario"></button>
             </div>
             <!-- Formulario para crear Usuario -->
             <form class="row g-3 text-dark text-center" action="{{ route('user.store') }}" method="POST" onsubmit="return validateForm()">
@@ -94,7 +94,7 @@
                     <!-- Botón para cerrar el modal -->
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-cerrar-modal-guardar-usuario">Cerrar</button>
                     <!-- Botón para enviar el formulario y registrar el usuario -->
-                    <button type="submit" class="btn btn-primary" style="--bs-btn-opacity: .5; " id="btn-crear-usuario">REGISTRAR</button>
+                    <button type="submit" class="btn bg-gradient-2" style="--bs-btn-opacity: .5; " id="btn-crear-usuario">REGISTRAR</button>
                 </div>
             </form>
         </div>
@@ -114,14 +114,14 @@
             <!-- Tabla principal -->
             <table id="Principal" class="table align-items-center mb-0 text-center " style="width:100% ">
                 <!-- Encabezado de la tabla -->
-                <thead class="table-primary text-center">
+                <thead class="bg-gradient-2 text-center">
                     <tr>
                         <th>#</th> <!-- Número de fila -->
-                        <th>Usuario</th> <!-- Nombre del usuario -->
-                        <th>Correo</th> <!-- Correo electrónico del usuario -->
-                        <th>Departamento</th> <!-- Departamento del usuario -->
+                        <th>USUARIO</th> <!-- Nombre del usuario -->
+                        <th>CORREO</th> <!-- Correo electrónico del usuario -->
+                        <th>DEPARTAMENTO</th> <!-- Departamento del usuario -->
                         <th>2FA</th> <!-- Estado de autenticación de dos factores -->
-                        <th class="w-20">ACCIONES</th> <!-- Acciones disponibles para cada usuario -->
+                        <th>ACCIONES</th> <!-- Acciones disponibles para cada usuario -->
                     </tr>
                 </thead>
                 <!-- Cuerpo de la tabla -->
@@ -146,30 +146,23 @@
                             @endif
                         </td>
                         <td>
-                            <div class="row gx-3 text-md-start">
-                                <!-- Botón para redireccionar a ver los usuarios -->
-                                @can('user.index')
-                                <div class="col">
-                                    <a id="btn-ver-usuario" href="{{ route('user.show', $user->id) }}" class="btn btn-cyan-800 mb-3"><i class='bx bxs-show'></i></a>
-                                </div>
-                                @endcan
-                                <!-- Botón para redireccionar a editar los usuarios -->
-                                @can('user.edit')
-                                <div class="col">
-                                    <a id="btn-editar-usuario" href="{{ route('user.edit', $user->id) }}" class="btn btn-green-600 mb-3"><i class='bx bxs-edit-alt'></i></a>
-                                </div>
-                                @endcan
-                                <!-- Formulario para eliminar el usuario -->
-                                @can('user.destroy')
-                                <div class="col">
-                                    <form method="POST" class="formulario-eliminar" action="{{ route('user.destroy', $user->id) }}">
-                                        @method('DELETE')
-                                        @csrf
-                                        <button id="btn-eliminar-usuario" class="btn btn-red-800" @if ($user->id === Auth::user()->id) disabled @endif><i class='bx bxs-trash'></i></button>
-                                    </form>
-                                </div>
-                                @endcan
-                            </div>
+                            <!-- Botón para redireccionar a ver los usuarios -->
+                            @can('user.index')
+                            <a  title="Ver usuario" id="btn-ver-usuario" href="{{ route('user.show', $user->id) }}" class="btn btn-cyan-800 mb-3"><i class='bx bxs-show'></i></a>
+                            @endcan
+                            <!-- Botón para redireccionar a editar los usuarios -->
+                            @can('user.edit')
+                            <a  title="Editar usuario" id="btn-editar-usuario" href="{{ route('user.edit', $user->id) }}" class="btn btn-green-600 mb-3"><i class='bx bxs-edit-alt'></i></a>
+                            @endcan
+                            <!-- Formulario para eliminar el usuario -->
+                            @can('user.destroy')
+                            <form method="POST" class="formulario-eliminar" style="display:inline;" action="{{ route('user.destroy', $user->id) }}">
+                                @method('DELETE')
+                                @csrf
+                                <button  title="Eliminar usuario" id="btn-eliminar-usuario" class="btn btn-red-800" @if ($user->id === Auth::user()->id) disabled @endif><i class='bx bxs-trash'></i></button>
+                            </form>
+                            @endcan
+
                         </td>
                     </tr>
                     @endforeach
@@ -183,7 +176,7 @@
             <!-- tabla restaurar usuario -->
             <table id="restaurar" class="table align-items-center mb-0 text-center" style="width:100% ">
                 <!-- Cabezera de la tabla restaurar usuario -->
-                <thead class="table-primary text-center">
+                <thead class="bg-gradient-2 text-center">
                     <tr>
                         <th>#</th> <!-- Número de fila -->
                         <th>Nombre</th> <!-- Nombre del usuario -->
@@ -218,15 +211,7 @@
     </div>
 </div>
 
-<script>
-    window.permissions = {
-        copy: {{ json_encode(auth()->user()->can('export.copy')) }},
-        excel: {{ json_encode(auth()->user()->can('export.excel')) }},
-        csv: {{ json_encode(auth()->user()->can('export.csv')) }},
-        pdf: {{ json_encode(auth()->user()->can('export.pdf')) }},
-        print: {{ json_encode(auth()->user()->can('export.print')) }}
-    };
-</script>
+@include('components.script-btn')
 
 <script src="{{ asset('assets/js/Tablas/tablas.js') }}"></script>
 <script src="{{ asset('assets/js/Usuarios/UserIndex.js') }}"></script>

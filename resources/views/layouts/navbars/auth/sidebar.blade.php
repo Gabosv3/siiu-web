@@ -1,4 +1,4 @@
-<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 " id="sidenav-main">
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 ps bg-white" >
   <div class="sidenav-header">
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
     <a class="align-items-center d-flex m-0 navbar-brand text-wrap" href="{{ route('dashboard') }}" id="btn-module-dashboard">
@@ -10,7 +10,7 @@
   <div class="collapse navbar-collapse  w-auto" id="sidenav-collapse-main">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('dashboard') ? 'active' : '') }}" href="{{ url('dashboard') }}" id="btn-module-dashboard">
+        <a class="nav-link {{ (Request::is('dashboard*') ? 'active' : '') }}" href="{{ url('dashboard') }}" id="btn-module-dashboard">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <svg width="12px" height="12px" viewBox="0 0 45 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <title>shop </title>
@@ -36,7 +36,7 @@
       @endif
       @can('user.index')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('user') ? 'active' : '') }} " href="{{ url('user') }}" id="btn-module-user">
+        <a class="nav-link {{ (Request::is('user*') ? 'active' : '') }} " href="{{ url('user') }}" id="btn-module-user">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <svg width="12px" height="12px" viewBox="0 0 46 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <title>Usuarios</title>
@@ -60,9 +60,9 @@
       @endcan
       @can('role.index')
       <li class="nav-item pb-2">
-        <a class="nav-link {{ (Request::is('role') ? 'active' : '') }}" href="{{ url('role') }}" id="btn-module-role">
+        <a class="nav-link {{ (Request::is('role*') ? 'active' : '') }}" href="{{ url('role') }}" id="btn-module-role">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-users ps-2 pe-2 text-center text-dark {{ (Request::is('role') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-users ps-2 pe-2 text-center text-dark {{ (Request::is('role*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Roles</span>
         </a>
@@ -76,9 +76,9 @@
 
       @can('Mantenimiento')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('SQL-Mantenimiento') ? 'active' : '') }}" href="{{ url('SQL-Mantenimiento') }}" id="btn-module-mantenimiento">
+        <a class="nav-link {{ (Request::is('SQL-Mantenimiento*') ? 'active' : '') }}" href="{{ url('SQL-Mantenimiento') }}" id="btn-module-mantenimiento">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-cogs ps-2 pe-2 text-center text-dark {{ (Request::is('SQL-Mantenimiento') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-cogs ps-2 pe-2 text-center text-dark {{ (Request::is('SQL-Mantenimiento*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Mantenimiento</span>
         </a>
@@ -86,9 +86,9 @@
       @endcan
       @can('departamentos.index')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('departamentos') ? 'active' : '') }}" href="{{ url('departamentos') }}" id="btn-module-departamentos">
+        <a class="nav-link {{ (Request::is('departamentos*') ? 'active' : '') }}" href="{{ url('departamentos') }}" id="btn-module-departamentos">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-university ps-2 pe-2 text-center text-dark {{ (Request::is('departamentos') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-university ps-2 pe-2 text-center text-dark {{ (Request::is('departamentos*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Departamentos</span>
         </a>
@@ -96,9 +96,9 @@
       @endcan
       @can('categorias.index')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('categorias') ? 'active' : '') }}" href="{{ url('categorias') }}">
+        <a class="nav-link {{ (Request::is('categorias*') ? 'active' : '') }}" href="{{ url('categorias') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-object-group ps-2 pe-2 text-center text-dark {{ (Request::is('categorias') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-object-group ps-2 pe-2 text-center text-dark {{ (Request::is('categorias*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Categorias</span>
         </a>
@@ -106,7 +106,7 @@
       @endcan
 
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
+        <a class="nav-link {{ (Request::is('inventarios') ? 'active' : '') }}" href="{{ url('inventarios') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-cubes ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>

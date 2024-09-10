@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Categoria extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
-    protected $fillable = ['nombre'];
+    protected $fillable = ['nombre', 'codigo', 'descripcion', 'imagen'];
 
     protected static function boot()
     {
@@ -18,7 +18,14 @@ class Categoria extends Model
 
         static::creating(function ($categoria) {
             $maxId = self::max('id') + 1;
-            $categoria->codigo = 'CAT-' . $maxId;
+            $prefix = strtoupper(substr($categoria->nombre, 0, 3)); // Primeras tres letras del nombre en mayúsculas
+            $codigo = str_pad($maxId, 3, '0', STR_PAD_LEFT); // Número de tres dígitos
+            $categoria->codigo = $prefix . '-' . $codigo;
         });
+    }
+
+    public function hardware()
+    {
+        return $this->hasMany(Hardware::class);
     }
 }
