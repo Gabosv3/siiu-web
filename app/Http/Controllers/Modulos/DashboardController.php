@@ -22,19 +22,18 @@ class DashboardController extends Controller
         $userCount = User::count();
 
         // Retorna la vista 'dashboard.Permisos' con el conteo de usuarios
-        return view('dashboard.Permisos', compact('userCount'));
+        return view('dashboard.permisos', compact('userCount'));
     }
 
     // Método para mostrar otra vista secundaria del dashboard
     public function Secundario()
     {
         // Retorna la vista 'dashboard.Secundario'
-        return view('dashboard.Secundario');
+        return view('dashboard.secundario');
     }
 
     public function Nosotros()
-
     {
-        return view('components.nosotros'); 
+        return view('components.nosotros');
     }
 }

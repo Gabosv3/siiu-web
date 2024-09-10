@@ -15,10 +15,15 @@ class CreateDepartamentosTable extends Migration
     {
         Schema::create('departamentos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('codigo')->unique()->nullable();
-            $table->timestamps();
-            $table->softDeletes();
+            $table->string('codigo')->unique()->nullable(); // unit_code
+            $table->string('nombre'); // unit_name
+            $table->string('encargado')->nullable();
+            $table->string('descripcion', 250); // unit_desc
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->timestamps(); // unit_create (created_at) and unit_update (updated_at)
+            $table->softDeletes(); // Para manejar el borrado lógico
+
 
         });
     }

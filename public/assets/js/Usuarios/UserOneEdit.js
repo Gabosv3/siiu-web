@@ -19,9 +19,15 @@ document.addEventListener("DOMContentLoaded", function () {
             value = value.slice(0, 8) + "-" + value.slice(8);
         }
         duiInput.value = value;
-        duiInput.setCustomValidity(
-            /^\d{8}-\d$/.test(duiInput.value) ? "" : "Invalid"
-        );
+
+        // Validación adicional para evitar el DUI 00000000-0
+        if (duiInput.value === "00000000-0") {
+            duiInput.setCustomValidity("Este DUI no es válido.");
+        } else {
+            duiInput.setCustomValidity(
+                /^\d{8}-\d$/.test(duiInput.value) ? "" : "Invalid"
+            );
+        }
     });
 
     const telefonoInput = document.getElementById("telefono");

@@ -1,7 +1,7 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-    <div class="container mt-5">
+    <div class="mt-1">
         <h1>SQL Mantenimiento </h1>
         
         @if(session('success'))

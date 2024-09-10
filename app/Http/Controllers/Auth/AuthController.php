@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function login()
     {
         // Retorna la vista 'Auth.Login', donde está el formulario de inicio de sesión
-        return view('Auth.Login');
+        return view('auth.login');
     }
 
     // Método para verificar las credenciales de inicio de sesión

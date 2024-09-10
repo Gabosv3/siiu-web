@@ -1,6 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\HardwareController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +16,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+    // Puedes agregar otras rutas protegidas aquí
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::apiResource('/users', UserController::class);
+    Route::apiResource('hardware', HardwareController::class);
 });
+
+
+Route::post('/login', [AuthController::class, 'login']);
