@@ -4,13 +4,23 @@
 <!-- Formulario principal -->
 <div class="p-3">
     <h3>Crear Activo</h3>
+    <div class="card border border-dark p-3 my-3">
+        <!-- Formulario de carga de CSV -->
+        <form id="csvUploadForm" action="{{ route('csv.upload') }}" method="POST" enctype="multipart/form-data">
+            @csrf
 
-    <!-- Formulario de carga de CSV -->
-    <form id="csvUploadForm" action="{{ route('csv.upload') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <input type="file" name="csv_file" accept=".csv" required>
-        <button type="submit" class="btn btn-primary">Subir CSV</button>
-    </form>
+            <!-- Contenedor para el archivo CSV -->
+            <div class="mb-3">
+                <label for="csv_file" class="form-label">Selecciona el archivo CSV</label>
+                <input type="file" id="csv_file" name="csv_file" accept=".csv" class="form-control" required>
+            </div>
+
+            <!-- Botón de carga -->
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">Subir CSV</button>
+            </div>
+        </form>
+    </div>
 
     <!-- Formulario para crear hardware -->
     <form id="hardwareForm" action="{{ route('hardwares.store') }}" method="POST">
@@ -165,246 +175,257 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        function initializeSelect2(selector) {
-            $(selector).select2({
-                placeholder: "Seleccione una opción",
-                theme: "bootstrap-5",
-                width: '100%',
+$(document).ready(function() {
+
+// Inicializar Select2
+function initializeSelect2(selector) {
+    $(selector).select2({
+        placeholder: "Seleccione una opción",
+        theme: "bootstrap-5",
+        width: '100%',
+    });
+}
+
+initializeSelect2('#fabricante_id');
+initializeSelect2('#modelo_id');
+initializeSelect2('.js-select-ubicacion');
+initializeSelect2('#columnas');
+
+// Manejo del formulario de carga CSV
+$('#csvUploadForm').on('submit', function(e) {
+    e.preventDefault();
+
+    var formData = new FormData(this);
+
+    $.ajax({
+        url: $(this).attr('action'),
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            // Limpiar el contenedor actual
+            $('#ciContainer').empty();
+
+            // Procesar los datos CSV y agregar filas al contenedor
+            if (response.data && response.data.length > 0) {
+                // Obtener los nombres de las columnas de la primera fila
+                var columnNames = response.data[0];
+
+                // Omite la primera fila de datos (que contiene los nombres de las columnas)
+                response.data.slice(1).forEach(function(row, index) {
+                    var filaNumero = (index + 1).toString().padStart(3, '0');
+                    var $row = $('<div class="row mb-3">');
+                    var columnWidth = Math.floor(12 / (columnNames.length + 1)); // Ajusta el ancho de las columnas
+
+                    var $label = $('<div class="col-lg-' + columnWidth + ' mb-3"><label class="form-label">CI ' + filaNumero + '</label></div>');
+                    $row.append($label);
+
+                    columnNames.forEach(function(columnName, colIndex) {
+                        var value = row[colIndex];
+                        var inputHtml = '<div class="col-lg-' + columnWidth + ' mb-3">' +
+                            '<label for="' + columnName + '_' + index + '" class="form-label">' + columnName.replace(/_/g, ' ').toUpperCase() + '</label>' +
+                            '<input type="text" class="form-control" id="' + columnName + '_' + index + '" name="' + columnName + '[]" value="' + value + '" required>' +
+                            '</div>';
+                        $row.append(inputHtml);
+                    });
+
+                    $('#ciContainer').append($row);
+                });
+
+                Swal.fire({
+                    title: '¡Éxito!',
+                    text: 'Archivo CSV cargado y datos actualizados.',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Información',
+                    text: 'No se encontraron datos en el archivo CSV.',
+                    icon: 'info',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        },
+        error: function() {
+            Swal.fire({
+                title: 'Error',
+                text: 'Hubo un error al procesar el archivo CSV.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
             });
         }
+    });
+});
 
-        initializeSelect2('#fabricante_id');
-        initializeSelect2('#modelo_id');
-        initializeSelect2('.js-select-ubicacion');
-        initializeSelect2('#columnas');
+// Manejo del cambio en el select de fabricante
+$('#fabricante_id').on('change', function() {
+    var fabricanteId = $(this).val();
+    var fabricanteText = $(this).find('option:selected').text();
 
-        $('#csvUploadForm').on('submit', function(e) {
-        e.preventDefault();
+    $('#addModeloBtn').prop('disabled', !fabricanteId);
+    $('#selectedFabricante').text(fabricanteText);
+    $('#fabricante_id_modelo').val(fabricanteId);
 
-        var formData = new FormData(this);
-
+    if (fabricanteId) {
         $.ajax({
-            url: $(this).attr('action'),
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
+            url: '/modelos/por-fabricante/' + fabricanteId,
+            method: 'GET',
             success: function(response) {
-                if (response.data) {
-                    var $table = $('<table class="table table-striped"><thead><tr></tr></thead><tbody></tbody></table>');
-
-                    // Crear encabezados
-                    var $thead = $table.find('thead tr');
-                    if (response.data.length > 0) {
-                        Object.keys(response.data[0]).forEach(function(key) {
-                            $thead.append('<th>' + key + '</th>');
-                        });
-
-                        // Crear filas de datos
-                        var $tbody = $table.find('tbody');
-                        response.data.forEach(function(row) {
-                            var $tr = $('<tr></tr>');
-                            Object.values(row).forEach(function(value) {
-                                $tr.append('<td>' + value + '</td>');
-                            });
-                            $tbody.append($tr);
-                        });
-                    } else {
-                        $thead.append('<th>No data found</th>');
-                    }
-
-                    // Agregar la tabla al contenedor
-                    $('#tableContainer').empty().append($table);
-
-                    Swal.fire({
-                        title: '¡Éxito!',
-                        text: 'Archivo CSV cargado y datos actualizados.',
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar'
-                    });
-                }
+                var $modeloSelect = $('#modelo_id').empty();
+                response.modelos.forEach(function(modelo) {
+                    $modeloSelect.append(new Option(modelo.nombre, modelo.id));
+                });
             },
             error: function() {
                 Swal.fire({
                     title: 'Error',
-                    text: 'Hubo un error al procesar el archivo CSV.',
+                    text: 'No se pudieron cargar los modelos.',
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
                 });
             }
         });
-    });
+    } else {
+        $('#selectedFabricante').text('');
+        $('#fabricante_id_modelo').val('');
+        $('#modelo_id').empty().append('<option value="" disabled selected>Seleccione un modelo</option>');
+    }
+});
 
-        $('#fabricante_id').on('change', function() {
-            var fabricanteId = $(this).val();
-            var fabricanteText = $(this).find('option:selected').text();
+// Manejo del formulario para crear un nuevo fabricante
+$('#createFabricanteForm').on('submit', function(e) {
+    e.preventDefault();
+    var nombre = $('#nuevo_fabricante_nombre').val();
 
-            $('#addModeloBtn').prop('disabled', !fabricanteId);
-            $('#selectedFabricante').text(fabricanteText);
-            $('#fabricante_id_modelo').val(fabricanteId);
-
-            if (fabricanteId) {
-                $.ajax({
-                    url: '/modelos/por-fabricante/' + fabricanteId,
-                    method: 'GET',
-                    success: function(response) {
-                        var $modeloSelect = $('#modelo_id').empty();
-                        response.modelos.forEach(function(modelo) {
-                            $modeloSelect.append(new Option(modelo.nombre, modelo.id));
-                        });
-                    },
-                    error: function() {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'No se pudieron cargar los modelos.',
-                            icon: 'error',
-                            confirmButtonText: 'Aceptar'
-                        });
-                    }
-                });
-            } else {
-                $('#selectedFabricante').text('');
-                $('#fabricante_id_modelo').val('');
-                $('#modelo_id').empty().append('<option value="" disabled selected>Seleccione un modelo</option>');
-            }
-        });
-
-        $('#createFabricanteForm').on('submit', function(e) {
-            e.preventDefault();
-            var nombre = $('#nuevo_fabricante_nombre').val();
-
-            $.ajax({
-                url: '{{ route('fabricantes.store') }}',
-                method: 'POST',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    nombre: nombre
-                },
-                success: function(response) {
-                    console.log(response); // Agrega esta línea para verificar los datos de la respuesta
-                    var columnas = response.columns;
-                    $('#columnas').empty().append('<option value="" disabled>Seleccionar columnas</option>');
-                    columnas.forEach(function(columna) {
-                        $('#columnas').append('<option value="' + columna + '">' + columna + '</option>');
-                    });
-                    $('#columnas').select2();
-                    Swal.fire({
-                        title: '¡Éxito!',
-                        text: 'Archivo CSV cargado y columnas actualizadas.',
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar'
-                    });
-                },
-                error: function() {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Hubo un error al crear el fabricante.',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                }
+    $.ajax({
+        url: '{{ route('fabricantes.store') }}',
+        method: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            nombre: nombre
+        },
+        success: function(response) {
+            var columnas = response.columns;
+            $('#columnas').empty().append('<option value="" disabled>Seleccionar columnas</option>');
+            columnas.forEach(function(columna) {
+                $('#columnas').append('<option value="' + columna + '">' + columna + '</option>');
             });
-        });
-
-        $('#createModeloForm').on('submit', function(e) {
-            e.preventDefault();
-            var nombre = $('#nuevo_modelo_nombre').val();
-            var fabricanteId = $('#fabricante_id_modelo').val();
-
-            $.ajax({
-                url: '{{ route('modelos.store') }}',
-                method: 'POST',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    nombre: nombre,
-                    fabricante_id: fabricanteId
-                },
-                success: function(response) {
-                    $('#createModeloModal').modal('hide');
-                    $('#nuevo_modelo_nombre').val('');
-                    var newOption = new Option(response.nombre, response.id, true, true);
-                    $('#modelo_id').append(newOption).trigger('change');
-
-                    Swal.fire({
-                        title: '¡Éxito!',
-                        text: 'Nuevo modelo creado con éxito.',
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar'
-                    });
-                },
-                error: function() {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Hubo un error al crear el modelo.',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                }
+            $('#columnas').select2();
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Archivo CSV cargado y columnas actualizadas.',
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
             });
-        });
-
-        $('#generateBtn').on('click', function() {
-            var columnasSeleccionadas = $('#columnas').val();
-            var numeroFilas = $('#numero_filas').val();
-
-            if (!numeroFilas || numeroFilas <= 0) {
-                console.log('Número de filas no válido');
-                return;
-            }
-
-            var $ciContainer = $('#ciContainer').empty();
-
-            for (var i = 0; i < numeroFilas; i++) {
-                var filaNumero = (i + 1).toString().padStart(3, '0');
-                var $row = $('<div class="row mb-3">');
-                var columnWidth = Math.floor(12 / (columnasSeleccionadas.length + 1));
-
-                var $label = $('<div class="col-lg-' + columnWidth + ' mb-3"><label class="form-label">CI ' + filaNumero + '</label></div>');
-                $row.append($label);
-
-                columnasSeleccionadas.forEach(function(columna) {
-                    if (columna === 'departamento') {
-                        var ubicacionHtml = '<div class="col-lg-' + columnWidth + ' mb-3">' +
-                            '<label for="ubicacion_' + i + '" class="form-label">Ubicación</label>' +
-                            '<select id="ubicacion_' + i + '" name="ubicacion[]" class="form-control js-select-ubicacion">' +
-                            '@foreach($departamentos as $departamento)' +
-                            '<option value="{{ $departamento->id }}">{{ $departamento->nombre }}</option>' +
-                            '@endforeach' +
-                            '</select></div>';
-                        $row.append(ubicacionHtml);
-                    } else if (['nombre', 'codigo_de_inventario', 'numero_de_serie'].includes(columna)) {
-                        var labelText = columna.replace(/_/g, ' ').toUpperCase();
-                        var inputHtml = '<div class="col-lg-' + columnWidth + ' mb-3">' +
-                            '<label for="' + columna + '_' + i + '" class="form-label">' + labelText + '</label>' +
-                            '<input type="text" class="form-control" id="' + columna + '_' + i + '" name="' + columna + '[]" required>' +
-                            '</div>';
-                        $row.append(inputHtml);
-                    }
-                });
-
-                $ciContainer.append($row);
-            }
-
-            $('.js-select-ubicacion').select2();
-        });
-
-        $('#columnas').on('change', function() {
-            var columnasSeleccionadas = $(this).val();
-            if (columnasSeleccionadas.includes('departamento')) {
-                $('#ubicacionContainer').show();
-            } else {
-                $('#ubicacionContainer').hide();
-            }
-        });
-
-        $('#columnas').select2({
-            placeholder: 'Seleccionar columnas',
-            allowClear: false
-        });
-
-        $('#ubicacionContainer').hide();
+        },
+        error: function() {
+            Swal.fire({
+                title: 'Error',
+                text: 'Hubo un error al crear el fabricante.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
     });
+});
+
+// Manejo del formulario para crear un nuevo modelo
+$('#createModeloForm').on('submit', function(e) {
+    e.preventDefault();
+    var nombre = $('#nuevo_modelo_nombre').val();
+    var fabricanteId = $('#fabricante_id_modelo').val();
+
+    $.ajax({
+        url: '{{ route('modelos.store') }}',
+        method: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            nombre: nombre,
+            fabricante_id: fabricanteId
+        },
+        success: function(response) {
+            $('#createModeloModal').modal('hide');
+            $('#nuevo_modelo_nombre').val('');
+            var newOption = new Option(response.nombre, response.id, true, true);
+            $('#modelo_id').append(newOption).trigger('change');
+
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Nuevo modelo creado con éxito.',
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            });
+        },
+        error: function() {
+            Swal.fire({
+                title: 'Error',
+                text: 'Hubo un error al crear el modelo.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    });
+});
+
+// Manejo del botón para generar filas dinámicas
+$('#generateBtn').on('click', function() {
+    var columnasSeleccionadas = $('#columnas').val();
+    var numeroFilas = $('#numero_filas').val();
+
+    if (!numeroFilas || numeroFilas <= 0) {
+        console.log('Número de filas no válido');
+        return;
+    }
+
+    var $ciContainer = $('#ciContainer').empty();
+
+    for (var i = 0; i < numeroFilas; i++) {
+        var filaNumero = (i + 1).toString().padStart(3, '0');
+        var $row = $('<div class="row mb-3">');
+        var columnWidth = Math.floor(12 / (columnasSeleccionadas.length + 1));
+
+        var $label = $('<div class="col-lg-' + columnWidth + ' mb-3"><label class="form-label">CI ' + filaNumero + '</label></div>');
+        $row.append($label);
+
+        columnasSeleccionadas.forEach(function(columna) {
+            if (columna === 'departamento') {
+                var ubicacionHtml = '<div class="col-lg-' + columnWidth + ' mb-3">' +
+                    '<label for="ubicacion_' + i + '" class="form-label">Ubicación</label>' +
+                    '<select id="ubicacion_' + i + '" name="ubicacion[]" class="form-control js-select-ubicacion">' +
+                    '@foreach($departamentos as $departamento)' +
+                    '<option value="{{ $departamento->id }}">{{ $departamento->nombre }}</option>' +
+                    '@endforeach' +
+                    '</select></div>';
+                $row.append(ubicacionHtml);
+            } else if (['nombre', 'codigo_de_inventario', 'numero_de_serie'].includes(columna)) {
+                var labelText = columna.replace(/_/g, ' ').toUpperCase();
+                var inputHtml = '<div class="col-lg-' + columnWidth + ' mb-3">' +
+                    '<label for="' + columna + '_' + i + '" class="form-label">' + labelText + '</label>' +
+                    '<input type="text" class="form-control" id="' + columna + '_' + i + '" name="' + columna + '[]" required>' +
+                    '</div>';
+                $row.append(inputHtml);
+            }
+        });
+
+        $ciContainer.append($row);
+    }
+
+    $('.js-select-ubicacion').select2();
+});
+
+// Manejo del cambio en el select de columnas
+$('#columnas').on('change', function() {
+    var columnasSeleccionadas = $(this).val();
+
+    if (columnasSeleccionadas.includes('ubicacion')) {
+        $('#ubicacionFields').removeClass('d-none');
+    } else {
+        $('#ubicacionFields').addClass('d-none');
+    }
+});
+
+});
 </script>
-
 @endsection

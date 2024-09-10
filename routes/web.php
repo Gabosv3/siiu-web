@@ -75,7 +75,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::get('/dashboard/Administrativo', [DashboardController::class, 'Principal'])->middleware('can:dashboard')->name('Permisos');
     Route::get('/dashboard/Operativo', [DashboardController::class, 'Secundario'])->name('Secundario');
     Route::get('/nosotros', [DashboardController::class, 'Nosotros'])->name('Nosotros');
-    
+
     // Usuario
     Route::resource('user', UserController::class);
     Route::put('/user/{id}/restore', [UserController::class, 'restore'])->name('user.restore');
@@ -83,25 +83,25 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::match(['put', 'patch'], '/user/one_update/{user}', [UserController::class, 'one_update'])->name('user.one_update');
 
     Route::post('/password/update', [PasswordController::class, 'update'])->name('password.update');
-    
+
     // Roles
     Route::resource('role', RoleController::class);
     Route::put('/role/{role}/restore', [RoleController::class, 'restore'])->name('role.restore');
-    
+
     // Departamentos
     Route::resource('departamentos', DepartamentoController::class);
     Route::put('/departamentos/{departamentos}/restore', [DepartamentoController::class, 'restore'])->name('departamentos.restore');
-    
+
     // Categorias
     Route::resource('categorias', CategoriaController::class);
     Route::get('inventarios', [CategoriaController::class, 'Categoriasvistas'])->name('categorias.restore');
     Route::put('/categorias/{categorias}/restore', [CategoriaController::class, 'restore'])->name('categorias.restore');
-    
+
     // SQL Mantenimiento
     Route::get('/SQL-Mantenimiento', [SQLMaintenanceController::class, 'index'])->name('sql');
     Route::get('/sql/download', [SQLMaintenanceController::class, 'download'])->name('sql.download');
     Route::post('/sql/upload', [SQLMaintenanceController::class, 'upload'])->name('sql.upload');
-    
+
     // Two Factor Authentication
     Route::prefix('two_factor_auth')->group(function () {
         Route::get('/', [LoginSecurityController::class, 'show2faForm'])->name('show2FASettings');
@@ -115,13 +115,12 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     //Inventario software y hardware
     Route::resource('inventarios/softwares', SoftwareController::class);
     Route::resource('inventarios/hardwares', HardwareController::class);
-    Route::get('/config-form', [CsvController::class, 'showForm'])->name('csv.form');
-Route::post('/upload-csv', [CsvController::class, 'upload'])->name('csv.upload');
+    Route::post('/upload-csv', [CsvController::class, 'upload'])->name('csv.upload');
     //proveedor
     Route::post('/fabricantes', [FabricanteController::class, 'store'])->name('fabricantes.store');
     //modelos
     Route::post('/modelos/store', [ModeloController::class, 'store'])->name('modelos.store');
-Route::get('/modelos/por-fabricante/{fabricante}', [ModeloController::class, 'getModelosPorFabricante']);
+    Route::get('/modelos/por-fabricante/{fabricante}', [ModeloController::class, 'getModelosPorFabricante']);
     // Cerrar sesión
     Route::post('signOut', [AuthController::class, 'signOut'])->name('signOut');
 });
