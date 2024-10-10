@@ -29,12 +29,21 @@
           <span class="nav-link-text ms-1">Dashboard</span>
         </a>
       </li>
+      <li class="nav-item pb-2">
+        <a class="nav-link {{ (Request::is('assignments') ? 'active' : '') }}" href="{{ url('assignments') }}" id="btn-module-role">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="fa fa-users ps-2 pe-2 text-center text-dark {{ (Request::is('assignments') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1">asignaciones</span>
+        </a>
+      </li>
+      @can('user.index')
       @if(auth()->user()->can('user.index') || auth()->user()->can('role.index'))
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Administracion Usuarios</h6>
       </li>
       @endif
-      @can('user.index')
+      
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('user*') ? 'active' : '') }} " href="{{ url('user') }}" id="btn-module-user">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -86,9 +95,9 @@
       @endcan
       @can('departamentos.index')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('departamentos*') ? 'active' : '') }}" href="{{ url('departamentos') }}" id="btn-module-departamentos">
+        <a class="nav-link {{ (Request::is('departaments*') ? 'active' : '') }}" href="{{ url('departaments') }}" id="btn-module-departamentos">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-university ps-2 pe-2 text-center text-dark {{ (Request::is('departamentos*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-university ps-2 pe-2 text-center text-dark {{ (Request::is('departaments*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Departamentos</span>
         </a>
@@ -96,9 +105,9 @@
       @endcan
       @can('categorias.index')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('categorias*') ? 'active' : '') }}" href="{{ url('categorias') }}">
+        <a class="nav-link {{ (Request::is('categories*') ? 'active' : '') }}" href="{{ url('categories') }} " id="btn-module-categorias">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-object-group ps-2 pe-2 text-center text-dark {{ (Request::is('categorias*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-object-group ps-2 pe-2 text-center text-dark {{ (Request::is('categories*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Categorias</span>
         </a>
@@ -106,7 +115,7 @@
       @endcan
 
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('inventarios') ? 'active' : '') }}" href="{{ url('inventarios') }}">
+        <a class="nav-link {{ (Request::is('inventarios') ? 'active' : '') }}" href="{{ url('inventarios') }}" id="btn-module-inventarios">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-cubes ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
@@ -114,7 +123,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('') ? 'active' : '') }} " href="{{ url('') }}" id="btn-module-user">
+        <a class="nav-link {{ (Request::is('tickets') ? 'active' : '') }} " href="{{ url('tickets') }}" id="btn-module-user">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-ticket ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
@@ -165,11 +174,19 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link  " href="{{ url('static-sign-in') }}">
+      <a class="nav-link {{ (Request::is('createtickets') ? 'active' : '') }}" href="{{ url('createtickets') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-plus-square-o ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-plus-square-o ps-2 pe-2 text-center text-dark {{ (Request::is('createtickets') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Crear Ticket</span>
+        </a>
+      </li>
+      <li class="nav-item">
+      <a class="nav-link {{ (Request::is('mytickets') ? 'active' : '') }}" href="{{ url('mytickets') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="fa fa-ticket ps-2 pe-2 text-center text-dark {{ (Request::is('mytickets') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1">Mis Tickets</span>
         </a>
       </li>
       <li class="nav-item">

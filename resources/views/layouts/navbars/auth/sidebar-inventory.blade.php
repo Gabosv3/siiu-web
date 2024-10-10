@@ -33,11 +33,11 @@
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Inventario</h6>
       </li>
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('inventarios*') ? 'active' : '') }}" href="{{ url('inventarios') }}" id="btn-module-mantenimiento">
+        <a class="nav-link {{ (Request::is('inventarios/hardware*')  || Request::is('inventarios') ? 'active' : '') }}" href="{{ url('inventarios') }}" id="btn-module-mantenimiento">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-desktop ps-2 pe-2 text-center text-dark {{ (Request::is('inventarios*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-desktop ps-2 pe-2 text-center text-dark {{ Request::is('inventarios/hardware*') || Request::is('inventarios') ? 'text-white' : 'text-dark' }} " aria-hidden="true"></i>
           </div>
-          <span class="nav-link-text ms-1">Equipo</span>
+          <span class="nav-link-text ms-1">Equipos</span>
         </a>
       </li>
       <li class="nav-item">
@@ -45,7 +45,15 @@
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-list-alt ps-2 pe-2 text-center text-dark {{ (Request::is('inventarios/softwares*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
-          <span class="nav-link-text ms-1">Software</span>
+          <span class="nav-link-text ms-1">Softwares</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('inventarios/licenses*') ? 'active' : '') }}" href="{{ url('inventarios/licenses') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="fas fa-shield-alt ps-2 pe-2 text-center text-dark {{ (Request::is('inventarios/licenses*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1">Licencias</span>
         </a>
       </li>
       <li class="nav-item">

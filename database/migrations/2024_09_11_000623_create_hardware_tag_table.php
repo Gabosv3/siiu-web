@@ -15,8 +15,10 @@ class CreateHardwareTagTable extends Migration
     {
         Schema::create('hardware_tag', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('hardware_id')->constrained('hardware'); // Llave foránea con la tabla 'hardware'
             $table->foreignId('tag_id')->constrained('tags'); // Llave foránea con la tabla 'tags'
+            
             $table->timestamps();
         });
     }

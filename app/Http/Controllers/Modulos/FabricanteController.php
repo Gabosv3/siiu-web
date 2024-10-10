@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Modulos;
 
 use App\Http\Controllers\Controller;
 use App\Models\Fabricante;
+use App\Models\Manufacturer;
 use Illuminate\Http\Request;
 
 class FabricanteController extends Controller
@@ -19,13 +20,13 @@ class FabricanteController extends Controller
             'nombre' => 'required|string|max:255',
         ]);
 
-        $fabricante = Fabricante::create([
-            'nombre' => $request->input('nombre'),
+        $fabricante = Manufacturer::create([
+            'name' => $request->input('nombre'),
         ]);
 
         return response()->json([
             'id' => $fabricante->id,
-            'nombre' => $fabricante->nombre,
+            'nombre' => $fabricante->name,
         ]);
     }
 }

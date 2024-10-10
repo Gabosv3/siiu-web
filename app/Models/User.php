@@ -8,17 +8,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'name',
         'email',
         'password',
-        'departamento_id',
+        'departament_id',
     ];
 
     protected $hidden = [
@@ -30,20 +31,32 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    // Definir qué atributos deben ser registrados
+    protected static $logAttributes = ['name', 'email']; // ajusta según tus atributos
+
+    // Opcional: Define si quieres que se registre el antiguo valor
+    protected static $logOldAttributes = true;
+
+    // Opcional: Personaliza el nombre del log
+    protected static $logName = 'user';
+
+    // Opcional: Descripción del evento
+
+
     /**
      * Relación uno a uno con la clase InformacionPersonal.
      */
-    public function informacionPersonal()
+    public function personalInformation()
     {
-        return $this->hasOne(InformacionPersonal::class);
+        return $this->hasOne(personal_information::class);
     }
 
     /**
      * Relación muchos a uno con la clase Departamento.
      */
-    public function departamento()
+    public function departament()
     {
-        return $this->belongsTo(Departamento::class)->withTrashed();
+        return $this->belongsTo(Departament::class)->withTrashed();
     }
 
     /**
@@ -54,8 +67,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(LoginSecurity::class);
     }
 
-    public function hardwareAsignado()
+    public function assignedHardware()
     {
-        return $this->hasMany(Hardware::class, 'dueño_id');
+        return $this->hasMany(Hardware::class, 'owner_id');
+    }
+
+    public function technician()
+    {
+        return $this->hasOne(Technician::class);
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
     }
 }

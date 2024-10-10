@@ -19,7 +19,7 @@ class CreateAfterUserInsertTrigger extends Migration
             AFTER INSERT ON users
             FOR EACH ROW
             BEGIN
-                INSERT INTO informacion_personals (user_id)
+                INSERT INTO personal_informations (user_id)
                 VALUES (NEW.id);
             END
         ');

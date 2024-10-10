@@ -4,6 +4,6 @@
         excel: {{ json_encode(auth()->user()->can('export.excel')) }},
         csv: {{ json_encode(auth()->user()->can('export.csv')) }},
         pdf: {{ json_encode(auth()->user()->can('export.pdf')) }},
-        print: {{ json_encode(auth()->user()->can('export.print')) }}
+        print: {{ json_encode(auth()->user()->can('export.print')) }},
     };
 </script>

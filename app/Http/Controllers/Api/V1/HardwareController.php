@@ -12,7 +12,8 @@ class HardwareController extends Controller
 {
     public function index()
     {
-        return HardwareResource::collection(Hardware::all());
+        $hardware = Hardware::with('category')->get();  // Cargar la categoría relacionada
+        return HardwareResource::collection($hardware);
     }
 
     public function show($id)

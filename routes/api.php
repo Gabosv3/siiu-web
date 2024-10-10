@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AssignmentController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\HardwareController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -20,8 +21,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Puedes agregar otras rutas protegidas aquí
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::apiResource('/users', UserController::class);
-    Route::apiResource('hardware', HardwareController::class);
+  
+    Route::get('/assignments', [AssignmentController::class, 'index']);
 });
 
+Route::apiResource('/hardware', HardwareController::class);
 
 Route::post('/login', [AuthController::class, 'login']);

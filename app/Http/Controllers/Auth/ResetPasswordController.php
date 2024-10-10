@@ -15,7 +15,7 @@ class ResetPasswordController extends Controller
     {
         // Muestra el formulario de restablecimiento de contraseña.
         // Se pasa el token de restablecimiento y el correo electrónico del usuario a la vista.
-        return view('auth.passwords.reset')->with(
+        return view('authenticated.passwords.reset')->with(
             ['token' => $token, 'email' => $request->email]
         );
     }

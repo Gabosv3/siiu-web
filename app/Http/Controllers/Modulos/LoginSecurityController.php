@@ -53,7 +53,7 @@ class LoginSecurityController extends Controller
                 'google2fa_url' => $google2fa_url
             ];
 
-            return view('Auth.2fa_settings', ['data' => $data]);
+            return view('authenticated.2fa_settings', ['data' => $data]);
         } catch (Exception $e) {
             dd($e->getMessage().' '.$e->getLine()); // Mostrar el mensaje de error y la línea donde ocurrió
         }
