@@ -77,8 +77,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Technician::class);
     }
 
+
+
     public function tickets()
     {
         return $this->hasMany(Ticket::class);
     }
+
+
+
 }

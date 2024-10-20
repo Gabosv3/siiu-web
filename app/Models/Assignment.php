@@ -17,6 +17,10 @@ class Assignment extends Model
         'status', // Estado de la tarea ('pendiente', 'en progreso', 'completada', etc.)
     ];
 
+    protected $casts = [
+        'initial_date' => 'datetime',
+    ];
+
     // Relación con el modelo Technician
     
     // Relación con el ticket

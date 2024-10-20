@@ -57,6 +57,14 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link {{ (Request::is('shelves') ? 'active' : '') }}" href="{{ url('shelves') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="fa fa-cubes ps-2 pe-2 text-center text-dark {{ (Request::is('shelves') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1">estanterías</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-ellipsis-h ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>

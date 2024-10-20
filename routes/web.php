@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\MyEvent;
 use App\Http\Controllers\Modulos\AssignmentController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Modulos\DashboardController;
@@ -16,12 +17,15 @@ use App\Http\Controllers\Modulos\FabricanteController;
 use App\Http\Controllers\Modulos\HardwareController;
 use App\Http\Controllers\Modulos\LicenseController;
 use App\Http\Controllers\Modulos\ModeloController;
+use App\Http\Controllers\Modulos\NotificationController;
+use App\Http\Controllers\Modulos\ShelfController;
 use App\Http\Controllers\Modulos\UserController;
 use App\Http\Controllers\Modulos\SoftwareController;
 use App\Http\Controllers\Modulos\SpecialtyController;
 use App\Http\Controllers\Modulos\TechnicianController;
 use App\Http\Controllers\Modulos\TecnicoController;
 use App\Http\Controllers\Modulos\TicketController;
+use App\Models\Shelf;
 use App\Models\Ticket;
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
@@ -31,6 +35,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Mockery\Matcher\Not;
 
 /*
 |--------------------------------------------------------------------------
@@ -207,45 +212,60 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
 
     // asignaciones de tickets
     Route::get('/assignments', [AssignmentController::class, 'index']);
+    Route::resource('/tickets', TicketController::class);
     Route::get('/tickets/{id}/assign', [AssignmentController::class, 'showAssignForm'])->name('tickets.assignForm');
     Route::post('/tickets/{id}/assign', [AssignmentController::class, 'assign'])->name('tickets.assign');
     Route::get('/mytickets', [TicketController::class, 'Mytickets'])->name('Mytickets');
+    Route::get('/mytickets/{id}', [TicketController::class, 'Myticketsshow'])->name('Mytickets.show');
     Route::get('/get-technicians/{specialty_id}', [AssignmentController::class, 'getTechniciansBySpecialty'])->name('get-technicians');
+
+    // Rutas CRUD para estanterías.
+    Route::get('/shelves', [ShelfController::class, 'index'])->name('shelves.index');
+    Route::post('/shelves', [ShelfController::class, 'store'])->name('shelves.store');
+    Route::post('/assign-hardware', [ShelfController::class, 'assignHardwareToPosition'])->name('assign.hardware');
+    Route::post('/positions/store', [ShelfController::class, 'storePosition'])->name('positions.store');
+
 
 
     Route::match(['get', 'post'], '/botman', function () {
         $config = [];
-    
+
         // Crear una instancia de BotMan
         $botman = BotManFactory::create($config);
 
-        
-    
+
+
         // Escucha para crear un usuario
         $botman->hears('listar usuarios', function (BotMan $bot) {
             $bot->reply("Mostrando la lista de usuarios. Haz clic aquí: <a href=\"" . route('user.index') . "\">Haz clic aquí</a>");
-            
         });
-    
+
         // Escucha para crear un usuario
         $botman->hears('crear usuario', function (BotMan $bot) {
             $bot->reply("Creando un nuevo usuario. Haz clic aquí: <a href=\"" . route('user.create') . "\">Haz clic aquí</a>");
-            
         });
 
-    
+
         // Escucha cualquier mensaje desconocido
         $botman->fallback(function (BotMan $bot) {
             $bot->reply('Lo siento, no entendí eso. Intenta con un comando como "crear usuario", "listar usuarios", o "mostrar inventarios".');
         });
-    
+
         // Procesar todas las interacciones
         $botman->listen();
     });
 
+    Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+
     // Cerrar sesión.
     Route::post('signOut', [AuthController::class, 'signOut'])->name('signOut');
 });
+
+//notificaciones
+Route::post('/pusher/auth', [NotificationController::class, 'auth'])->middleware('auth');
+
 
 // Muestra una página de error de autorización cuando el acceso es denegado.
 Route::get('/forbidden', function () {

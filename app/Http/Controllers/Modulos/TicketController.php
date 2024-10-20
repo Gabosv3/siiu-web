@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Modulos;
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\Ticket;
+use App\Models\User;
+use App\Notifications\TicketNotification;
 use Illuminate\Http\Request;
 
-class TicketController extends Controller{
+class TicketController extends Controller
+{
 
     public function index()
     {
@@ -17,7 +20,7 @@ class TicketController extends Controller{
 
     public function crearTicketindex()
     {
-        
+
         return view('tickets.users.create');
     }
     public function createTicket(Request $request)
@@ -34,13 +37,34 @@ class TicketController extends Controller{
             'status' => 'abierto', // El ticket se crea con estado 'abierto'
         ]);
 
-        return redirect()->route('')->with('success', 'Ticket creado exitosamente.');
+         // Obtener el usuario que creó el ticket
+         $user = User::find(auth()->id()); // Obtén el usuario actual
+
+         // Enviar la notificación al usuario que creó el ticket
+         $user->notify(new TicketNotification($ticket));
+
+        return redirect()->back()->with('success', 'Ticket creado exitosamente.');
     }
 
-    public function Mytickets(){
+    public function Mytickets()
+    {
         $tickets = auth()->user()->tickets()->get();
         return view('tickets.users.mytickets', compact('tickets'));
     }
+
+    public function Myticketsshow($id)
+    {
+        // Busca el ticket por su ID, junto con las asignaciones
+        $ticket = Ticket::with('assignments.technician')->findOrFail($id);
+
+        // Retorna la vista con el ticket y sus asignaciones (historial)
+        return view('tickets.users.show', compact('ticket'));
+    }
+
+
+
+
+
 
 
     public function assignTicket(Request $request, $ticketId)

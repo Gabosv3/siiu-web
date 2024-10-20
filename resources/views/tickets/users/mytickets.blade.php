@@ -28,7 +28,7 @@
                     <td>{{ $ticket->created_at }}</td>
                     <td>
                         <!-- Cambia a un enlace que redirija a la vista de detalles -->
-                        <a href="{{ route('tickets.show', $ticket->id) }}" class="btn btn-cyan-800 mb-3"><i class='bx bxs-show'></i></a>
+                        <a href="{{ route('Mytickets.show', $ticket->id) }}" class="btn btn-cyan-800 mb-3"><i class='bx bxs-show'></i></a>
                     </td>
                 </tr>
                 @endforeach

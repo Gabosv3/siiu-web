@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/users', UserController::class);
   
     Route::get('/assignments', [AssignmentController::class, 'index']);
+
+    
 });
 
 Route::apiResource('/hardware', HardwareController::class);

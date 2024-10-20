@@ -33,4 +33,30 @@
         
     </form>
 </div>
+
+@if (session('success'))
+<script>
+    $(document).ready(function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: "{{ session('success') }}",
+            timer: 3000,
+            showConfirmButton: false
+        });
+    });
+</script>
+@elseif (session('error'))
+<script>
+    $(document).ready(function() {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "{{ session('error') }}",
+            timer: 3000,
+            showConfirmButton: false
+        });
+    });
+</script>
+@endif
 @endsection
