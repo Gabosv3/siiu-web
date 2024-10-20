@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Modulos;
 
 use App\Http\Controllers\Controller;
+use App\Models\Departament;
 use App\Models\User;
 use App\Models\Departamento;
 use App\Models\InformacionPersonal;
+use App\Models\personal_information;
+use App\Models\Technician;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
@@ -32,12 +35,19 @@ class UserController extends Controller
         // Obtener usuarios con paginación
         $users = User::paginate();
         // Obtener usuarios eliminados
-        $usersDelets = User::onlyTrashed()->get();
+        $deletedUsers = User::onlyTrashed()->get();
         // Obtener todos los departamentos
-        $departamentos = Departamento::all();
+        $departamentos = Departament::all();
+
+        // Obtener técnicos disponibles
+        $technicians = Technician::where('available', true)->with('user')->get();
+
+        // Obtener técnicos desactivados
+        $deletedTechnicians = Technician::where('available', false)->with('user')->get();
+
 
         // Retornar la vista 'user.index' con las variables necesarias
-        return view('user.index', compact('users', 'departamentos', 'usersDelets'))
+        return view('user.index', compact('users', 'departamentos', 'deletedUsers', 'technicians', 'deletedTechnicians'))
             ->with('i', (request()->input('page', 1) - 1) * $users->perPage());
     }
 
@@ -57,7 +67,7 @@ class UserController extends Controller
             'password' => 'required|min:8',
             'password_confirmation' => 'required|same:password',
             'name' => 'required',
-            'departamento_id' => 'required|exists:departamentos,id',
+            'departament_id' => 'required|exists:departaments,id',
         ], [
             'email.required' => 'El correo es requerido',
             'email.unique' => 'El correo ya ha sido usado',
@@ -66,8 +76,8 @@ class UserController extends Controller
             'password_confirmation.required' => 'La confirmación de la contraseña es requerida',
             'password.same' => 'Las contraseñas no coinciden',
             'name.required' => 'El nombre es requerido',
-            'departamento_id.required' => 'El departamento es requerido',
-            'departamento_id.exists' => 'El departamento seleccionado no es válido',
+            'departament_id.required' => 'El departamento es requerido',
+            'departament_id.exists' => 'El departamento seleccionado no es válido',
         ]);
 
         // Crear un nuevo usuario
@@ -75,7 +85,7 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'departamento_id' => $request->departamento_id,
+            'departament_id' => $request->departament_id,
         ])->assignRole('Usuario');
 
         // Redireccionamiento con mensaje de éxito
@@ -85,17 +95,17 @@ class UserController extends Controller
     // Método para mostrar los detalles de un usuario específico
     public function show($id)
     {
-        $user = User::with('informacionPersonal')->find($id);
+        $user = User::with('personalInformation')->find($id);
         return view('user.show', compact('user'));
     }
 
     // Método para mostrar la vista de edición de un usuario
-    public function editar($id)
+    public function editUser($id)
     {
         // Buscar el usuario por su ID
-        $user = User::with('informacionPersonal')->find($id);
+        $user = User::with('personalInformation')->find($id);
         // Obtener todos los departamentos
-        $departamentos = Departamento::all();
+        $departamentos = Departament::all();
         // Obtener todos los roles
         $roles = Role::all();
         // Obtener los IDs de los roles asignados al usuario
@@ -113,37 +123,38 @@ class UserController extends Controller
     // Método para mostrar la vista de edición de un usuario
     public function edit($id)
     {
-        // Llamar al método editar y obtener los datos
-        $data = $this->editar($id);
+        // Llamar al método editUser y obtener los datos
+        $data = $this->editUser($id);
 
         // Pasar los datos a la vista
         return view('user.edit', $data);
     }
-    public function one_edit($id)
+
+    public function one_Edit($id)
     {
-        $data = $this->editar($id);
+        $data = $this->editUser($id);
 
         // Pasar los datos a la vista
-        return view('Auth.user_edit', $data);
+        return view('authenticated.user_edit', $data);
     }
 
-    public function actualizar(Request $request, User $user, $validateRoles = true, $validateDepartamento = true)
+    public function updateUser(Request $request, User $user, $validateRoles = true, $validateDepartment = true)
     {
         // Definir las reglas de validación
         $rules = [
             'email' => 'required|unique:users,email,' . $user->id,
             'name' => 'required',
-            'apellidos' => 'required',
-            'nombres' => 'required',
-            'fecha_nacimiento' => 'required|date',
-            'genero' => 'required',
+            'last_name' => 'required',
+            'first_name' => 'required',
+            'birth_date' => 'required|date',
+            'gender' => 'required',
             'dui' => 'required|unique:informacion_personals,dui,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
-            'telefono' => 'required|unique:informacion_personals,telefono,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
+            'phone' => 'required|unique:informacion_personals,phone,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
         ];
 
-        // Agregar la regla de validación para departamento_id si es necesario
-        if ($validateDepartamento) {
-            $rules['departamento_id'] = 'required|exists:departamentos,id';
+        // Agregar la regla de validación para departament_id si es necesario
+        if ($validateDepartment) {
+            $rules['departament_id'] = 'required|exists:departamentos,id';
         }
 
         // Mensajes de validación personalizados
@@ -151,17 +162,17 @@ class UserController extends Controller
             'email.required' => 'El correo es requerido',
             'email.unique' => 'El correo ya ha sido usado',
             'name.required' => 'El nombre es requerido',
-            'departamento_id.required' => 'El departamento es requerido',
-            'departamento_id.exists' => 'El departamento no es válido',
-            'apellidos.required' => 'Los apellidos son requeridos',
-            'nombres.required' => 'Los nombres son requeridos',
-            'fecha_nacimiento.required' => 'La fecha de nacimiento es requerida',
-            'fecha_nacimiento.date' => 'La fecha de nacimiento no es válida',
-            'genero.required' => 'El género es requerido',
+            'departament_id.required' => 'El departamento es requerido',
+            'departament_id.exists' => 'El departamento no es válido',
+            'last_name.required' => 'Los apellidos son requeridos',
+            'first_name.required' => 'Los nombres son requeridos',
+            'birth_date.required' => 'La fecha de nacimiento es requerida',
+            'birth_date.date' => 'La fecha de nacimiento no es válida',
+            'gender.required' => 'El género es requerido',
             'dui.required' => 'El DUI es requerido',
             'dui.unique' => 'El DUI ya ha sido usado',
-            'telefono.required' => 'El teléfono es requerido',
-            'telefono.unique' => 'El teléfono ya ha sido usado',
+            'phone.required' => 'El teléfono es requerido',
+            'phone.unique' => 'El teléfono ya ha sido usado',
         ];
 
         // Validar los datos
@@ -169,8 +180,8 @@ class UserController extends Controller
 
         // Preparar los datos del usuario para actualizar
         $userData = $request->only('name', 'email');
-        if ($validateDepartamento) {
-            $userData['departamento_id'] = $request->departamento_id;
+        if ($validateDepartment) {
+            $userData['departament_id'] = $request->departament_id;
         }
         $user->update($userData);
 
@@ -180,25 +191,25 @@ class UserController extends Controller
         }
 
         // Preparar los datos de información personal para actualizar
-        $informacionPersonalData = $request->only('apellidos', 'nombres', 'fecha_nacimiento', 'genero', 'dui', 'telefono');
+        $informacionPersonalData = $request->only('last_name', 'first_name', 'birth_date', 'gender', 'dui', 'phone');
         $informacionPersonal = $user->informacionPersonal;
         if ($informacionPersonal) {
             $informacionPersonal->update($informacionPersonalData);
         } else {
             $informacionPersonalData['user_id'] = $user->id;
-            InformacionPersonal::create($informacionPersonalData);
+            personal_information::create($informacionPersonalData);
         }
     }
 
     public function update(Request $request, User $user)
     {
-        $this->actualizar($request, $user, true, true); // Valida y actualiza roles y departamento
-        return redirect()->back()->with('Actualizado', 'SI');
+        $this->updateUser($request, $user, true, true); // Valida y actualiza roles y departamento
+        return redirect()->back()->with('Updated', 'YES');
     }
 
-    public function one_update(Request $request, User $user)
+    public function oneUpdate(Request $request, User $user)
     {
-        $this->actualizar($request, $user, false, false); // No valida ni actualiza roles ni departamento
+        $this->updateUser($request, $user, false, false); // No valida ni actualiza roles ni departamento
         return redirect()->back()->with('status', 'Usuario actualizado');
     }
 
@@ -207,9 +218,9 @@ class UserController extends Controller
     {
         // Buscar el usuario por su ID y eliminarlo
         if (User::find($id)->delete()) {
-            return redirect()->back()->with('eliminado', 'SI');
+            return redirect()->back()->with('deleted', 'YES');
         } else {
-            return redirect()->back()->with('eliminado', 'NO');
+            return redirect()->back()->with('deleted', 'NO');
         }
     }
 
@@ -222,11 +233,9 @@ class UserController extends Controller
         if ($user) {
             // Restaurar el usuario eliminado
             $user->restore();
-            return redirect()->back()->with('Restaurado', 'SI');
+            return redirect()->back()->with('Restored', 'YES');
         } else {
-            return redirect()->back()->with('Restaurado', 'NO');
+            return redirect()->back()->with('Restored', 'NO');
         }
     }
-
-    
 }

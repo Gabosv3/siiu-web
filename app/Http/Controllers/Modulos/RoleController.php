@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Modulos;
 
 use App\Http\Controllers\Controller;
@@ -71,14 +72,16 @@ class RoleController extends Controller
     public function edit($id)
     {
         // Buscar el rol por su ID
-        $role = Role::find($id);
-        // Obtener todos los permisos
-        $permissions = Permission::all();
+        $role = Role::findOrFail($id);
+
+        // Obtener todos los permisos y agruparlos por el campo 'group' (o cualquier otro campo que desees)
+        $permissionsGrouped = Permission::all()->groupBy('group');
+
         // Obtener los IDs de los permisos asignados al rol
         $rolePermissions = $role->permissions->pluck('id')->toArray();
 
         // Retornar la vista 'role.edit' con las variables necesarias
-        return view('role.edit', compact('role', 'permissions', 'rolePermissions'));
+        return view('role.edit', compact('role', 'permissionsGrouped', 'rolePermissions'));
     }
 
     // Método para actualizar un rol en la base de datos

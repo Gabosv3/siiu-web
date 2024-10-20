@@ -49,15 +49,17 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.7/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.bootstrap4.min.css">
- 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" rel="stylesheet">
 
 
 
   <!-- jQuery -->
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://js.pusher.com/7.2.0/pusher.min.js"></script>
+
 
 
 </head>
@@ -78,8 +80,6 @@
   <script src="{{ asset('assets/js/plugins/fullcalendar.min.js') }}"></script>
   <script src="{{ asset('assets/js/plugins/chartjs.min.js') }}"></script>
 
-  <!-- Bootstrap JS (version 4.5.2) -->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
   <!-- JS de DataTables y sus extensiones -->
   <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
@@ -96,7 +96,10 @@
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js'></script>
+
+  <!-- Pusher JS -->
 
   <!-- Additional JS (if any) -->
   @stack('dashboard')
@@ -119,6 +122,110 @@
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
   </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const dropdownMenuButton = document.getElementById('dropdownMenuButton');
+      const notificationDropdown = document.getElementById('notificationDropdown');
+      const notificationIcon = document.getElementById('notificationIcon'); // Icono de la campana donde se mostrará el número
+
+      // Realiza una solicitud AJAX para obtener las notificaciones cuando se carga la página
+      fetch('/notifications')
+        .then(response => response.json())
+        .then(data => {
+          // Limpia las notificaciones anteriores
+          notificationDropdown.innerHTML = '';
+
+          let unreadCount = 0; // Contador de notificaciones no leídas
+
+          // Añade las nuevas notificaciones
+          data.forEach(notification => {
+            // Verificar si la notificación no ha sido leída
+            if (!notification.read_at) {
+              unreadCount++; // Incrementar el contador de no leídas
+              const li = document.createElement('li');
+              li.classList.add('mb-2'); // Clase para el margen inferior
+              li.innerHTML = `
+                            <a class="dropdown-item border-radius-md notification-link" href="javascript:;" data-id="${notification.id}">
+                                <div class="d-flex py-1">
+                                    <div class="d-flex flex-column justify-content-center">
+                                        <h6 class="text-sm font-weight-normal mb-1">
+                                            <span class="font-weight-bold">${notification.data.message}</span>
+                                        </h6>
+                                        <p class="text-xs text-secondary mb-0">
+                                            <i class="fa fa-clock me-1"></i>
+                                            ${new Date(notification.created_at).toLocaleString()}
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+              notificationDropdown.appendChild(li);
+            }
+          });
+
+          // Mostrar número de notificaciones no leídas en el icono
+          if (unreadCount > 0) {
+            notificationIcon.innerHTML = ` <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${unreadCount}  <span class="visually-hidden">Sin messages</span></span>`;
+          } else {
+            // Si no hay notificaciones no leídas, mostrar "No hay notificaciones"
+            notificationDropdown.innerHTML = `
+                        <li class="text-center p-2">
+                            <p class="text-sm text-muted mb-0">No hay notificaciones</p>
+                        </li>
+                    `;
+            notificationIcon.innerHTML = ''; // Quitar el número si no hay no leídas
+          }
+
+          // Añadir funcionalidad para marcar como visto al hacer clic en la notificación
+          const notificationLinks = document.querySelectorAll('.notification-link');
+          notificationLinks.forEach(link => {
+            link.addEventListener('click', function() {
+              const notificationId = this.dataset.id;
+
+              // Realiza una solicitud AJAX para marcar la notificación como vista
+              fetch(`/notifications/${notificationId}/read`, {
+                  method: 'POST',
+                  headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}', // Añade el token CSRF si es necesario
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    read: true
+                  })
+                })
+                .then(response => {
+                  if (response.ok) {
+                    // Elimina la notificación del DOM o actualiza su estado
+                    this.closest('li').remove(); // Remueve la notificación de la lista
+
+                    // Actualiza el contador de no leídas
+                    unreadCount--;
+                    if (unreadCount > 0) {
+                      notificationIcon.innerHTML = ` <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${unreadCount}  <span class="visually-hidden">Sin messages</span></span>`;
+                    } else {
+                      notificationIcon.innerHTML = '';
+                      notificationDropdown.innerHTML = `
+                                        <li class="text-center p-2">
+                                            <p class="text-sm text-muted mb-0">No hay notificaciones</p>
+                                        </li>
+                                    `;
+                    }
+                  } else {
+                    console.error('Error marking notification as read');
+                  }
+                });
+            });
+          });
+        })
+        .catch(error => console.error('Error fetching notifications:', error));
+    });
+  </script>
+
+
+
+
+
 
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>

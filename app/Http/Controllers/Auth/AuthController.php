@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\MyEvent;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,7 @@ class AuthController extends Controller
     public function login()
     {
         // Retorna la vista 'Auth.Login', donde está el formulario de inicio de sesión
-        return view('auth.login');
+        return view('authenticated.login');
     }
 
     // Método para verificar las credenciales de inicio de sesión
@@ -33,6 +34,12 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             // Regenerar la sesión para evitar ataques de sesión fija
             $request->session()->regenerate();
+
+            // Disparar el evento después de la autenticación exitosa
+            $userId = Auth::id(); // ID del usuario autenticado
+            $data = ['message' => 'Usuario autenticado correctamente']; // Datos que deseas enviar con el evento
+            event(new MyEvent($data, $userId));
+
             // Redirigir al usuario autenticado a la ruta 'dashboard'
             return redirect()->route('dashboard');
         }
