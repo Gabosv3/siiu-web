@@ -4,14 +4,14 @@
 <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
     <div class="row">
         <!-- Sección para el título y la imagen de roles -->
-        <div class="col-4 text-center mx-auto">
+        <div class="col-6 text-center mx-auto">
             <!-- Icono de Roles -->
             <img src="https://cdn-icons-png.flaticon.com/512/5151/5151145.png" width="200px" alt="Icono de Roles">
             <h3 class="center">ROLES</h3>
         </div>
-        <div class="col-4 text-center mx-auto"></div>
+        
         <!-- Botón para abrir el modal para crear un nuevo rol, solo visible para usuarios con el permiso -->
-        <div class="col-md-4 d-flex justify-content-center align-items-center">
+        <div class="col-md-6 d-flex justify-content-center align-items-center">
             @can('role.create')
             <div class="py-5">
                 <button type="button" class="btn btn-rounded btn-md bg-gradient-2" data-bs-toggle="modal" data-bs-target="#createRoleModal" id="btn-modal-crear-role">Crear Role</button>
@@ -63,7 +63,7 @@
         <!-- Pestaña para mostrar los roles -->
         <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Roles</button>
         <!-- Pestaña para mostrar los roles eliminados -->
-        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Eliminados</button>
+        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Desactivados</button>
     </div>
 </nav>
 

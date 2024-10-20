@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Departamento;
-use App\Models\InformacionPersonal;
+use App\Models\Assignment;
+use App\Models\Specialty;
+use App\Models\Technician;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -20,8 +21,8 @@ class DatabaseSeeder extends Seeder
     {
     
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('informacion_personals')->truncate();
-        DB::statement('ALTER TABLE informacion_personals AUTO_INCREMENT = 1;');
+        DB::table('personal_informations')->truncate();
+        DB::statement('ALTER TABLE personal_informations AUTO_INCREMENT = 1;');
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $this->call(RoleSeeder::class);
@@ -31,7 +32,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Administrador',
             'email' => 'admin@example.com',
             'password' => Hash::make('1234'), // Recuerda cambiar esto por la contraseña real
-            'departamento_id' => 1,
+            'departament_id' => 1,
             'email_verified_at' => now(), // Establece la fecha de verificación de email
         ])->assignRole('SuperAdmin');
         
@@ -39,7 +40,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Gabriel',
             'email' => 'Gabriel@example.com',
             'password' => Hash::make('1234'), // Recuerda cambiar esto por la contraseña real
-            'departamento_id' => 1,
+            'departament_id' => 1,
             'email_verified_at' => now(), // Establece la fecha de verificación de email
         ])->assignRole('Administrador');
         
@@ -47,9 +48,21 @@ class DatabaseSeeder extends Seeder
             'name' => 'Azucena',
             'email' => 'Azucena@example.com',
             'password' => Hash::make('1234'), // Recuerda cambiar esto por la contraseña real
-            'departamento_id' => 1,
+            'departament_id' => 1,
             'email_verified_at' => now(), // Establece la fecha de verificación de email
         ])->assignRole('Usuario');
+
+        Specialty::create([
+            'name' => 'Soporte Técnico',
+        ]);
+
+        Technician::create([
+            'user_id' => 1, // ID del usuario asociado
+            'specialty_id' => 1, // Especialidad del técnico
+            'available' => true, // Indica si el técnico está disponible
+        ]);
+
+      
 
     }
 }

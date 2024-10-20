@@ -75,7 +75,7 @@
                     <!-- Campo para ingresar el nombre del usuario -->
                     <div class="col-md-4 mb-3">
                         <label for="name" class="form-label">Usuario</label>
-                        <input name="name" type="text" class="border-dark form-control @error('name') is-invalid @enderror" id="name" aria-describedby="nameHelp" required minlength="6" pattern="[a-zA-Z]+" value="{{ old('name', $user->name) }}">
+                        <input name="name" type="text" class="border-dark form-control @error('name') is-invalid @enderror" id="name" aria-describedby="nameHelp" required minlength="6" pattern="[a-zA-Z\s]+" value="{{ old('name', $user->name) }}">
                         <div class="invalid-feedback">El nombre debe tener al menos 6 caracteres y solo puede contener letras.</div>
                         @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -109,7 +109,7 @@
                     <!-- Campo para ingresar los apellidos del usuario-->
                     <div class="col-md-4 mb-3">
                         <label for="apellidos" class="form-label">Apellidos</label>
-                        <input name="apellidos" type="text" class="border-dark form-control @error('apellidos') is-invalid @enderror" id="apellidos" value="{{ old('apellidos', $user->informacionPersonal->apellidos ?? '') }}" required minlength="6" pattern="[a-zA-Z]+" title="El apellido debe tener al menos 6 caracteres y solo letras.">
+                        <input name="apellidos" type="text" class="border-dark form-control @error('apellidos') is-invalid @enderror" id="apellidos" value="{{ old('apellidos', $user->informacionPersonal->apellidos ?? '') }}" required minlength="6" pattern="[a-zA-Z\s]+" title="El apellido debe tener al menos 6 caracteres y solo letras.">
                         <div class="invalid-feedback">El apellido debe tener al menos 6 caracteres y solo puede contener letras.</div>
                         @error('apellidos')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -118,7 +118,7 @@
                     <!-- Campo para ingresar Nombre del usuario-->
                     <div class="col-md-4 mb-3">
                         <label for="nombres" class="form-label">Nombres</label>
-                        <input name="nombres" type="text" class="border-dark form-control @error('nombres') is-invalid @enderror" id="nombres" value="{{ old('nombres', $user->informacionPersonal->nombres ?? '') }}" required minlength="6" pattern="[a-zA-Z]+" title="El nombre debe tener al menos 6 caracteres y solo letras.">
+                        <input name="nombres" type="text" class="border-dark form-control @error('nombres') is-invalid @enderror" id="nombres" value="{{ old('nombres', $user->informacionPersonal->nombres ?? '') }}" required minlength="6" pattern="[a-zA-Z\s]+" title="El nombre debe tener al menos 6 caracteres y solo letras.">
                         <div class="invalid-feedback">El nombre debe tener al menos 6 caracteres y solo puede contener letras.</div>
                         @error('nombres')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -198,4 +198,13 @@
 </div>
 <!-- Validaciones tipo Javascript para los campos del usuario -->
 <script src="{{ asset('assets/js/Usuarios/UserEdit.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        $('#departamento_id').select2({
+            placeholder: "Seleccione un departamento",
+            theme: "bootstrap-5",
+            width: '100%',
+        });
+    });
+</script>
 @endsection

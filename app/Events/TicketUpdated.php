@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Events;
+
+use App\Models\Ticket;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+
+class TicketUpdated
+{
+    use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $ticket;
+
+    public function __construct(Ticket $ticket)
+    {
+        $this->ticket = $ticket;
+    }
+
+    public function broadcastOn()
+    {
+        return new Channel('tickets.' . $this->ticket->id);
+    }
+
+    public function broadcastAs()
+    {
+        return 'TicketUpdated';
+    }
+}
+

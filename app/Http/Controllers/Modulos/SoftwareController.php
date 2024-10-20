@@ -3,120 +3,115 @@
 namespace App\Http\Controllers\Modulos;
 
 use App\Http\Controllers\Controller;
+use App\Models\Manufacturer;
 use App\Models\Software;
 use Illuminate\Http\Request;
 
 class SoftwareController extends Controller
 {
-    /**
-     * Mostrar una lista de todos los software.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $software = Software::all();
-        return view('inventario.software.index', compact('software'));
+        $softwaresdeleted = Software::onlyTrashed()->get();
+        // Obtiene todas las licencias
+        $softwares = Software::with(['manufacturer', 'licencias'])->paginate(10);
+        return view('inventories.softwares.index', compact('softwares', 'softwaresdeleted'));
     }
 
-    /**
-     * Mostrar el formulario para crear un nuevo software.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        return view('inventario.software.create');
+        $fabricantes = Manufacturer::all();
+        return view('inventories.softwares.create', compact('fabricantes'));
     }
 
-    /**
-     * Almacenar un nuevo software en la base de datos.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
-    {   
-        $request->validate([
-            'nombre_software' => 'required|string|max:255',
-            'version' => 'required|string|max:50',
-            'fabricante' => 'required|string|max:255',
-            'asignada' => 'nullable|string|max:255',
-            'ubicacion' => 'required|string|max:255',
-            'clasificacion_licencia' => 'required|string|max:255',
-            'tipo' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'clave_licencia' => 'nullable|string|max:255',
-            'fecha_compra' => 'nullable|date',
-        ]);
-
-        Software::create($request->all());
-
-        return redirect()->route('softwares.index')
-                         ->with('success', 'Software creado exitosamente.');
-    }
-
-    /**
-     * Mostrar un software específico.
-     *
-     * @param  \App\Models\Software  $software
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Software $software)
     {
-        return view('inventario.software.show', compact('software'));
+        $validatedData = $request->validate(
+            [
+                'manufacturer_id' => 'required|exists:manufacturers,id',
+                'software_name' => 'required|string|max:255',
+                'version' => 'required|string|max:255',
+                'description' => 'nullable|string',
+            ],
+            [
+                'manufacturer_id.required' => 'El fabricante es obligatorio',
+                'software_name.required' => 'El nombre del software es obligatorio',
+                'version.required' => 'La versión es obligatoria',
+            ]
+        );
+
+        Software::create($validatedData);
+
+        return redirect()->route('softwares.index')->with('success', 'Software creado exitosamente');
     }
 
-    /**
-     * Mostrar el formulario para editar un software existente.
-     *
-     * @param  \App\Models\Software  $software
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Software $software)
     {
-        return view('inventario.software.edit', compact('software'));
+        $fabricantes = Manufacturer::all();
+        return view('inventories.softwares.edit', compact('software', 'fabricantes'));
     }
 
-    /**
-     * Actualizar un software existente en la base de datos.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Software  $software
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Software $software)
     {
-        $request->validate([
-            'nombre_software' => 'required|string|max:255',
-            'version' => 'required|string|max:50',
-            'fabricante' => 'required|string|max:255',
-            'asignada' => 'nullable|string|max:255',
-            'ubicacion' => 'required|string|max:255',
-            'clasificacion_licencia' => 'required|string|max:255',
-            'tipo' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'clave_licencia' => 'nullable|string|max:255',
-            'fecha_compra' => 'nullable|date',
-        ]);
+        $validatedData = $request->validate(
+            [
+                'manufacturer_id' => 'required|exists:manufacturers,id',
+                'software_name' => 'required|string|max:255',
+                'version' => 'required|string|max:255',
+                'description' => 'nullable|string',
+            ],
+            [
+                'manufacturer_id.required' => 'El fabricante es obligatorio',
+                'software_name.required' => 'El nombre del software es obligatorio',
+                'version.required' => 'La versión es obligatoria',
+            ]
+        );
 
-        $software->update($request->all());
+        $software->update($validatedData);
 
-        return redirect()->route('softwares.index')
-                         ->with('success', 'Software actualizado exitosamente.');
+        // Registro en el log
+
+
+        return redirect()->route('softwares.index')->with('success', 'Software actualizado exitosamente');
     }
 
-    /**
-     * Eliminar un software de la base de datos.
-     *
-     * @param  \App\Models\Software  $software
-     * @return \Illuminate\Http\Response
-     */
+    public function show($id)
+    {
+        // Encontrar el software por su ID
+        $software = Software::findOrFail($id);
+
+        // Obtener las licencias vinculadas a este software
+        $licencias = $software->licencias;
+
+        // Contar cuántas licencias tiene este software
+        $totalLicencias = $licencias->count();
+
+        // Retornar la vista con el software, las licencias y el total de licencias
+        return view('inventories.softwares.show', compact('software', 'licencias', 'totalLicencias'));
+    }
+
     public function destroy(Software $software)
     {
         $software->delete();
 
-        return redirect()->route('softwares.index')
-                         ->with('success', 'Software eliminado exitosamente.');
+        // Registro en el log
+        if ($software) {
+            return redirect()->route('softwares.index')->with('success', 'Software eliminado exitosamente');
+        }
+
+        return redirect()->route('softwares.index')->with('error', 'Software no encontrado');
+    }
+
+    public function restore($id)
+    {
+        // Buscar el software eliminado por su ID
+        $software = Software::withTrashed()->find($id);
+
+        if ($software) {
+            // Restaurar el software eliminado
+            $software->restore();
+            return redirect()->back()->with('success', 'Software restaurado exitosamente.');
+        } else {
+            return redirect()->back()->with('error', 'Software no encontrado.');
+        }
     }
 }

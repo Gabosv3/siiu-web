@@ -61,6 +61,9 @@ $(document).ready(function() {
     // Configurar DataTables para las diferentes tablas
     configureDataTable('#Principal', permissions);
     configureDataTable('#restaurar', permissions);
+    configureDataTable('#TechniciansTable', permissions);
+    configureDataTable('#DeletedTechniciansTable', permissions);
+
 });
 
 $(".formulario-eliminar").submit(function (e) {
@@ -68,7 +71,7 @@ $(".formulario-eliminar").submit(function (e) {
 
     Swal.fire({
         title: "¿Estas seguro?",
-        text: "Este Usuario se eliminara definitivamente",
+        text: "Este se eliminara definitivamente",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -86,7 +89,7 @@ $(".formulario-restaurar").submit(function (e) {
 
     Swal.fire({
         title: "¿Estas seguro?",
-        text: "Este usuario se reutaurara",
+        text: "Este se reutaurara",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",

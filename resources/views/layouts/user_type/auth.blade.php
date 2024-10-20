@@ -14,7 +14,7 @@
         @include('layouts.footers.guest.footer')
     
     @else
-        @if (\Request::is('inventarios*'))  
+        @if (\Request::is('inventarios*'))
             @include('layouts.navbars.auth.sidebar-inventory')
             <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg overflow-hidden">
                 @include('layouts.navbars.auth.nav')
