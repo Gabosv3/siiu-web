@@ -19,7 +19,7 @@ class SoftwareController extends Controller
 
     public function create()
     {
-        $fabricantes = Manufacturer::all();
+        $fabricantes = Manufacturer::where('type', 'Software')->get();
         return view('inventories.softwares.create', compact('fabricantes'));
     }
 

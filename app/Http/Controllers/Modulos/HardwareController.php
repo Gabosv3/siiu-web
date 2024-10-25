@@ -17,6 +17,14 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class HardwareController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:hardware.index')->only('index');
+        $this->middleware('can:hardware.create')->only('create', 'store');
+        $this->middleware('can:hardware.edit')->only('edit', 'update');
+        $this->middleware('can:hardware.destroy')->only('destroy');
+        $this->middleware('can:hardware.restore')->only('restore');
+    }
     public function index(Request $request)
     {
         $viewType = $request->input('view', 'card'); // Obtiene el tipo de vista desde la consulta, por defecto es 'card'
@@ -25,7 +33,7 @@ class HardwareController extends Controller
         // Obtiene todos los registros de hardware y aplica el filtro por categoría si se proporciona
         $hardwares = Hardware::when($categoriaId && $categoriaId != 'all', function ($query) use ($categoriaId) {
             return $query->where('category_id', $categoriaId);
-        })->paginate(16); // Cambia 12 por el número de elementos que quieras por página
+        })->paginate(16); // Obtiene 10 registros por categoria
 
         return view('inventories.hardwares.index', compact('hardwares', 'viewType'));
     }
@@ -33,13 +41,11 @@ class HardwareController extends Controller
     public function create(Request $request)
     {
         // Obtener las variables necesarias
-        $fabricantes = Manufacturer::all();
+        $fabricantes = Manufacturer::where('type', 'Equipo')->get();
         $categorias = Category::all();
         $usuarios = User::all();
         $departamentos = Departament::all();
         $modelos = Models::all();
-        $tags = Tag::all();
-        $sistemas = Software::all();
 
         // Obtener la categoría con base en el ID proporcionado en la solicitud (si existe)
         $categoria = Category::find($request->input('category_id'));
@@ -57,8 +63,6 @@ class HardwareController extends Controller
             'usuarios' => $usuarios,
             'departamentos' => $departamentos,
             'modelos' => $modelos,
-            'tags' => $tags,
-            'sistemas' => $sistemas,
             'csv_data' => $csvData
         ]);
     }

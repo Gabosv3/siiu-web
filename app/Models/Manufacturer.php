@@ -16,10 +16,11 @@ class Manufacturer extends Model
     //especifica los campos de la tabla
     protected $fillable = [
         'name', // Nombre del fabricante
+        'type', // Descripción del fabricante (opcional)
     ];
     
     // Configure the attributes that will be logged
-    protected static $logAttributes = ['name']; // Atributos que se registrarán en los registros de actividad
+    protected static $logAttributes = ['name', 'type']; // Atributos que se registrarán en los registros de actividad
     
     // You can customize the log message
     protected static $logName = 'manufacturer'; // Nombre personalizado para los registros de actividad

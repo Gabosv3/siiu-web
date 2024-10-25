@@ -64,7 +64,7 @@
         </div>
         <div class="col-md-12 text-end">
             <!-- Botón para actualizar -->
-            <button type="submit" class="btn btn-primary" id="btn-actualizar-role">Actualizar</button>
+            <button type="submit" class="btn btn-primary floating-button" id="btn-actualizar-role">Actualizar</button>
         </div>
     </form>
     @endif

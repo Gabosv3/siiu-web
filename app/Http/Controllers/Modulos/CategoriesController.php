@@ -20,6 +20,12 @@ class CategoriesController extends Controller
         $this->middleware('can:categorias.restore')->only('restore');
     }
 
+/*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Muestra una lista de las categorías existentes en la base de datos.
+     *
+     * @return \Illuminate\Http\Response
+/******  ee3d40ff-92df-4e82-85fc-5ed010535390  *******/
     public function index()
     {
         // Obtener todas las categorías de la base de datos con paginación
@@ -42,8 +48,20 @@ class CategoriesController extends Controller
         // Validar los datos del formulario
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
-            'description' => 'nullable|string|max:65535',
-            'image' => 'nullable|image|max:2048', // Validación para la imagen
+            'description' => 'required|string|max:655',
+            'image' => 'required|image|max:2048',
+            'type' => 'required' // Validación para la imagen
+        ], [
+            'name.required' => 'El nombre es obligatorio',
+            'name.string' => 'El nombre debe ser una cadena de texto',
+            'name.max' => 'El nombre no debe superar los 255 caracteres',
+            'name.unique' => 'La categoría ya existe',
+            'description.required' => 'La descripción es obligatoria',
+            'description.string' => 'La descripción debe ser una cadena de texto',
+            'description.max' => 'La descripción no debe superar los 655 caracteres',
+            'image.required' => 'La imagen es obligatoria',
+            'image.image' => 'La imagen debe ser una imagen',
+            'image.max' => 'La imagen no debe superar los 2 MB',
         ]);
 
         // Inicializar el array de datos para la creación del modelo
@@ -83,7 +101,17 @@ class CategoriesController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
             'description' => 'nullable|string|max:65535',
-            'image' => 'nullable|image|max:2048', // Validación para la imagen
+            'image' => 'nullable|image|max:2048',
+            'type' => 'required'
+        ], [
+            'name.required' => 'El nombre es obligatorio',
+            'name.string' => 'El nombre debe ser una cadena de texto',
+            'name.max' => 'El nombre no debe superar los 255 caracteres',
+            'name.unique' => 'La categoría ya existe',
+            'description.string' => 'La descripción debe ser una cadena de texto',
+            'description.max' => 'La descripción no debe superar los 65535 caracteres',
+            'image.image' => 'La imagen debe ser una imagen',
+            'image.max' => 'La imagen no debe superar los 2 MB',
         ]);
 
         // Procesar y almacenar la nueva imagen si fue cargada
@@ -144,9 +172,18 @@ class CategoriesController extends Controller
     public function categoryViews()
     {
         // Obtener todas las categorías de la base de datos con paginación
-        $categories = Category::paginate(10);
+        $categories = Category::where('type', 'Equipo')->paginate(10);
         // Retornar la vista 'inventory.index' con las categorías
         return view('inventories.index', compact('categories'))
+            ->with('i', (request()->input('page', 1) - 1) * $categories->perPage());
+    }
+
+    public function categoryViewsForSupply()
+    {
+        // Obtener todas las categorías de la base de datos con paginación
+        $categories = Category::where('type', 'Insumo')->paginate(10);
+        // Retornar la vista 'inventory.index' con las categorías
+        return view('inventories.supplies.searchforcategories', compact('categories'))
             ->with('i', (request()->input('page', 1) - 1) * $categories->perPage());
     }
 }

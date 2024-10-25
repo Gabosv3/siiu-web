@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Modulos;
 use App\Http\Controllers\Controller;
 use App\Models\Departament;
 use App\Models\User;
-use App\Models\Departamento;
-use App\Models\InformacionPersonal;
 use App\Models\personal_information;
 use App\Models\Technician;
 use Illuminate\Http\Request;
@@ -33,7 +31,7 @@ class UserController extends Controller
     public function index()
     {
         // Obtener usuarios con paginación
-        $users = User::paginate();
+        $users = User::all();
         // Obtener usuarios eliminados
         $deletedUsers = User::onlyTrashed()->get();
         // Obtener todos los departamentos
@@ -47,8 +45,7 @@ class UserController extends Controller
 
 
         // Retornar la vista 'user.index' con las variables necesarias
-        return view('user.index', compact('users', 'departamentos', 'deletedUsers', 'technicians', 'deletedTechnicians'))
-            ->with('i', (request()->input('page', 1) - 1) * $users->perPage());
+        return view('user.index', compact('users', 'departamentos', 'deletedUsers', 'technicians', 'deletedTechnicians'));
     }
 
     // Método para mostrar la vista de creación de un nuevo usuario

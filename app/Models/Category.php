@@ -13,10 +13,10 @@ class Category extends Model
 
     protected $table = 'categories';
 
-    protected $fillable = ['name', 'code', 'description', 'image']; // Campos en inglés
+    protected $fillable = ['name', 'code', 'description','type', 'image']; // Campos en inglés
 
     // Configurar los atributos que se registrarán
-    protected static $logAttributes = ['name', 'code', 'description', 'image'];
+    protected static $logAttributes = ['name', 'code', 'description','type', 'image'];
 
     // Puedes personalizar el nombre del registro de actividad
     protected static $logName = 'category';

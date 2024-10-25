@@ -31,6 +31,19 @@
             </div>
 
             <div class="mb-3">
+                <label for="description" class="form-label">TIPO:</label>
+                <select name="type" class="form-control" id="type" required>
+                    <option value="" disabled>Seleccione un tipo</option>
+                    <option value="Equipo" {{ $category->type == 'Equipo' ? 'selected' : '' }}>Equipo</option>
+                    <option value="Insumo" {{ $category->type == 'Insumo' ? 'selected' : '' }}>Insumo</option>
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, seleccione un tipo.
+                </div>
+            </div>
+
+
+            <div class="mb-3">
                 <label for="image" class="form-label">IMAGEN:</label>
                 <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage()">
                 <div class="invalid-feedback">

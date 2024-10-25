@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Assignment;
+
 use App\Models\Specialty;
 use App\Models\Technician;
 use App\Models\User;
+
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -61,6 +62,7 @@ class DatabaseSeeder extends Seeder
             'specialty_id' => 1, // Especialidad del técnico
             'available' => true, // Indica si el técnico está disponible
         ]);
+
 
       
 

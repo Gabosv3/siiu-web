@@ -306,16 +306,7 @@
             });
         });
 
-
-        // Manejo del cambio en el select de fabricante
-        $('#fabricante_id').on('change', function() {
-            let fabricanteId = $(this).val();
-            let fabricanteText = $(this).find('option:selected').text();
-
-            $('#addModeloBtn').prop('disabled', !fabricanteId);
-            $('#selectedFabricante').text(fabricanteText);
-            $('#fabricante_id_modelo').val(fabricanteId);
-
+        function cargarModelosPorFabricante(fabricanteId) {
             if (fabricanteId) {
                 $.ajax({
                     url: '/modelos/por-fabricante/' + fabricanteId,
@@ -336,11 +327,24 @@
                     }
                 });
             } else {
-                $('#selectedFabricante').text('');
-                $('#fabricante_id_modelo').val('');
                 $('#modelo_id').empty().append('<option value="" disabled selected>Seleccione un modelo</option>');
             }
+        }
+
+
+
+        $('#fabricante_id').on('change', function() {
+            let fabricanteId = $(this).val();
+            let fabricanteText = $(this).find('option:selected').text();
+
+            $('#addModeloBtn').prop('disabled', !fabricanteId);
+            $('#selectedFabricante').text(fabricanteText);
+            $('#fabricante_id_modelo').val(fabricanteId);
+
+            // Cargar modelos cuando el fabricante cambia
+            cargarModelosPorFabricante(fabricanteId);
         });
+
 
         // Manejo del formulario para crear un nuevo fabricante
         $('#createFabricanteForm').on('submit', function(e) {
@@ -352,7 +356,9 @@
                 method: 'POST',
                 data: {
                     _token: $('meta[name="csrf-token"]').attr('content'),
-                    nombre: nombre
+                    nombre: nombre,
+                    type: 'Equipo',
+
                 },
                 success: function(response) {
                     // Mensaje de éxito
@@ -364,7 +370,7 @@
                     });
 
                     // Cierra el modal
-                   
+
                     $('#createFabricanteModal').modal('hide');
                     $('#nuevo_fabricante_nombre').val('');
 
@@ -401,10 +407,7 @@
                     fabricante_id: fabricanteId
                 },
                 success: function(response) {
-                    $('#createModeloModal').modal('hide');
-                    $('#nuevo_modelo_nombre').val('');
-                    let newOption = new Option(response.nombre, response.id, true, true);
-                    $('#modelo_id').append(newOption).trigger('change');
+
 
                     Swal.fire({
                         title: '¡Éxito!',
@@ -412,6 +415,10 @@
                         icon: 'success',
                         confirmButtonText: 'Aceptar'
                     });
+
+                    $('#createModeloModal').modal('hide');
+                    $('#nuevo_modelo_nombre').val('');
+                    cargarModelosPorFabricante(fabricanteId);
                 },
                 error: function() {
                     Swal.fire({

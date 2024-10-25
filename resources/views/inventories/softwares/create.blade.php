@@ -85,7 +85,8 @@ $('#createFabricanteForm').on('submit', function(e) {
         method: 'POST',
         data: {
             _token: $('meta[name="csrf-token"]').attr('content'),
-            nombre: nombre
+            nombre: nombre,
+            type: 'Software',
         },
         success: function(response) {
             // Cierra el modal si es necesario
@@ -97,9 +98,7 @@ $('#createFabricanteForm').on('submit', function(e) {
             // Crea una nueva opción para el select de fabricantes
             let newOption = new Option(response.nombre, response.id, true, true); // Suponiendo que tu respuesta tiene 'nombre' y 'id'
             $('#fabricante_id').append(newOption).trigger('change'); // Asegúrate de que el ID del select sea correcto
-            console.error(xhr.responseText); // Muestra el error en la consola
-            console.log(xhr.responseText);
-            console.log('si llega');
+           
             // Mensaje de éxito
             Swal.fire({
                 title: '¡Éxito!',

@@ -17,8 +17,13 @@
             <input type="text" class="form-control" value="{{ auth()->user()->departament->name }}" readonly>
         </div>
         <div class="col-md-8 col-sm-12 mb-3">
-            <label for="title" class="form-label">Título del Ticket</label>
-            <input type="text" class="form-control" id="title" name="title" required>
+            <label for="title" class="form-label">Problema del Ticket</label>
+            <select name="title" id="title" class="form-select">
+                    <option value="Computador No enciende">Computador No enciende</option>
+                    <option value="Problema de Carga">Problema de Carga</option>
+                    <option value="Problema de Conexión">Problema de Conexión</option>
+                    <option value="Problema de Red">Problema de Red</option>
+            </select>
         </div>
 
         <div class="col-md-8 col-sm-12 mb-3">

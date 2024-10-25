@@ -41,6 +41,14 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link {{ (Request::is('inventarios/suppliesforcategory*')  || Request::is('inventarios/supplies*') ? 'active' : '') }}" href="{{ url('inventarios/suppliesforcategory') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="fa fa-cart-plus ps-2 pe-2 text-center text-dark {{ (Request::is('inventarios/suppliesforcategory*') || Request::is('inventarios/supplies*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1">Insumos</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link {{ (Request::is('inventarios/softwares*') ? 'active' : '') }}" href="{{ url('inventarios/softwares') }}" id="btn-module-departamentos">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-list-alt ps-2 pe-2 text-center text-dark {{ (Request::is('inventarios/softwares*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
@@ -57,21 +65,14 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('shelves') ? 'active' : '') }}" href="{{ url('shelves') }}">
+        <a class="nav-link {{ (Request::is('inventarios/shelves') ? 'active' : '') }}" href="{{ url('inventarios/shelves') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-cubes ps-2 pe-2 text-center text-dark {{ (Request::is('shelves') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-cubes ps-2 pe-2 text-center text-dark {{ (Request::is('inventarios/shelves') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">estanterías</span>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
-          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-ellipsis-h ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
-          </div>
-          <span class="nav-link-text ms-1">Otros</span>
-        </a>
-      </li>
+      
       
       
       

@@ -22,6 +22,7 @@ use App\Http\Controllers\Modulos\ShelfController;
 use App\Http\Controllers\Modulos\UserController;
 use App\Http\Controllers\Modulos\SoftwareController;
 use App\Http\Controllers\Modulos\SpecialtyController;
+use App\Http\Controllers\Modulos\SupplyController;
 use App\Http\Controllers\Modulos\TechnicianController;
 use App\Http\Controllers\Modulos\TecnicoController;
 use App\Http\Controllers\Modulos\TicketController;
@@ -137,7 +138,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
 
     // Muestra las vistas relacionadas con inventarios de categorías.
     Route::get('inventarios', [CategoriesController::class, 'categoryViews'])->name('categories.views');
-
+    Route::get('inventarios/suppliesforcategory', [CategoriesController::class, 'categoryViewsForSupply'])->name('categoriessupply.views');
     // Restaura una categoría eliminada.
     Route::put('/categories/{category}/restore', [CategoriesController::class, 'restore'])->name('categories.restore');
 
@@ -197,6 +198,10 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     // Restaura una licencia eliminada.
     Route::put('/inventarios/licenses/{license}/restore', [LicenseController::class, 'restore'])->name('licenses.restore');
 
+    // Rutas CRUD para los insumos
+    Route::resource('inventarios/supplies', SupplyController::class);
+
+
     // Rutas CRUD para tickets.
     Route::resource('/tickets', TicketController::class);
     // Muestra la vista de tickets.
@@ -220,7 +225,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::get('/get-technicians/{specialty_id}', [AssignmentController::class, 'getTechniciansBySpecialty'])->name('get-technicians');
 
     // Rutas CRUD para estanterías.
-    Route::get('/shelves', [ShelfController::class, 'index'])->name('shelves.index');
+    Route::get('inventarios/shelves', [ShelfController::class, 'index'])->name('shelves.index');
     Route::post('/shelves', [ShelfController::class, 'store'])->name('shelves.store');
     Route::post('/assign-hardware', [ShelfController::class, 'assignHardwareToPosition'])->name('assign.hardware');
     Route::post('/positions/store', [ShelfController::class, 'storePosition'])->name('positions.store');

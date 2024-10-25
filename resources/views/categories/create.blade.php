@@ -25,7 +25,19 @@
                 <label for="description" class="form-label">DESCRIPCION:</label>
                 <textarea class="form-control" id="description" name="description" required></textarea>
                 <div class="invalid-feedback">
-                Por favor, ingrese una descripción.
+                    Por favor, ingrese una descripción.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">TIPO:</label>
+                <select name="type" class="form-control" id="type" required>
+                    <option value="" disabled selected> Seleccione una tipo</option>
+                    <option value="Equipo">Equipo</option>
+                    <option value="Insumo">Insumo</option>
+
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, seleccione una tipo.
                 </div>
             </div>
 
@@ -33,7 +45,7 @@
                 <label for="image" class="form-label">IMAGEN:</label>
                 <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage()">
                 <div class="invalid-feedback">
-                Por favor, seleccione una imagen.
+                    Por favor, seleccione una imagen.
                 </div>
             </div>
             <div class="col-md-12 text-end">

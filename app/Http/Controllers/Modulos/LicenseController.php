@@ -11,6 +11,14 @@ use Illuminate\Http\Request;
 
 class LicenseController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:licencias.index')->only('index');
+        $this->middleware('can:licencias.create')->only('create', 'store');
+        $this->middleware('can:licencias.edit')->only('edit', 'update');
+        $this->middleware('can:licencias.destroy')->only('destroy');
+        $this->middleware('can:licencias.restore')->only('restore');
+    }
     //
     // Mostrar todas las licencias
     public function index(Request $request)

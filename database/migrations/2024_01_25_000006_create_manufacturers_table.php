@@ -16,6 +16,7 @@ class CreateManufacturersTable extends Migration
         Schema::create('manufacturers', function (Blueprint $table) {
             $table->id(); // Clave primaria: id
             $table->string('name'); // Nombre del fabricante
+            $table->string('type'); // Descripción del fabricante (opcional)
             $table->timestamps(); // Timestamps para created_at y updated_at
         });
     }

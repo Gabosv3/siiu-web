@@ -69,6 +69,8 @@ class RoleSeeder extends Seeder
             'General' => [
                 ['name' => 'dashboard', 'description' => 'Ver Dashboard', 'roles' => ['SuperAdmin', 'Administrador']],
                 ['name' => 'Mantenimiento', 'description' => 'Ver Mantenimiento', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'Inventarios', 'description' => 'Ver Inventarios', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'Historial', 'description' => 'Ver Historial', 'roles' => ['SuperAdmin', 'Administrador']],
             ],
             'Técnicos' => [
                 ['name' => 'technicians.index', 'description' => 'Ver Técnicos', 'roles' => ['SuperAdmin', 'Administrador']],
@@ -83,6 +85,48 @@ class RoleSeeder extends Seeder
                 ['name' => 'hardware.edit', 'description' => 'Editar Hardware', 'roles' => ['SuperAdmin']],
                 ['name' => 'hardware.destroy', 'description' => 'Eliminar Hardware', 'roles' => ['SuperAdmin']],
                 ['name' => 'hardware.restore', 'description' => 'Restaurar Hardware', 'roles' => ['SuperAdmin']],
+            ],'Softwares' => [
+                ['name' => 'softwares.index', 'description' => 'Ver Softwares', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'softwares.create', 'description' => 'Crear Softwares', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'softwares.edit', 'description' => 'Editar Softwares', 'roles' => ['SuperAdmin']],
+                ['name' => 'softwares.destroy', 'description' => 'Eliminar Softwares', 'roles' => ['SuperAdmin']],
+                ['name' => 'softwares.restore', 'description' => 'Restaurar Softwares', 'roles' => ['SuperAdmin']],
+            ],'Licencias' => [
+                ['name' => 'licencias.index', 'description' => 'Ver Licencias', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'licencias.create', 'description' => 'Crear Licencias', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'licencias.edit', 'description' => 'Editar Licencias', 'roles' => ['SuperAdmin']],
+                ['name' => 'licencias.destroy', 'description' => 'izar Licencias', 'roles' => ['SuperAdmin']],
+                ['name' => 'licencias.restore', 'description' => 'Restaurar Licencias', 'roles' => ['SuperAdmin']],
+            ],'Insumos' => [
+                ['name' => 'supply.index', 'description' => 'Ver Insumos', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'supply.create', 'description' => 'Crear Insumos', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'supply.edit', 'description' => 'Editar Insumos', 'roles' => ['SuperAdmin']],
+                ['name' => 'supply.destroy', 'description' => 'Eliminar Insumos', 'roles' => ['SuperAdmin']],
+                ['name' => 'supply.restore', 'description' => 'Restaurar Insumos', 'roles' => ['SuperAdmin']],
+            ],'Estanterias' => [
+                ['name' => 'estanterias.index', 'description' => 'Ver Estanterias', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'estanterias.create', 'description' => 'Crear Estanterias', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'estanterias.edit', 'description' => 'Editar Estanterias', 'roles' => ['SuperAdmin']],
+                ['name' => 'estanterias.destroy', 'description' => 'Eliminar Estanterias', 'roles' => ['SuperAdmin']],
+                ['name' => 'estanterias.restore', 'description' => 'Restaurar Estanterias', 'roles' => ['SuperAdmin']],
+            ],'Asignaciones' => [
+                ['name' => 'asignar.index', 'description' => 'Ver Asignaciones', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'asignar.create', 'description' => 'Crear Asignaciones', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'asignar.edit', 'description' => 'Editar Asignaciones', 'roles' => ['SuperAdmin']],
+                ['name' => 'asignar.destroy', 'description' => 'Eliminar Asignaciones', 'roles' => ['SuperAdmin']],
+                ['name' => 'asignar.restore', 'description' => 'Restaurar Asignaciones', 'roles' => ['SuperAdmin']],
+            ],'Tickets' => [
+                ['name' => 'tickets.index', 'description' => 'Ver Tickets', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'tickets.create', 'description' => 'Crear Tickets', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'tickets.edit', 'description' => 'Editar Tickets', 'roles' => ['SuperAdmin']],
+                ['name' => 'tickets.destroy', 'description' => 'Eliminar Tickets', 'roles' => ['SuperAdmin']],
+                ['name' => 'tickets.restore', 'description' => 'Restaurar Tickets', 'roles' => ['SuperAdmin']],
+            ],'Tickets de Soporte' => [
+                ['name' => 'support_tickets.index', 'description' => 'Ver Tickets de Soporte', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'support_tickets.create', 'description' => 'Crear Tickets de Soporte', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'support_tickets.edit', 'description' => 'Editar Tickets de Soporte', 'roles' => ['SuperAdmin']],
+                ['name' => 'support_tickets.destroy', 'description' => 'Eliminar Tickets de Soporte', 'roles' => ['SuperAdmin']],
+                ['name' => 'support_tickets.restore', 'description' => 'Restaurar Tickets de Soporte', 'roles' => ['SuperAdmin']],
             ],
         ];
 
@@ -105,11 +149,13 @@ class RoleSeeder extends Seeder
             [
                 'name' => 'Computadora',
                 'description' => 'Computadoras de escritorio',
+                'type' => 'Equipo',
                 'image' => '/storage/categories/37D4HL6kLBPdERxY4stskrhVDgFqQ305aOIUb6iC.jpg' // Imagen que ya existe
             ],
             [
                 'name' => 'Laptop',
                 'description' => 'Laptops de escritorio',
+                'type' => 'Equipo',
                 'image' => '/storage/categories/37D4HL6kLBPdERxY4stskrhVDgFqQ305aOIUb6iC.jpg' // Imagen que ya existe
             ],
            

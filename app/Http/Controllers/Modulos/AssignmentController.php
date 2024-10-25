@@ -13,6 +13,15 @@ class AssignmentController extends Controller
 {
     //
 
+    public function __construct()
+    {
+        // Middleware para verificar permisos antes de ejecutar métodos específicos
+        $this->middleware('can:asignar.index')->only('index','showAssignForm');
+        $this->middleware('can:asignar.create')->only('assign');
+        $this->middleware('can:asignar.edit')->only('edit', 'update');
+        $this->middleware('can:asignar.destroy')->only('destroy');
+    }
+
     public function index()
     {
         return view('components.calendar');
