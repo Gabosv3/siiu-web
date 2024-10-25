@@ -145,25 +145,7 @@ class RoleSeeder extends Seeder
         }
 
         // Crear categorías con imágenes ya existentes en la carpeta pública
-        $categories = [
-            [
-                'name' => 'Computadora',
-                'description' => 'Computadoras de escritorio',
-                'type' => 'Equipo',
-                'image' => '/storage/categories/37D4HL6kLBPdERxY4stskrhVDgFqQ305aOIUb6iC.jpg' // Imagen que ya existe
-            ],
-            [
-                'name' => 'Laptop',
-                'description' => 'Laptops de escritorio',
-                'type' => 'Equipo',
-                'image' => '/storage/categories/37D4HL6kLBPdERxY4stskrhVDgFqQ305aOIUb6iC.jpg' // Imagen que ya existe
-            ],
-           
-        ];
 
-        foreach ($categories as $categoryData) {
-            Category::create($categoryData);
-        }
 
         
     }
