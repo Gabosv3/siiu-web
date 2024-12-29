@@ -107,6 +107,68 @@ class RoleController extends Controller
         return redirect()->route('role.index')->with('Actualizado', 'SI');
     }
 
+    public function updateName(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|unique:roles,name,' . $id,
+        ], [
+            'name.required' => 'El Role es requerido',
+            'name.unique' => 'El Role ya ha sido usado',
+        ]);
+
+        $role = Role::findOrFail($id);
+        $role->name = $request->name;
+        $role->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function updatePermission(Request $request, $id)
+    {
+        $request->validate([
+            'permission_id' => 'nullable|exists:permissions,id',
+            'group' => 'nullable|string',
+            'is_checked' => 'required|boolean',
+        ], [
+            'permission_id.exists' => 'El permiso seleccionado no existe.',
+            'group.string' => 'El campo "group" debe ser una cadena de texto.',
+            'is_checked.boolean' => 'El campo "is_checked" debe ser un booleano.',
+            
+        ]);
+
+        $role = Role::findOrFail($id);
+
+        if ($request->permission_id) {
+            if ($request->is_checked) {
+                $role->givePermissionTo($request->permission_id);
+            } else {
+                $role->revokePermissionTo($request->permission_id);
+            }
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function clone(Request $request, $roleId)
+    {
+        // Encontrar el rol original
+        $role = Role::findOrFail($roleId);
+    
+        // Clonar el rol
+        $newRole = $role->replicate();
+        $newRole->name = $request->input('name');  // Asignar el nuevo nombre
+        $newRole->save();
+    
+        // Clonar los permisos asociados
+        $rolePermissions = $role->permissions;
+        $newRole->permissions()->sync($rolePermissions);
+    
+        return response()->json([
+            'message' => 'Rol clonado con éxito',
+            'role' => $newRole
+        ]);
+    }
+
     // Método para eliminar un rol
     public function destroy($id)
     {

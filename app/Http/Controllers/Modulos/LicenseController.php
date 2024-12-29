@@ -28,7 +28,7 @@ class LicenseController extends Controller
         $software_id = $request->input('software_id');
 
         // Obtiene todos los softwares para el dropdown
-        $softwares = Software::all();
+        $softwares = Software::where('type', 'paid')->get();
 
         if ($software_id) {
             // Obtiene el software correspondiente
@@ -62,10 +62,10 @@ class LicenseController extends Controller
         $request->validate([
             'software_id' => 'required|exists:softwares,id',
             'license_key.*' => 'required|string|unique:licenses,license_key',
+            'max_licenses.*' => 'nullable|integer',
             'purchase_date' => 'nullable|date',
             'expiration_date' => 'nullable|date|after_or_equal:purchase_date',
             'status' => 'required|string',
-            'hardware_id' => 'nullable|exists:hardwares,id',
         ], [
             'software_id.exists' => 'El software no existe.',
             'license_key.unique' => 'La clave de licencia ya existe.',
@@ -81,10 +81,10 @@ class LicenseController extends Controller
             License::create([
                 'software_id' => $request->software_id,
                 'license_key' => $license_key,
+                'max_licenses' => $request->max_licenses,
                 'purchase_date' => $request->purchase_date,
                 'expiration_date' => $request->expiration_date,
                 'status' => $request->status,
-                'hardware_id' => $request->hardware_id ?? null,
             ]);
         }
 

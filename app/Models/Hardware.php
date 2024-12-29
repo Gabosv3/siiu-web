@@ -15,8 +15,6 @@ class Hardware extends Model
 
     protected $fillable = [
         'category_id',
-        'user_id',
-        'departament_id',
         'manufacturer_id',
         'model_id',
         'name',
@@ -26,15 +24,13 @@ class Hardware extends Model
         'serial_number',
         'warranty_expiration_date',
         'barcode_path'
-        
-       
+
+
     ];
 
     // Configurar los atributos que se registrarán
     protected static $logAttributes = [
         'category_id',
-        'user_id',
-        'departament_id',
         'manufacturer_id',
         'model_id',
         'name',
@@ -78,9 +74,18 @@ class Hardware extends Model
         return $this->belongsTo(Models::class);
     }
 
+    public function hardwareAssigned()
+    {
+        return $this->hasOne(HardwareAssignment::class);
+    }
+
+    public function equipmentHistories()
+    {
+        return $this->hasMany(EquipmentHistory::class);
+    }
     // Relación muchos a muchos con los sistemas asignados
-   
-    
+
+
     // Relación con las licencias
- 
+
 }

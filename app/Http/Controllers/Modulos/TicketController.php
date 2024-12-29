@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Modulos;
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\Ticket;
+use App\Models\Title;
 use App\Models\User;
 use App\Notifications\TicketNotification;
 use Illuminate\Http\Request;
@@ -15,33 +16,34 @@ class TicketController extends Controller
     public function index()
     {
         $tickets = Ticket::where('user_id', auth()->id())->get();
+
         return view('tickets.index', compact('tickets'));
     }
 
     public function crearTicketindex()
     {
-
-        return view('tickets.users.create');
+        $titles = Title::all();
+        return view('tickets.users.create', compact('titles'));
     }
     public function createTicket(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title_id' => 'required|exists:titles,id',
             'description' => 'required|string',
         ]);
 
         $ticket = Ticket::create([
             'user_id' => auth()->id(), // El usuario actual que crea el ticket
-            'title' => $request->input('title'),
+            'title_id' => $request->input('title_id'),
             'description' => $request->input('description'),
             'status' => 'abierto', // El ticket se crea con estado 'abierto'
         ]);
 
-         // Obtener el usuario que creó el ticket
-         $user = User::find(auth()->id()); // Obtén el usuario actual
+        // Obtener el usuario que creó el ticket
+        $user = User::find(auth()->id()); // Obtén el usuario actual
 
-         // Enviar la notificación al usuario que creó el ticket
-         $user->notify(new TicketNotification($ticket));
+        // Enviar la notificación al usuario que creó el ticket
+        $user->notify(new TicketNotification($ticket));
 
         return redirect()->back()->with('success', 'Ticket creado exitosamente.');
     }

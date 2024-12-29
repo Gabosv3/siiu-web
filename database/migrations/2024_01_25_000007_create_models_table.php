@@ -18,10 +18,9 @@ class CreateModelsTable extends Migration
 
             // Llave foránea que referencia a la tabla 'fabricantes'
             $table->foreignId('manufacturer_id')->constrained('manufacturers')->onDelete('cascade'); // Elimina en cascada si se elimina el fabricante
-
             $table->string('name'); // Nombre del modelo
-
             $table->timestamps(); // Timestamps para created_at y updated_at
+            $table->softDeletes(); // Agrega la columna 'deleted_at'
         });
     }
 

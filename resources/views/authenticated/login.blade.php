@@ -25,7 +25,7 @@
                   <!-- Campo de correo electrónico -->
                   <label>Correo</label>
                   <div class="mb-3">
-                    <input name="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                    <input name="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ old('email', request()->cookie('remember_email')) }}">
                     @error('email')
                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                     @enderror
@@ -33,15 +33,15 @@
                   <!-- Campo de contraseña -->
                   <label>Contraseña</label>
                   <div class="mb-3">
-                    <input name="password" type="password" class="form-control" id="exampleInputPassword1" required>
+                    <input name="password" type="password" class="form-control" id="exampleInputPassword1" value="{{ old('password', request()->cookie('remember_password')) }}">
                     @error('password')
                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                     @enderror
                   </div>
                   <!-- Checkbox para recordar la contraseña -->
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="rememberMe" checked="">
-                    <label class="form-check-label" for="rememberMe">Recordar contraseña</label>
+                    <input class="form-check-input" type="checkbox" id="remember" name="remember" {{ request()->cookie('remember_email') ? 'checked' : '' }}>
+                    <label class="form-check-label" for="remember">Recordar sesión</label>
                   </div>
 
                   <!-- Mensaje de error para credenciales inválidas -->
@@ -85,6 +85,7 @@
 </main>
 
 
+
 <!-- Mostrar mensaje de estado -->
 @if (session('status'))
 <script>
@@ -100,23 +101,31 @@
 
 @if (session()->has('success'))
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
   Swal.fire({
     icon: 'success',
     title: 'Sesión cerrada correctamente',
     showConfirmButton: true,
-  })
+  });
+  });
 </script>
 @endif
 @error('invalid_credentials')
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
   Swal.fire({
     icon: 'error',
     title: 'Oops...',
     text: 'Usuario y contraseña invalida',
 
   })
+  });
 </script>
 @enderror
-
+@if(session('message'))
+    <div class="alert alert-warning">
+        {{ session('message') }}
+    </div>
+@endif
 
 @endsection

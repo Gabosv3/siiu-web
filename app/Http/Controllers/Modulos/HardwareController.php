@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Modulos;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Departament;
+use App\Models\EquipmentHistory;
 use App\Models\Hardware;
 use App\Models\Manufacturer;
 use App\Models\Models;
@@ -134,7 +135,9 @@ class HardwareController extends Controller
 
     public function show(Hardware $hardware)
     {
-        return view('inventario.hardware.show', compact('hardware'));
+        $histories = EquipmentHistory::where('hardware_id', $hardware->id)->get();
+        $users = User::with('personalInformation', 'departament')->get();
+        return view('inventories.hardwares.show', compact('hardware', 'users', 'histories'));
     }
 
     public function edit(Hardware $hardware)
@@ -156,4 +159,12 @@ class HardwareController extends Controller
 
         return redirect()->route('hardwares.index')->with('success', 'Hardware eliminado exitosamente.');
     }
+
+    public function restore(Hardware $hardware)
+    {
+        $hardware->restore();
+
+        return redirect()->route('hardwares.index')->with('success', 'Hardware restaurado exitosamente.');
+    }
+    
 }

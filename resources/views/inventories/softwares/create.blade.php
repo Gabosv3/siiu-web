@@ -1,7 +1,7 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-<div class="container">
+<div class="container card" style="height-min: 75vh ;">
     <h1>Agregar Nuevo Software</h1>
 
     <form action="{{ route('softwares.store') }}" method="POST">
@@ -33,10 +33,17 @@
             <input type="text" name="version" class="form-control" required>
         </div>
         <div class="form-group">
+            <label for="serial_number">Tipo</label>
+            <select name="type" class="form-control">
+                <option value="free">Gratis</option>
+                <option value="paid">Pagado</option>
+            </select>
+        </div>
+        <div class="form-group">
             <label for="description">Descripción</label>
             <textarea name="description" class="form-control"></textarea>
         </div>
-        <button type="submit" class="btn btn-success">Guardar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
     </form>
 </div>
 

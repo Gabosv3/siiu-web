@@ -98,7 +98,7 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js'></script>
-
+  <script src="https://kit.fontawesome.com/8a453a31e6.js" crossorigin="anonymous"></script>
   <!-- Pusher JS -->
 
   <!-- Additional JS (if any) -->
@@ -122,7 +122,7 @@
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
   </script>
-
+  @if(Auth::check())
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const dropdownMenuButton = document.getElementById('dropdownMenuButton');
@@ -221,7 +221,7 @@
         .catch(error => console.error('Error fetching notifications:', error));
     });
   </script>
-
+  @endif
 
 
 

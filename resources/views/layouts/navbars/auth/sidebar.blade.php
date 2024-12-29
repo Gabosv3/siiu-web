@@ -143,14 +143,22 @@
       @endcan
       @can('Historial')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('') ? 'active' : '') }}" href="{{ url('') }}">
+        <a class="nav-link {{ (Request::is('escaneo') ? 'active' : '') }}" href="{{ url('escaneo') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-history ps-2 pe-2 text-center text-dark {{ (Request::is('') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-barcode ps-2 pe-2 text-center text-dark {{ (Request::is('escaneo') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
-          <span class="nav-link-text ms-1">Historial</span>
+          <span class="nav-link-text ms-1">Escanear</span>
         </a>
       </li>
       @endcan
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('reportes') ? 'active' : '') }}" href="{{ url('reportes') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="fa fa-bar-chart ps-2 pe-2 text-center text-dark {{ (Request::is('reportes') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1">reportes</span>
+        </a>
+      </li>
       <li class="nav-item mt-3">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Tu cuenta </h6>
       </li>

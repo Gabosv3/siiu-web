@@ -9,7 +9,7 @@
             <img src="https://cdn-icons-png.flaticon.com/512/5151/5151145.png" width="200px" alt="Icono de Roles">
             <h3 class="center">ROLES</h3>
         </div>
-        
+
         <!-- Botón para abrir el modal para crear un nuevo rol, solo visible para usuarios con el permiso -->
         <div class="col-md-6 d-flex justify-content-center align-items-center">
             @can('role.create')
@@ -90,7 +90,7 @@
                             @if($role->name !== 'SuperAdmin')
                             <!-- Botón para editar el rol (visible solo para usuarios con permiso) -->
                             @can('role.edit')
-                            <a title="Editar rol"  href="{{ route('role.edit', $role->id) }}" class="btn btn-green-600 mb-3" id="btn-redireccionar-editar-rol"><i class='bx bxs-edit-alt'></i></a>
+                            <a title="Editar rol" href="{{ route('role.edit', $role->id) }}" class="btn btn-green-600 mb-3" id="btn-redireccionar-editar-rol"><i class='bx bxs-edit-alt'></i></a>
                             @endcan
                             <!-- Botón para eliminar el rol (visible solo para usuarios con permiso) -->
                             @can('role.destroy')
@@ -100,6 +100,13 @@
                                 <button title="Eliminar rol" class="btn btn-red-800"><i class='bx bxs-trash' id="btn-eliminar-rol"></i></button>
                             </form>
                             @endcan
+                            <button title="Clonar rol" class="btn btn-info mb-3 btn-clonar-rol"
+                                data-role-id="{{ $role->id }}"
+                                data-role-name="{{ $role->name }}"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalClonarRol">
+                                <i class='bx bxs-copy'></i>
+                            </button>
                             @else
                             <!-- Botones desactivados o no visibles para el rol "SuperAdmin" -->
                             <button class="btn btn-green-600 mb-3" disabled><i class='bx bxs-edit-alt'></i></button>
@@ -146,6 +153,34 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Clonar Rol -->
+<div class="modal fade" id="modalClonarRol" tabindex="-1" aria-labelledby="modalClonarRolLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalClonarRolLabel">Clonar Rol</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-clonar-rol">
+                    @csrf
+                    <!-- Campo oculto para el ID del rol -->
+                    <input type="hidden" id="role-id" name="role-id">
+                    <!-- Campo para el nombre del nuevo rol -->
+                    <div class="mb-3">
+                        <label for="role-name" class="form-label">Nuevo Nombre del Rol</label>
+                        <input type="text" class="form-control" id="role-name" name="name" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" id="btn-clonar-modal" class="btn btn-primary">Clonar</button>
+            </div>
         </div>
     </div>
 </div>
@@ -199,6 +234,40 @@
 </script>
 @endif
 @endforeach
+
+<script>
+    $(document).on('click', '.btn-clonar-rol', function() {
+        var roleId = $(this).data('role-id'); // Obtener el ID del rol
+        var roleName = $(this).data('role-name'); // Obtener el nombre del rol
+
+        // Completar el campo del modal con el nombre del rol
+        $('#role-name').val(roleName);
+        $('#role-id').val(roleId);
+    });
+
+    // Código para enviar el formulario del modal al backend
+    $('#btn-clonar-modal').on('click', function() {
+        var roleId = $('#role-id').val(); // Obtener el ID desde el input oculto
+        var roleName = $('#role-name').val(); // Obtener el nombre desde el input del modal
+
+        $.ajax({
+            url: '/role/' + roleId + '/clone', // Ruta para clonar el rol
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                name: roleName
+            },
+            success: function(response) {
+                alert('Rol clonado con éxito');
+                $('#modalClonarRol').modal('hide');
+                location.reload(); // Recargar la página o actualizar la lista
+            },
+            error: function(xhr) {
+                alert('Error al clonar el rol');
+            }
+        });
+    });
+</script>
 
 
 @endsection

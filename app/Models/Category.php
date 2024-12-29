@@ -38,4 +38,11 @@ class Category extends Model
     {
         return $this->hasMany(Hardware::class); // Relación con el modelo Hardware
     }
+    
+    public function equipments()
+{
+    return $this->hasMany(Hardware::class, 'category_id');
+}
+
+
 }

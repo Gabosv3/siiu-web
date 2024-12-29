@@ -37,7 +37,11 @@
                             <td>{{ $software->software_name }}</td>
                             <td>{{ $software->version }}</td>
                             <td>{{ $software->manufacturer->name }}</td>
+                            @if($software->type == 'free')
+                            <td>No usa licencia</td>
+                            @else
                             <td><a title="Ver Licencias" href="{{ route('licenses.index', ['software_id' => $software->id]) }}" class="btn btn-cyan-800"><i class="fa fa-key"></i></a></td>
+                            @endif
                             <td>
                                 <a href="{{ route('softwares.show', $software->id) }}" title="Ver Software" class="btn btn-cyan-800"><i class="bx bxs-show"></i></a>
                                 <a title="Editar Software" href="{{ route('softwares.edit', $software->id) }}" class="btn btn-green-600"><i class='bx bxs-edit-alt'></i></a>
@@ -94,29 +98,29 @@
 <script src="{{ asset('assets/js/Tablas/tablas.js') }}"></script> <!-- Cargar scripts de tablas -->
 
 @if (session('success')) <!-- Mostrar mensaje de opción si hay un estado en la sesión -->
-    <script>
-        $(document).ready(function() {
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: "{{ session('success') }}", // Muestra el mensaje de sesión
-                timer: 3000,
-                showConfirmButton: false
-            });
+<script>
+    $(document).ready(function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: "{{ session('success') }}", // Muestra el mensaje de sesión
+            timer: 3000,
+            showConfirmButton: false
         });
-    </script>
+    });
+</script>
 @elseif (session('error'))
-    <script>
-        $(document).ready(function() {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: "{{ session('warning') }}", // Muestra el mensaje de sesión
-                timer: 3000,
-                showConfirmButton: false
-            });
+<script>
+    $(document).ready(function() {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "{{ session('warning') }}", // Muestra el mensaje de sesión
+            timer: 3000,
+            showConfirmButton: false
         });
-    </script>
+    });
+</script>
 @endif
 
 

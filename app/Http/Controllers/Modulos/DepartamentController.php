@@ -46,6 +46,17 @@ class DepartamentController extends Controller
             'manager' => 'required|exists:users,id', // El encargado es obligatorio y debe existir en la tabla 'users'
             'latitude' => 'nullable|numeric', // La latitud es opcional y debe ser numérica
             'longitude' => 'nullable|numeric', // La longitud es opcional y debe ser numérica
+        ],
+        [
+            'name.required' => 'El nombre del departamento es requerido.',
+            'code.required' => 'El código del departamento es requerido.',
+            'code.unique' => 'El código del departamento ya existe.',
+            'code.numeric' => 'El código del departamento debe ser numérico.',
+            'description.required' => 'La descripción del departamento es requerida.',
+            'manager.required' => 'El encargado del departamento es requerido.',
+            'manager.exists' => 'El encargado seleccionado no es valido.',
+            'latitude.numeric' => 'La latitud debe ser numérica.',
+            'longitude.numeric' => 'La longitud debe ser numérica.',
         ]);
     
         // Obtener el nombre del encargado si se proporciona un ID
@@ -101,6 +112,17 @@ class DepartamentController extends Controller
             'manager' => 'required|exists:users,id', // El encargado es obligatorio y debe existir en la tabla 'users'
             'latitude' => 'nullable|numeric', // La latitud es opcional y debe ser numérica
             'longitude' => 'nullable|numeric', // La longitud es opcional y debe ser numérica
+        ],
+        [
+            'name.required' => 'El nombre del departamento es requerido.',
+            'code.required' => 'El código del departamento es requerido.',
+            'code.unique' => 'El código del departamento ya existe.',
+            'code.numeric' => 'El código del departamento debe ser numérico.',
+            'description.required' => 'La descripción del departamento es requerida.',
+            'manager.required' => 'El encargado del departamento es requerido.',
+            'manager.exists' => 'El encargado seleccionado no es valido.',
+            'latitude.numeric' => 'La latitud debe ser numérica.',
+            'longitude.numeric' => 'La longitud debe ser numérica.',
         ]);
     
         $inChargeName = null;

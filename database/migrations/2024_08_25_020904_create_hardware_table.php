@@ -17,8 +17,6 @@ class CreateHardwareTable extends Migration
             $table->id(); // Clave primaria: id
         
             $table->foreignId('category_id')->constrained('categories'); // Llave foránea con la tabla 'categorias'
-            $table->foreignId('user_id')->nullable()->constrained('users'); // Dueño (si está asignada)
-            $table->foreignId('departament_id')->nullable()->constrained('departaments'); // Ubicación (departamento)
             $table->foreignId('manufacturer_id')->constrained('manufacturers'); // Fabricante vinculado
             $table->foreignId('model_id')->constrained('models'); // Modelo vinculado al fabricante
         

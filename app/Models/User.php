@@ -67,9 +67,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(LoginSecurity::class);
     }
 
-    public function assignedHardware()
+    public function harwareAssigned()
     {
-        return $this->hasMany(Hardware::class, 'owner_id');
+        return $this->hasOne(HardwareAssignment::class);
     }
 
     public function technician()

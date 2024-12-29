@@ -19,8 +19,8 @@ class CreateSoftwaresTable extends Migration
             // Información del software
             $table->string('software_name'); // Nombre del software
             $table->string('version'); // Versión del software
-           
             $table->text('description')->nullable(); // Descripción del software (opcional)
+            $table->enum('type', ['free', 'paid'])->default('free'); // Tipo de software
             $table->timestamps(); // Timestamps para created_at y updated_at
             $table->softDeletes(); // Agrega la columna 'deleted_at'
         });

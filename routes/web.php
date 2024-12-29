@@ -11,6 +11,7 @@ use App\Http\Controllers\Modulos\LoginSecurityController;
 use App\Http\Controllers\Modulos\PasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\CsvController;
+use App\Http\Controllers\Modulos\BarcodeController;
 use App\Http\Controllers\Modulos\CategoriesController;
 use App\Http\Controllers\Modulos\DepartamentController;
 use App\Http\Controllers\Modulos\FabricanteController;
@@ -18,25 +19,21 @@ use App\Http\Controllers\Modulos\HardwareController;
 use App\Http\Controllers\Modulos\LicenseController;
 use App\Http\Controllers\Modulos\ModeloController;
 use App\Http\Controllers\Modulos\NotificationController;
+use App\Http\Controllers\Modulos\ReportsController;
 use App\Http\Controllers\Modulos\ShelfController;
 use App\Http\Controllers\Modulos\UserController;
 use App\Http\Controllers\Modulos\SoftwareController;
 use App\Http\Controllers\Modulos\SpecialtyController;
 use App\Http\Controllers\Modulos\SupplyController;
 use App\Http\Controllers\Modulos\TechnicianController;
-use App\Http\Controllers\Modulos\TecnicoController;
 use App\Http\Controllers\Modulos\TicketController;
-use App\Models\Shelf;
-use App\Models\Ticket;
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
-use BotMan\BotMan\Drivers\DriverManager;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Mockery\Matcher\Not;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -68,7 +65,7 @@ Route::group(['middleware' => 'guest'], function () {
 Route::middleware('auth')->group(function () {
     // Muestra una notificación para verificar el correo si aún no está verificado.
     Route::get('/email/verify', function () {
-        return view('auth.verify-email');
+        return view('authenticated.verify-email');
     })->name('verification.notice');
 
     // Verifica el correo del usuario usando un enlace firmado.
@@ -116,13 +113,16 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::get('/user/{id}/one_edit', [UserController::class, 'one_edit'])->name('user.one_edit');
 
     // Actualiza un solo campo del usuario.
-    Route::match(['put', 'patch'], '/user/one_update/{user}', [UserController::class, 'one_update'])->name('user.one_update');
+    Route::match(['put', 'patch'], '/user/one_update/{user}', [UserController::class, 'oneUpdate'])->name('user.one_update');
 
     // Actualiza la contraseña del usuario.
     Route::post('/password/update', [PasswordController::class, 'update'])->name('password.update');
 
     // Rutas CRUD para el recurso de roles.
     Route::resource('role', RoleController::class);
+    Route::post('/role/{role}/clone', [RoleController::class, 'clone'])->name('role.storeClone');
+    Route::put('/roles/{id}/update-name', [RoleController::class, 'updateName']);
+    Route::put('/roles/{id}/update-permission', [RoleController::class, 'updatePermission']);
 
     // Restaura un rol eliminado.
     Route::put('/role/{role}/restore', [RoleController::class, 'restore'])->name('role.restore');
@@ -230,7 +230,10 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::post('/assign-hardware', [ShelfController::class, 'assignHardwareToPosition'])->name('assign.hardware');
     Route::post('/positions/store', [ShelfController::class, 'storePosition'])->name('positions.store');
 
+    Route::resource('inventarios/models', ModeloController::class);
+    Route::put('/inventarios/models/{modelos}/restore', [ModeloController::class, 'restore'])->name('models.restore');
 
+    Route::post('/assign-equipment', [AssignmentController::class, 'assignEquipment'])->name('assign.equipment');
 
     Route::match(['get', 'post'], '/botman', function () {
         $config = [];
@@ -259,6 +262,10 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
         // Procesar todas las interacciones
         $botman->listen();
     });
+
+    Route::get('/escaneo', [BarcodeController::class, 'index'])->name('procesar.index');
+    Route::post('inventarios/hardware/barcode', [BarcodeController::class, 'procesarCodigo'])->name('procesar.codigo');
+    Route::get('/reportes', [ReportsController::class, 'index'])->name('reportes');
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);

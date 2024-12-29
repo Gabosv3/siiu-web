@@ -99,7 +99,7 @@
                                             <div class="col-lg-3 col-md-4  mt-3">Departamento</div>
                                             <!-- Valor del departamento (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
-                                                {{ $user->departamento ? $user->departamento->nombre : 'No disponible' }}
+                                                {{ $user->departament ? $user->departament->name : 'No disponible' }}
                                             </div>
                                         </div>
 
@@ -112,8 +112,8 @@
                                             <div class="col-lg-3 col-md-4  mt-3">Nombre</div>
                                             <!-- Valor del nombre personal (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
-                                                @isset($user->informacionPersonal->nombres)
-                                                    {{ $user->informacionPersonal->nombres }}
+                                                @isset($user->personalInformation->first_name)
+                                                    {{ $user->personalInformation->first_name }}
                                                 @else
                                                     No disponible
                                                 @endisset
@@ -125,8 +125,8 @@
                                             <div class="col-lg-3 col-md-4  mt-3">Apellido</div>
                                             <!-- Valor del apellido personal (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
-                                                @isset($user->informacionPersonal->apellidos)
-                                                    {{ $user->informacionPersonal->apellidos }}
+                                                @isset($user->personalInformation->last_name)
+                                                    {{ $user->personalInformation->last_name }}
                                                 @else
                                                     No disponible
                                                 @endisset
@@ -138,8 +138,8 @@
                                             <div class="col-lg-3 col-md-4  mt-3">Fecha de nacimiento</div>
                                             <!-- Valor de la fecha de nacimiento (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
-                                                @isset($user->informacionPersonal->fecha_nacimiento)
-                                                    {{ $user->informacionPersonal->fecha_nacimiento }}
+                                                @isset($user->personalInformation->birth_date)
+                                                    {{ $user->personalInformation->birth_date }}
                                                 @else
                                                     No disponible
                                                 @endisset
@@ -151,8 +151,8 @@
                                             <div class="col-lg-3 col-md-4  mt-3">Género</div>
                                             <!-- Valor del género (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
-                                                @isset($user->informacionPersonal->genero)
-                                                    {{ $user->informacionPersonal->genero }}
+                                                @isset($user->personalInformation->gender)
+                                                    {{ $user->personalInformation->gender }}
                                                 @else
                                                     No disponible
                                                 @endisset
@@ -164,8 +164,8 @@
                                             <div class="col-lg-3 col-md-4  mt-3">DUI</div>
                                             <!-- Valor del DUI (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
-                                                @isset($user->informacionPersonal->dui)
-                                                    {{ $user->informacionPersonal->dui }}
+                                                @isset($user->personalInformation->dui)
+                                                    {{ $user->personalInformation->dui }}
                                                 @else
                                                     No disponible
                                                 @endisset
@@ -177,8 +177,8 @@
                                             <div class="col-lg-3 col-md-4  mt-3">Teléfono</div>
                                             <!-- Valor del teléfono (si está disponible) -->
                                             <div class="col-lg-9 col-md-8 mt-3 text-dark">
-                                                @isset($user->informacionPersonal->telefono)
-                                                    {{ $user->informacionPersonal->telefono }}
+                                                @isset($user->personalInformation->phone)
+                                                    {{ $user->personalInformation->phone }}
                                                 @else
                                                     No disponible
                                                 @endisset
@@ -223,79 +223,79 @@
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <!-- Fila: Nombres -->
+                                            <!-- Fila: first_name -->
                                             <div class="row mb-3">
-                                                <label for="nombres"
+                                                <label for="first_name"
                                                     class="col-md-4 col-lg-4 col-form-label">Nombres</label>
                                                 <div class="col-md-6 col-lg-6">
-                                                    <input name="nombres" type="text"
-                                                        class="form-control border-dark @error('nombres') is-invalid @enderror"
-                                                        id="nombres"
-                                                        value="{{ old('nombres', $user->informacionPersonal->nombres ?? '') }}"
-                                                        required minlength="6" pattern="[a-zA-Z]+"
+                                                    <input name="first_name" type="text"
+                                                        class="form-control border-dark @error('first_name') is-invalid @enderror"
+                                                        id="first_name"
+                                                        value="{{ old('first_name', $user->personalInformation->first_name ?? '') }}"
+                                                        required minlength="6" pattern="[a-zA-Z\s]+"
                                                         title="El nombre debe tener al menos 6 caracteres y solo letras.">
                                                     <div class="invalid-feedback">El nombre debe tener al menos 6
                                                         caracteres y solo puede contener letras.</div>
-                                                    @error('nombres')
+                                                    @error('first_name')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <!-- Fila: Apellidos -->
+                                            <!-- Fila: last_name -->
                                             <div class="row mb-3">
-                                                <label for="apellidos"
+                                                <label for="last_name"
                                                     class="col-md-4 col-lg-4 col-form-label">Apellidos</label>
                                                 <div class="col-md-6 col-lg-6">
-                                                    <input name="apellidos" type="text"
-                                                        class="form-control border-dark @error('apellidos') is-invalid @enderror"
-                                                        id="apellidos"
-                                                        value="{{ old('apellidos', $user->informacionPersonal->apellidos ?? '') }}"
-                                                        required minlength="6" pattern="[a-zA-Z]+"
+                                                    <input name="last_name" type="text"
+                                                        class="form-control border-dark @error('last_name') is-invalid @enderror"
+                                                        id="last_name"
+                                                        value="{{ old('last_name', $user->personalInformation->last_name ?? '') }}"
+                                                        required minlength="6" pattern="[a-zA-Z\s]+"
                                                         title="El apellido debe tener al menos 6 caracteres y solo letras.">
                                                     <div class="invalid-feedback">El apellido debe tener al menos 6
                                                         caracteres y solo puede contener letras.</div>
-                                                    @error('apellidos')
+                                                    @error('last_name')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <!-- Fila: Fecha de Nacimiento -->
                                             <div class="row mb-3">
-                                                <label for="fecha_nacimiento"
+                                                <label for="birth_date"
                                                     class="col-md-4 col-lg-4 col-form-label">Fecha de Nacimiento</label>
                                                 <div class="col-md-6 col-lg-6">
-                                                    <input name="fecha_nacimiento" type="date"
-                                                        class="form-control border-dark @error('fecha_nacimiento') is-invalid @enderror"
-                                                        id="fecha_nacimiento"
-                                                        value="{{ old('fecha_nacimiento', $user->informacionPersonal->fecha_nacimiento ?? '') }}"
+                                                    <input name="birth_date" type="date"
+                                                        class="form-control border-dark @error('birth_date') is-invalid @enderror"
+                                                        id="birth_date"
+                                                        value="{{ old('birth_date', $user->personalInformation->birth_date ?? '') }}"
                                                         required>
                                                     <div class="invalid-feedback">Debes tener al menos 16 años.</div>
-                                                    @error('fecha_nacimiento')
+                                                    @error('birth_date')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <!-- Fila: Género -->
                                             <div class="row mb-3">
-                                                <label for="genero"
+                                                <label for="gender"
                                                     class="col-md-4 col-lg-4 col-form-label">Género</label>
                                                 <div class="col-md-6 col-lg-6">
-                                                    <select name="genero"
-                                                        class="form-control border-dark @error('genero') is-invalid @enderror"
-                                                        id="genero" required>
+                                                    <select name="gender"
+                                                        class="form-control border-dark @error('gender') is-invalid @enderror"
+                                                        id="gender" required>
                                                         <option value="">Seleccione una opción</option>
                                                         <option value="Masculino"
-                                                            {{ old('genero', $user->informacionPersonal->genero ?? '') == 'Masculino' ? 'selected' : '' }}>
+                                                            {{ old('gender', $user->personalInformation->gender ?? '') == 'Masculino' ? 'selected' : '' }}>
                                                             Masculino</option>
                                                         <option value="Femenino"
-                                                            {{ old('genero', $user->informacionPersonal->genero ?? '') == 'Femenino' ? 'selected' : '' }}>
+                                                            {{ old('gender', $user->personalInformation->gender ?? '') == 'Femenino' ? 'selected' : '' }}>
                                                             Femenino</option>
                                                         <option value="Otro"
-                                                            {{ old('genero', $user->informacionPersonal->genero ?? '') == 'Otro' ? 'selected' : '' }}>
+                                                            {{ old('gender', $user->personalInformation->gender ?? '') == 'Otro' ? 'selected' : '' }}>
                                                             Otro</option>
                                                     </select>
                                                     <div class="invalid-feedback">Por favor, selecciona un género.</div>
-                                                    @error('genero')
+                                                    @error('gender')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
                                                 </div>
@@ -307,7 +307,7 @@
                                                     <input name="dui" type="text"
                                                         class="form-control border-dark @error('dui') is-invalid @enderror"
                                                         id="dui"
-                                                        value="{{ old('dui', $user->informacionPersonal->dui ?? '') }}"
+                                                        value="{{ old('dui', $user->personalInformation->dui ?? '') }}"
                                                         required pattern="\d{8}-\d"
                                                         title="El DUI debe tener el formato 00000000-0.">
                                                     <div class="invalid-feedback">El DUI debe tener el formato 00000000-0.
@@ -319,18 +319,18 @@
                                             </div>
                                             <!-- Fila: Teléfono -->
                                             <div class="row mb-3">
-                                                <label for="telefono"
+                                                <label for="phone"
                                                     class="col-md-4 col-lg-4 col-form-label">Teléfono</label>
                                                 <div class="col-md-6 col-lg-6">
-                                                    <input name="telefono" type="text"
-                                                        class="form-control border-dark @error('telefono') is-invalid @enderror"
-                                                        id="telefono"
-                                                        value="{{ old('telefono', $user->informacionPersonal->telefono ?? '') }}"
+                                                    <input name="phone" type="text"
+                                                        class="form-control border-dark @error('phone') is-invalid @enderror"
+                                                        id="phone"
+                                                        value="{{ old('phone', $user->personalInformation->phone ?? '') }}"
                                                         required pattern="\d{4}-\d{4}"
                                                         title="El teléfono debe tener el formato 0000-0000.">
                                                     <div class="invalid-feedback">El teléfono debe tener el formato
                                                         0000-0000.</div>
-                                                    @error('telefono')
+                                                    @error('phone')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
                                                 </div>

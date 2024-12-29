@@ -1,7 +1,7 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-<div class="row mb-3">
+<div class="container row mb-3">
 
     <div class="col-sm-4">
         {{-- Solo muestra el botón si existe una categoría válida --}}
@@ -41,7 +41,7 @@
                         <img src="{{ asset($hardware->category->image) }}" alt="{{ $hardware->category->name }}" style="width: 100px; height: 100px; object-fit: cover">
                     </div>
                     <div class="card-title">{{ $hardware->name }}
-                        <h4>{{ $hardware->inventory_code }} </h4>
+                        <h4><a href="{{ route('hardwares.show', $hardware) }}">{{ $hardware->inventory_code }} </a></h4>
                     </div>
                 </div>
                 <div class="card-body row text-center">

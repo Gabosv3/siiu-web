@@ -45,26 +45,54 @@
                     </div>
                     <div class="col-md-12 mb-3">
                         <label for="password" class="form-label">Contraseña</label>
-                        <input name="password" type="password" class="border-dark form-control @error('password') is-invalid @enderror" id="password" required>
-                        <input type="checkbox" onclick="togglePassword('password')"> <label for="text">mostrar contraseña</label>
+                        <div class="input-group">
+                            <input name="password" type="password"
+                                class="border-dark form-control @error('password') is-invalid @enderror"
+                                id="password"
+                                required>
+                            <span class="input-group-text border-dark" onclick="togglePassword('password')">
+                                <i class="fa fa-eye" id="togglePasswordIcon"></i>
+                            </span>
+                        </div>
                         @error('password')
                         <small class="text-danger mt-1"><strong>{{ $message }}</strong></small>
                         @enderror
                     </div>
+
                     <div class="col-md-12 mb-3">
                         <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>
-                        <input name="password_confirmation" type="password" class="border-dark form-control" id="password_confirmation" required>
-                        <input type="checkbox" onclick="togglePassword('password_confirmation')"> <label for="text">mostrar contraseña</label>
+                        <div class="input-group">
+                            <input name="password_confirmation" type="password"
+                                class="border-dark form-control"
+                                id="password_confirmation"
+                                required>
+                            <span class="input-group-text border-dark" onclick="togglePassword('password_confirmation')">
+                                <i class="fa fa-eye" id="togglePasswordIconConfirmation"></i>
+                            </span>
+                        </div>
                     </div>
+
                     <div class="form-group">
                         <label for="departament_id" class="form-label">Departamento:</label>
-                        <select class="form-control @error('departament_id') is-invalid @enderror js-select-departamento" id="departament_id" name="departament_id" required>
+                        <select class="form-control border-dark @error('departament_id') is-invalid @enderror js-select-departamento" id="departament_id" name="departament_id" required>
                             <option value="">Seleccione un departamento</option>
                             @foreach ($departamentos as $departamento)
                             <option value="{{ $departamento->id }}">{{ $departamento->name }}</option>
                             @endforeach
                         </select>
                         @error('departamento_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="role_id" class="form-label">Rol:</label>
+                        <select class="form-control border-dark @error('role_id') is-invalid @enderror" id="role_id" name="role_id" multiple="multiple" required>
+                            <option value="">Seleccione un rol</option>
+                            @foreach ($roles as $role)
+                            <option value="{{ $role->id }}">{{ $role->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('role_id')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -286,10 +314,18 @@
 
 <script>
     $(document).ready(function() {
-        $('.js-select-departamento').select2({
-            placeholder: "Seleccione un departamento",
-            theme: "bootstrap-5",
-            width: '100%',
+        function initializeSelect2(selector) {
+            $(selector).select2({
+                dropdownParent: $('#staticBackdrop'),
+                placeholder: "Seleccione una opción",
+                theme: "bootstrap-5",
+                width: '100%',
+            });
+        }
+
+        $('#staticBackdrop').on('shown.bs.modal', function() {
+            initializeSelect2('#departament_id');
+            initializeSelect2('#role_id');
         });
     });
 </script>

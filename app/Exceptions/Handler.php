@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Session\TokenMismatchException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -44,6 +45,11 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof AuthorizationException) {
             return response()->view('layouts.Errors.403', [], 403);
+        }
+
+        if ($exception instanceof TokenMismatchException) {
+            // Redirige al usuario a la página de inicio si el token CSRF ha expirado
+            return redirect()->route('login')->with('message', 'Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.');
         }
 
         return parent::render($request, $exception);

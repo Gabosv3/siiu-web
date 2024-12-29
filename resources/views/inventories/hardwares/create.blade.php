@@ -2,7 +2,7 @@
 
 @section('content')
 <!-- Formulario principal -->
-<div class="p-3">
+<div class="container p-3">
     <h3>Crear Activo</h3>
     <div class="card border border-dark p-3 my-3">
         <!-- Formulario de carga de CSV -->
@@ -23,7 +23,7 @@
     </div>
 
     <!-- Formulario para crear hardware -->
-    <form id="hardwareForm" action="{{ route('hardwares.store') }}" method="POST">
+    <form id="hardwareForm" action="{{ route('hardwares.store') }}" method="POST" autocomplete="off">
         @csrf
         <!-- Estado -->
         <div class="card border border-dark p-3 my-3">
@@ -120,12 +120,12 @@
                         <option value="inventory_code" selected>Código de Inventario</option>
                         <option value="serial_number" selected>Número de Serie</option>
                         <!-- Opciones adicionales -->
-                        <option value="location_id">Departamento</option>
+
                     </select>
                 </div>
                 <div class="col-lg-6 mb-3">
-                    <label for="numero_filas" class="form-label">Número de Filas</label>
-                    <input type="number" id="numero_filas" name="numero_filas" class="form-control" min="1" value="1">
+                    <label for="" class="form-label">Filas</label>
+                    <input type="number" id="numero_filas" name="filas" class="form-control" min="1" value="1" autocomplete="off">
                 </div>
                 <div class="col-lg-12 mb-3">
                     <button type="button" id="generateBtn" class="btn btn-primary">Generar Lista</button>

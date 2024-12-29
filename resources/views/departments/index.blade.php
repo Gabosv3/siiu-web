@@ -3,7 +3,16 @@
 @section('content')
 <h1>Departamentos/Secciones/Unidades</h1>
 
-<a href="{{ route('departaments.create') }}" class="btn bg-gradient-2 mb-3">Crear Departamento</a>
+<div class="row mb-3">
+    <div class="col-md-10 map-container" >
+        <div id="map" style="max-height: 400px;"></div>
+    </div>
+
+    <div class="col-md-2">
+        <a href="{{ route('departaments.create') }}" class="btn bg-gradient-2 mb-3">Crear Departamento</a>
+    </div>
+</div>
+
 
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -92,17 +101,82 @@
 <script src="{{ asset('assets/js/Tablas/tablas.js') }}"></script>
 
 @if (session('status')) <!-- Mostrar mensaje de éxito si hay un estado en la sesión -->
-    <script>
-        $(document).ready(function() {
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: "{{ session('status') }}", // Muestra el mensaje de sesión
-                timer: 3000,
-                showConfirmButton: false
-            });
+<script>
+    $(document).ready(function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: "{{ session('status') }}", // Muestra el mensaje de sesión
+            timer: 3000,
+            showConfirmButton: false
         });
-    </script>
+    });
+</script>
 @endif
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Coordenadas por defecto para centrar el mapa
+        var defaultLat = 13.43931902478275;
+        var defaultLng = -88.15837383270265;
+
+        // Inicializar el mapa
+        var map = L.map('map').setView([defaultLat, defaultLng], 16);
+
+        // Capas base
+        var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 18,
+            attribution: '© <a href="https://www.esri.com/en-us/arcgis/about-arcgis/overview">Esri</a>'
+        });
+
+        // Selector de capas
+        var baseMaps = {
+            "Map": osmLayer,
+            "Satellite": satelliteLayer
+        };
+        L.control.layers(baseMaps).addTo(map);
+
+        // Añadir marcadores para cada departamento
+        var departments = @json($departments); // Convertir datos desde Laravel a JSON
+
+        departments.forEach(function(department) {
+            if (department.latitude && department.longitude) {
+                var marker = L.marker([department.latitude, department.longitude]).addTo(map);
+
+                // Contenido del popup con opciones
+                var popupContent = `
+                    <div>
+                        <h5>${department.name}</h5>
+                        <p>Latitud: ${department.latitude}<br>Longitud: ${department.longitude}</p>
+                        <button onclick="navigateTo('${department.id}')">Ver Detalles</button>
+                        <button onclick="editDepartment('${department.id}')">Editar</button>
+                        <button onclick="EquiposDepartamento('${department.id}')">Equipos</button>
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent);
+            }
+        });
+
+        // Funciones para los botones
+        window.navigateTo = function(departmentId) {
+            window.location.href = `/departaments/${departmentId}`;
+        };
+
+        window.editDepartment = function(departmentId) {
+            window.location.href = `/departaments/${departmentId}/edit`;
+        };
+
+        window.EquiposDepartamento = function(departmentId) {
+            window.location.href = `/equipos/${departmentId}`;
+        };
+    });
+</script>
+
 
 @endsection

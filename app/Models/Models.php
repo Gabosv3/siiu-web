@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Models extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     // Especifica el nombre de la tabla
     protected $table = 'models';
@@ -35,5 +36,10 @@ class Models extends Model
     public function manufacturer()
     {
         return $this->belongsTo(Manufacturer::class); // Clave foránea con la tabla 'manufacturers'
+    }
+
+    public function modelCharacteristic()
+    {
+        return $this->hasMany(ModelCharacteristic::class);
     }
 }

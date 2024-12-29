@@ -30,12 +30,19 @@ class SoftwareController extends Controller
                 'manufacturer_id' => 'required|exists:manufacturers,id',
                 'software_name' => 'required|string|max:255',
                 'version' => 'required|string|max:255',
+                'type' => 'required|string|max:255',
                 'description' => 'nullable|string',
             ],
             [
                 'manufacturer_id.required' => 'El fabricante es obligatorio',
                 'software_name.required' => 'El nombre del software es obligatorio',
                 'version.required' => 'La versión es obligatoria',
+                'type.required' => 'El tipo es obligatorio',
+                'description.required' => 'La descripción es obligatoria',
+                'description.string' => 'La descripción debe ser una cadena de texto',
+                'type.string' => 'El tipo debe ser una cadena de texto',
+                'type.max' => 'El tipo no debe superar los 255 caracteres',
+                'description.max' => 'La descripción no debe superar los 65535 caracteres',
             ]
         );
 
@@ -57,19 +64,23 @@ class SoftwareController extends Controller
                 'manufacturer_id' => 'required|exists:manufacturers,id',
                 'software_name' => 'required|string|max:255',
                 'version' => 'required|string|max:255',
+                'type' => 'required|string|max:255',
                 'description' => 'nullable|string',
             ],
             [
                 'manufacturer_id.required' => 'El fabricante es obligatorio',
                 'software_name.required' => 'El nombre del software es obligatorio',
                 'version.required' => 'La versión es obligatoria',
+                'type.required' => 'El tipo es obligatorio',
+                'description.required' => 'La descripción es obligatoria',
+                'description.string' => 'La descripción debe ser una cadena de texto',
+                'type.string' => 'El tipo debe ser una cadena de texto',
+                'type.max' => 'El tipo no debe superar los 255 caracteres',
+                'description.max' => 'La descripción no debe superar los 65535 caracteres',
             ]
         );
 
         $software->update($validatedData);
-
-        // Registro en el log
-
 
         return redirect()->route('softwares.index')->with('success', 'Software actualizado exitosamente');
     }

@@ -1,5 +1,5 @@
 <?php 
 
 return [
-    'view' => 'Auth.2fa_verify',
+    'view' => 'authentication.2fa_verify',
 ];

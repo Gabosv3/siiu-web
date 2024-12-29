@@ -31,21 +31,25 @@ class UserController extends Controller
     public function index()
     {
         // Obtener usuarios con paginación
-        $users = User::all();
+        $users = User::withTrashed()->paginate(10); // Incluye los eliminados si es necesario
+    
         // Obtener usuarios eliminados
         $deletedUsers = User::onlyTrashed()->get();
+    
         // Obtener todos los departamentos
         $departamentos = Departament::all();
-
+    
         // Obtener técnicos disponibles
         $technicians = Technician::where('available', true)->with('user')->get();
-
+    
         // Obtener técnicos desactivados
         $deletedTechnicians = Technician::where('available', false)->with('user')->get();
-
-
+    
+        // Obtener todos los roles excepto "SuperAdmin"
+        $roles = Role::where('name', '!=', 'SuperAdmin')->get();
+    
         // Retornar la vista 'user.index' con las variables necesarias
-        return view('user.index', compact('users', 'departamentos', 'deletedUsers', 'technicians', 'deletedTechnicians'));
+        return view('user.index', compact('users', 'departamentos', 'deletedUsers', 'technicians', 'deletedTechnicians', 'roles'));
     }
 
     // Método para mostrar la vista de creación de un nuevo usuario
@@ -145,13 +149,13 @@ class UserController extends Controller
             'first_name' => 'required',
             'birth_date' => 'required|date',
             'gender' => 'required',
-            'dui' => 'required|unique:informacion_personals,dui,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
-            'phone' => 'required|unique:informacion_personals,phone,' . ($user->informacionPersonal ? $user->informacionPersonal->id : 'NULL') . ',user_id',
+            'dui' => 'required|unique:personal_informations,dui,' . ($user->personalInformation ? $user->personalInformation->id : 'NULL') . ',user_id',
+            'phone' => 'required|unique:personal_informations,phone,' . ($user->personalInformation ? $user->personalInformation->id : 'NULL') . ',user_id',
         ];
 
         // Agregar la regla de validación para departament_id si es necesario
         if ($validateDepartment) {
-            $rules['departament_id'] = 'required|exists:departamentos,id';
+            $rules['departament_id'] = 'required|exists:departaments,id';
         }
 
         // Mensajes de validación personalizados
@@ -189,7 +193,7 @@ class UserController extends Controller
 
         // Preparar los datos de información personal para actualizar
         $informacionPersonalData = $request->only('last_name', 'first_name', 'birth_date', 'gender', 'dui', 'phone');
-        $informacionPersonal = $user->informacionPersonal;
+        $informacionPersonal = $user->personalInformation;
         if ($informacionPersonal) {
             $informacionPersonal->update($informacionPersonalData);
         } else {

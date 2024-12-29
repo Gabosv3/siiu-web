@@ -72,6 +72,14 @@
           <span class="nav-link-text ms-1">estanterías</span>
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('inventarios/models*')  ? 'active' : '') }}" href="{{ url('inventarios/models') }}" id="btn-module-mantenimiento">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="fa-solid fa-shapes ps-2 pe-2 text-center text-dark {{ Request::is('inventarios/models*')  ? 'text-white' : 'text-dark' }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1">Modelos</span>
+        </a>
+      </li>
       
       
       

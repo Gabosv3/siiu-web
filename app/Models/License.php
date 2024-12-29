@@ -17,10 +17,10 @@ class License extends Model
     // Especifica los campos que se pueden asignar masivamente
     protected $fillable = [
         'software_id',// Clave primaria de la licencia
-        'hardware_id', // Clave foránea opcional a la tabla 'equipos'
         'license_key',// Clave de la licencia
         'purchase_date',// Fecha de compra de la licencia
         'expiration_date', // Fecha de expiración de la licencia
+        'max_devices', // Cantidad de equipos permitidos
         'status'// Estado de la licencia
     ];
 
@@ -30,6 +30,7 @@ class License extends Model
         'software_name',
         'purchase_date',
         'expiration_date',
+        'max_devices',
         'status',
     ];
 

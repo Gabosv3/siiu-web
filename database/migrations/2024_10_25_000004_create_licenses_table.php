@@ -18,12 +18,11 @@ class CreateLicensesTable extends Migration
             // Clave foránea a la tabla 'softwares'
             $table->foreignId('software_id')->constrained('softwares')->onDelete('cascade');
             // Clave foránea opcional a la tabla 'equipos'
-            $table->foreignId('hardware_id')->nullable()->constrained('hardware')->onDelete('set null');
             $table->string('license_key')->unique(); // Clave única de la licencia
             $table->date('purchase_date')->nullable(); // Fecha de compra de la licencia (opcional)
             $table->date('expiration_date')->nullable(); // Fecha de expiración de la licencia (opcional)
+            $table->integer('max_devices')->default(1);
             $table->string('status')->default('active'); // Estado de la licencia (por defecto es 'active')
-            
             $table->timestamps(); // Timestamps para created_at y updated_at
             $table->softDeletes(); // Agrega la columna 'deleted_at' para eliminaciones lógicas
         });

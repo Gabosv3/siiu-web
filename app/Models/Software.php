@@ -17,6 +17,7 @@ class Software extends Model
         'manufacturer_id',
         'software_name',
         'version',
+        'type',
         'description',
     ];
 
@@ -25,6 +26,7 @@ class Software extends Model
         'manufacturer_id',
         'software_name',
         'version',
+        'type',
         'description',
     ];
 

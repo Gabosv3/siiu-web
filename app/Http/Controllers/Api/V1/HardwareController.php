@@ -5,76 +5,88 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\HardwareResource;
 use App\Models\Hardware;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class HardwareController extends Controller
 {
-    public function index()
+    /**
+     * Muestra una lista de hardware con sus categorías.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
     {
-        $hardware = Hardware::with('category')->get();  // Cargar la categoría relacionada
-        return HardwareResource::collection($hardware);
-    }
-
-    public function show($id)
-    {
-        return new HardwareResource(Hardware::findOrFail($id));
-    }
-
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'categoria_id' => 'required|exists:categorias,id',
-            'conflictos' => 'nullable|string',
-            'estado' => 'required|string',
-            'user_id' => 'nullable|exists:users,id',
-            'ubicacion_id' => 'required|exists:departamentos,id',
-            'codigo_de_inventario' => 'required|string|unique:hardware,codigo_de_inventario',
-            'numero_de_serie' => 'required|string|unique:hardware,numero_de_serie',
-            'fabricante_id' => 'required|exists:fabricantes,id',
-            'modelo_id' => 'nullable|exists:modelos,id',
-            'sistemas_asignados' => 'nullable|json',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+        // Verificar que el usuario esté autenticado
+        if (!Auth::check()) {
+            return response()->json([
+                'error' => 'No autorizado.',
+                'message' => 'El usuario no está autenticado.'
+            ], Response::HTTP_UNAUTHORIZED); // 401
         }
 
-        $hardware = Hardware::create($request->all());
+        try {
+            // Cargar todos los registros de hardware junto con la categoría relacionada
+            $hardware = Hardware::with('category')->get();
+            
+            // Retornar la colección de hardware usando el recurso, asegurando una respuesta estructurada
+            return HardwareResource::collection($hardware);
 
-        return new HardwareResource($hardware);
+        } catch (\Exception $e) {
+            // Manejar cualquier excepción inesperada y retornar un mensaje de error genérico
+            return response()->json([
+                'error' => 'Ocurrió un error inesperado al recuperar los registros de hardware.',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+        }
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Muestra el hardware especificado por su ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show( $id)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'categoria_id' => 'required|exists:categorias,id',
-            'conflictos' => 'nullable|string',
-            'estado' => 'required|string',
-            'user_id' => 'nullable|exists:users,id',
-            'ubicacion_id' => 'required|exists:departamentos,id',
-            'codigo_de_inventario' => 'required|string|unique:hardware,codigo_de_inventario,' . $id,
-            'numero_de_serie' => 'required|string|unique:hardware,numero_de_serie,' . $id,
-            'fabricante_id' => 'required|exists:fabricantes,id',
-            'modelo_id' => 'nullable|exists:modelos,id',
-            'sistemas_asignados' => 'nullable|json',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+        // Validar que el ID sea un número
+        if($id == null || !is_numeric($id)){
+            return response()->json([
+                'error' => 'ID inválido.',
+                'message' => 'El ID del hardware es inválido.'
+            ], Response::HTTP_BAD_REQUEST); // 400
         }
 
-        $hardware = Hardware::findOrFail($id);
-        $hardware->update($request->all());
+        // Verificar que el usuario esté autenticado
+        if (!Auth::check()) {
+            return response()->json([
+                'error' => 'No autorizado.',
+                'message' => 'El usuario no está autenticado.'
+            ], Response::HTTP_UNAUTHORIZED); // 401
+        }
 
-        return new HardwareResource($hardware);
-    }
+        try {
+            // Intentar encontrar el hardware solicitado por su ID
+            $hardware = Hardware::with('category')->findOrFail($id);
+            
+            // Si se encuentra, se retorna en el formato definido por el HardwareResource
+            return new HardwareResource($hardware);
 
-    public function destroy($id)
-    {
-        Hardware::destroy($id);
-        return response()->json(null, 204);
+        } catch (ModelNotFoundException $e) {
+            // Si el hardware con el ID especificado no existe, retornar un mensaje de error
+            return response()->json([
+                'error' => 'Hardware no encontrado.',
+                'message' => 'No se encontró ningún registro de hardware con el ID especificado.'
+            ], Response::HTTP_NOT_FOUND); // 404
+
+        } catch (\Exception $e) {
+            // Manejar cualquier otra excepción inesperada
+            return response()->json([
+                'error' => 'Ocurrió un error inesperado al recuperar el registro de hardware.',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+        }
     }
 }

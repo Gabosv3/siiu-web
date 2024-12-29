@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    const telefonoInput = document.getElementById("telefono");
+    const telefonoInput = document.getElementById("phone");
     telefonoInput.addEventListener("input", function () {
         let value = telefonoInput.value.replace(/\D/g, "");
 
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Age validation
-    const fechaNacimientoInput = document.getElementById("fecha_nacimiento");
+    const fechaNacimientoInput = document.getElementById("birth_date");
     fechaNacimientoInput.addEventListener("input", function () {
         const birthDate = new Date(fechaNacimientoInput.value);
         const today = new Date();
