@@ -271,6 +271,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::get('/escaneo', [BarcodeController::class, 'index'])->name('procesar.index');
     Route::post('inventarios/hardware/barcode', [BarcodeController::class, 'procesarCodigo'])->name('procesar.codigo');
     Route::get('/reportes', [ReportsController::class, 'index'])->name('reportes');
+    Route::get('/reportes/usuario', [ReportsController::class, 'getUserReports'])->name('reportes.usuario');
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
@@ -278,6 +279,10 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
 
     // Cerrar sesión.
     Route::post('signOut', [AuthController::class, 'signOut'])->name('signOut');
+
+    //aca
+
+
 });
 
 //notificaciones
