@@ -11,7 +11,9 @@ use App\Models\Specialty;
 use App\Models\Technician;
 use App\Models\Ticket;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AssignmentController extends Controller
 {
@@ -79,72 +81,84 @@ class AssignmentController extends Controller
 
         return redirect()->route('tickets.assignForm', $id)->with('success', 'Ticket asignado exitosamente.');
     }
-
     public function assignEquipment(Request $request)
-    {
-        // Validar los datos de la solicitud
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'hardware_id' => 'required|exists:hardware,id',
-        ], [
-            'user_id.required' => 'El usuario es obligatorio.',
-            'hardware_id.required' => 'El equipo es obligatorio.',
-            'user_id.exists' => 'El usuario no existe.',
-            'hardware_id.exists' => 'El equipo no existe.',
-        ]);
-    
-        // Verifica si ya hay una asignación existente
-        $existingAssignment = HardwareAssignment::where('hardware_id', $request->hardware_id)->first();
-    
-        if ($existingAssignment) {
-            // Si existe, actualiza la asignación
-            $existingAssignment->user_id = $request->user_id;
-            $existingAssignment->save();
-    
-            // Actualiza el estado del hardware a "Reasignado"
-            $hardware = Hardware::find($request->hardware_id);
-            $hardware->status = 'Reasignado';
-            $hardware->save();
-    
-            $user = User::find($request->user_id); // Obtener usuario
+{
+    // Validar los datos de la solicitud
+    $request->validate([
+        'user_ids' => 'nullable|array',
+        'user_ids.*' => 'exists:users,id',
+        'departament_id' => 'nullable|exists:departaments,id',
+        'hardware_id' => 'required|exists:hardware,id',
+    ], [
+        'user_ids.*.exists' => 'Alguno de los usuarios seleccionados no existe.',
+        'departament_id.exists' => 'El departamento no existe.',
+        'hardware_id.exists' => 'El equipo no existe.',
+    ]);
+
+    // Buscar el hardware
+    $hardware = Hardware::find($request->hardware_id);
+    if (!$hardware) {
+        return response()->json([
+            'success' => false,
+            'message' => 'El equipo solicitado no existe.',
+        ], 404);
+    }
+
+    // Verificar si el equipo ya está asignado a algún usuario
+    if ($request->filled('user_ids')) {
+        foreach ($request->user_ids as $userId) {
+            // Verificar si ya está asignado el equipo a ese usuario
+            if ($hardware->users()->where('user_id', $userId)->exists()) {
+                continue; // Si ya está asignado, continuar con el siguiente usuario
+            }
+
+            // Asignar el equipo al usuario si no está asignado
+            $hardware->users()->attach($userId);
+
+            // Registrar en el historial
             EquipmentHistory::create([
-                'hardware_id' => $request->hardware_id,
-                'user_id' => $request->user_id,
-                'action' => 'reasignación',
-                'description' => 'Equipo reasignado a usuario.',
-                'performed_at' => now(),
-            ]);
-        } else {
-            // Si no existe, crea una nueva asignación
-            HardwareAssignment::create([
-                'hardware_id' => $request->hardware_id,
-                'user_id' => $request->user_id,
-            ]);
-            
-            // Actualiza el estado del hardware a "Asignado"
-            $hardware = Hardware::find($request->hardware_id);
-            $hardware->status = 'Asignado';
-            $hardware->save();
-    
-            $user = User::find($request->user_id); // Obtener usuario
-            EquipmentHistory::create([
-                'hardware_id' => $request->hardware_id,
-                'user_id' => $request->user_id,
-                'action' => 'Asignación',
-                'description' => 'Equipo asignado a usuario.',
+                'hardware_id' => $hardware->id,
+                'user_id' => $userId,
+                'action' => 'Asignación a usuario',
+                'description' => "Equipo asignado al usuario ID: {$userId}.",
                 'performed_at' => now(),
             ]);
         }
-    
-        // Devuelve una respuesta JSON con la información actualizada
-        return response()->json([
-            'success' => true,
-            'message' => 'Equipo asignado correctamente',
-            'user_name' => $user->name, // Nombre del usuario
-            'departament_name' => $user->departament->name ?? 'Sin departamento', // Nombre del departamento
-            'status' => $hardware->status, // Estado del hardware
+    }
+
+    // Asignación a departamento
+    if ($request->filled('departament_id')) {
+        // Solo asignar el departamento si no existe un usuario asignado
+        HardwareAssignment::create([
+            'hardware_id' => $hardware->id,
+            'user_id' => null, // Asignamos null a user_id ya que no se asigna un usuario
+            'departament_id' => $request->departament_id,
+        ]);
+
+        // Registrar en el historial
+        EquipmentHistory::create([
+            'hardware_id' => $hardware->id,
+            'user_id' => null,
+            'action' => 'Asignación a departamento',
+            'description' => "Equipo asignado al departamento ID: {$request->departament_id}.",
+            'performed_at' => now(),
         ]);
     }
-    
-    
+
+    // Actualizar el estado del hardware
+    $hardware->status = 'Asignado';
+    $hardware->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Equipo asignado correctamente.',
+        'status' => $hardware->status,
+        'assigned_to' => $hardware->users()->pluck('name')->join(', '),
+        'department_name' => $hardware->hardwareAssignments->first()->department->name ?? null,
+    ]);
+}
+
+
+
+
 }

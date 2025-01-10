@@ -6,31 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateHardwareAssignmentsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('hardware_assignments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('hardware_id')->constrained()->onDelete('cascade'); // Llave foránea
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Llave foránea
+            $table->unsignedBigInteger('hardware_id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('departament_id')->nullable(); // Agregando departament_id directamente
             $table->timestamps();
-            
-            // Asegurarse de que solo haya una asignación por hardware
-            $table->unique('hardware_id');
+
+            $table->foreign('hardware_id')->references('id')->on('hardware')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('departament_id')->references('id')->on('departaments')->onDelete('cascade');
+        });
+
+        // Crear tabla pivote
+        Schema::create('hardware_user', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('hardware_id');
+            $table->unsignedBigInteger('user_id');
+            $table->timestamps();
+
+            $table->foreign('hardware_id')->references('id')->on('hardware')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            $table->unique(['hardware_id', 'user_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
+        Schema::dropIfExists('hardware_user');
         Schema::dropIfExists('hardware_assignments');
     }
 }

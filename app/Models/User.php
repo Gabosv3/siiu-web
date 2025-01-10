@@ -84,6 +84,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Ticket::class);
     }
 
+    public function hardware()
+{
+    return $this->belongsToMany(Hardware::class, 'hardware_user', 'user_id', 'hardware_id');
+}
+
 
 
 }

@@ -10,19 +10,18 @@ class ModelCharacteristic extends Model
     use HasFactory;
 
     protected $fillable = [
-        'model_id',
+        'model_id',  // Asegúrate de que esta columna se llama 'model_id'
         'characteristic_id',
         'value',
     ];
 
     public function model()
     {
-        return $this->belongsTo(Model::class);
+        return $this->belongsTo(Model::class, 'model_id'); // La relación debe ser con 'model_id'
     }
 
     public function characteristic()
     {
         return $this->belongsTo(Characteristic::class);
     }
-    
 }

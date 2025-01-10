@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Departament;
 use App\Models\EquipmentHistory;
+use App\Models\EquipmentSoftware;
 use App\Models\Hardware;
+use App\Models\License;
 use App\Models\Manufacturer;
 use App\Models\Models;
 use App\Models\Software;
@@ -80,13 +82,13 @@ class HardwareController extends Controller
                 'required',
                 'string',
                 'max:255',
-                function($attribute, $value, $fail) use ($request) {
+                function ($attribute, $value, $fail) use ($request) {
                     foreach ($request->name as $index => $name) {
                         // Verifica si el inventory_code ya existe para esa categoría en la tabla 'hardware'
                         $exists = Hardware::where('category_id', $request->category_id)
                             ->where('inventory_code', $request->inventory_code[$index])
                             ->exists();
-        
+
                         if ($exists) {
                             $fail('El código de inventario ' . $request->inventory_code[$index] . ' ya está registrado en esta categoría.');
                         }
@@ -134,11 +136,29 @@ class HardwareController extends Controller
     }
 
     public function show(Hardware $hardware)
-    {
-        $histories = EquipmentHistory::where('hardware_id', $hardware->id)->get();
-        $users = User::with('personalInformation', 'departament')->get();
-        return view('inventories.hardwares.show', compact('hardware', 'users', 'histories'));
-    }
+{
+    $hardware->load(['softwares.licencias', 'equipmentHistories', 'users', 'category', 'manufacturer', 'model']);
+    $histories = EquipmentHistory::where('hardware_id', $hardware->id)->get();
+    $users = User::with('personalInformation', 'departament')->get();
+    $departaments = Departament::all();
+
+    // Obtener todos los softwares gratuitos y de pago
+    $freeSoftwares = Software::where('type', 'free')->get();
+    $paidSoftwares = Software::where('type', 'paid')->get();
+
+    // Obtener licencias que pueden ser usadas en al menos un dispositivo
+    $availableLicenses = License::where('max_devices', '>=', 1)->get();
+
+    // Obtener las licencias vinculadas al hardware
+    $linkedLicenses = $hardware->softwares->flatMap(function ($software) {
+        return $software->licencias;
+    });
+
+    return view('inventories.hardwares.show', compact('hardware', 'users', 'histories', 'departaments', 'freeSoftwares', 'paidSoftwares', 'availableLicenses', 'linkedLicenses'));
+}
+
+
+
 
     public function edit(Hardware $hardware)
     {
@@ -166,5 +186,4 @@ class HardwareController extends Controller
 
         return redirect()->route('hardwares.index')->with('success', 'Hardware restaurado exitosamente.');
     }
-    
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\CsvController;
 use App\Http\Controllers\Modulos\BarcodeController;
 use App\Http\Controllers\Modulos\CategoriesController;
 use App\Http\Controllers\Modulos\DepartamentController;
+use App\Http\Controllers\Modulos\EquipmentSoftwareController;
 use App\Http\Controllers\Modulos\FabricanteController;
 use App\Http\Controllers\Modulos\HardwareController;
 use App\Http\Controllers\Modulos\LicenseController;
@@ -192,6 +193,10 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     // Obtiene los modelos asociados a un fabricante.
     Route::get('/modelos/por-fabricante/{fabricante}', [ModeloController::class, 'getModelosPorFabricante']);
 
+    //
+    Route::get('models/{id}/characteristics', [ModeloController::class, 'associateCharacteristics'])->name('models.characteristics.associate');
+    Route::post('models/{id}/characteristics', [ModeloController::class, 'storeCharacteristics'])->name('models.characteristics.store');
+
     // Rutas CRUD para las licencias de software.
     Route::resource('inventarios/licenses', LicenseController::class);
 
@@ -234,7 +239,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::put('/inventarios/models/{modelos}/restore', [ModeloController::class, 'restore'])->name('models.restore');
 
     Route::post('/assign-equipment', [AssignmentController::class, 'assignEquipment'])->name('assign.equipment');
-
+    Route::post('/assign-software', [EquipmentSoftwareController::class, 'assignSoftware']);
     Route::match(['get', 'post'], '/botman', function () {
         $config = [];
 

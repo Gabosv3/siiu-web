@@ -14,4 +14,6 @@ class CharacteristicController extends Controller
         $models = Models::all();
         return view('inventories.models.index', compact('models'));
     }
+
+    
 }

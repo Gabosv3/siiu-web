@@ -4,83 +4,51 @@ namespace App\Http\Controllers\Modulos;
 
 use App\Http\Controllers\Controller;
 use App\Models\EquipmentSoftware;
+use App\Models\License;
 use Illuminate\Http\Request;
 
 class EquipmentSoftwareController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+     // Asignar software y licencia a un equipo
+     public function assignSoftware(Request $request)
+     {
+         // Validar datos recibidos
+         $validated = $request->validate([
+             'hardware_id' => 'required|exists:hardware,id',
+             'software_id' => 'required|exists:softwares,id',
+             'license_id'  => 'nullable|exists:licenses,id',
+         ]);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+         // Verificar si la licencia es válida
+         if (!empty($validated['license_id'])) {
+             $license = License::find($validated['license_id']);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+             // Validar que no esté expirada
+             if ($license->expiration_date && $license->expiration_date < now()) {
+                 return response()->json([
+                     'message' => 'La licencia seleccionada ha expirado.',
+                 ], 400);
+             }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\EquipmentSoftware  $equipmentSoftware
-     * @return \Illuminate\Http\Response
-     */
-    public function show(EquipmentSoftware $equipmentSoftware)
-    {
-        //
-    }
+             // Validar el número máximo de dispositivos permitidos
+             $activeDevices = EquipmentSoftware::where('license_id', $license->id)->count();
+             if ($activeDevices >= $license->max_devices) {
+                 return response()->json([
+                     'message' => 'La licencia ya alcanzó el máximo de dispositivos permitidos.',
+                 ], 400);
+             }
+         }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\EquipmentSoftware  $equipmentSoftware
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(EquipmentSoftware $equipmentSoftware)
-    {
-        //
-    }
+         // Crear la relación en la tabla intermedia
+         $assignment = EquipmentSoftware::create([
+             'hardware_id' => $validated['hardware_id'],
+             'software_id' => $validated['software_id'],
+             'license_id'  => $validated['license_id'] ?? null,
+         ]);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\EquipmentSoftware  $equipmentSoftware
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, EquipmentSoftware $equipmentSoftware)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\EquipmentSoftware  $equipmentSoftware
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(EquipmentSoftware $equipmentSoftware)
-    {
-        //
-    }
+         return response()->json([
+             'message' => 'Software y licencia asignados correctamente.',
+             'data'    => $assignment,
+         ], 201);
+     }
 }

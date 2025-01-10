@@ -163,8 +163,9 @@
                         <input type="text" class="form-control" id="nuevo_fabricante_nombre" name="nombre" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 </form>
-                <button id="closeModalButton" type="button" class="btn btn-secondary">Cancelar</button></button>
+
             </div>
         </div>
     </div>
@@ -189,6 +190,7 @@
                         <input type="text" class="form-control" id="nuevo_modelo_nombre" name="nombre" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </form>
             </div>
         </div>

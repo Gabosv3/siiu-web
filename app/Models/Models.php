@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+
 class Models extends Model
 {
     use HasFactory, LogsActivity, SoftDeletes;
@@ -38,8 +39,24 @@ class Models extends Model
         return $this->belongsTo(Manufacturer::class); // Clave foránea con la tabla 'manufacturers'
     }
 
-    public function modelCharacteristic()
+    /**
+     * Relación con las características del modelo.
+     * Un modelo tiene muchas características (a través de la tabla pivot `model_characteristics`).
+     */
+    public function characteristics()
     {
-        return $this->hasMany(ModelCharacteristic::class);
+        return $this->belongsToMany(Characteristic::class, 'model_characteristics')
+                    ->withPivot('value') // Incluye el valor de la característica en la relación
+                    ->withTimestamps();
+    }
+
+    /**
+     * Relación directa con la tabla `model_characteristics`.
+     * Por si necesitas acceder a la tabla pivot directamente.
+     */
+    public function modelCharacteristics()
+    {
+        return $this->hasMany(ModelCharacteristic::class, 'model_id'); // Asegúrate de que la relación usa 'model_id'
     }
 }
+

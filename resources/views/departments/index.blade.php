@@ -2,14 +2,11 @@
 
 @section('content')
 <h1>Departamentos/Secciones/Unidades</h1>
+<a href="{{ route('departaments.create') }}" class="btn bg-gradient-2 mb-3">Crear Departamento</a>
 
 <div class="row mb-3">
-    <div class="col-md-10 map-container" >
+    <div class="col-md-12 map-container" >
         <div id="map" style="max-height: 400px;"></div>
-    </div>
-
-    <div class="col-md-2">
-        <a href="{{ route('departaments.create') }}" class="btn bg-gradient-2 mb-3">Crear Departamento</a>
     </div>
 </div>
 

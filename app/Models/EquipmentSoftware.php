@@ -9,24 +9,29 @@ class EquipmentSoftware extends Model
 {
     use HasFactory;
 
+    protected $table = 'equipment_softwares';
+
     protected $fillable = [
-        'hardware_id',
-        'software_id',
-        'license_id',
+        'hardware_id',    // Relación con el equipo
+        'software_id',    // Relación con el software
+        'license_id',     // Relación con la licencia (opcional)
     ];
 
-    public function equipment()
+    // Relación con el equipo (hardware)
+    public function hardware()
     {
-        return $this->belongsTo(Hardware::class);
+        return $this->belongsTo(Hardware::class)->withTrashed();
     }
 
+    // Relación con el software
     public function software()
     {
-        return $this->belongsTo(Software::class);
+        return $this->belongsTo(Software::class)->withTrashed();
     }
 
+    // Relación con la licencia
     public function license()
     {
-        return $this->belongsTo(License::class);
+        return $this->belongsTo(License::class)->withTrashed();
     }
 }

@@ -8,10 +8,10 @@
         @method('PUT')
 
         <div class="form-group">
-            <label for="name_modelo">Nombre del modelo:</label>
-            <input type="text" id="name_modelo" name="name_modelo" class="form-control" value="{{ $model->name_modelo }}">
+            <label for="name">Nombre del modelo:</label>
+            <input type="text" id="name" name="name" class="form-control" value="{{ $model->name }}">
         </div>
-        <div class="form-group">        
+        <div class="form-group">
             <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
     </form>

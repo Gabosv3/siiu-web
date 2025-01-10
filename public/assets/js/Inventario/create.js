@@ -50,7 +50,7 @@ $(document).ready(function() {
         const nombre = $('#nuevo_fabricante_nombre').val();
 
         $.ajax({
-            url: '{{ route('fabricantes.store') }}',
+            url: "{{ route('fabricantes.store') }",
             method: 'POST',
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content'),
@@ -89,7 +89,7 @@ $(document).ready(function() {
         const fabricanteId = $('#fabricante_id_modelo').val();
 
         $.ajax({
-            url: '{{ route('modelos.store') }}',
+            url: "{{ route('modelos.store') }}",
             method: 'POST',
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content'),

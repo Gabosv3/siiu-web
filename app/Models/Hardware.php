@@ -88,4 +88,29 @@ class Hardware extends Model
 
     // Relación con las licencias
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'hardware_user', 'hardware_id', 'user_id');
+    }
+
+    public function licencias()
+    {
+        return $this->hasManyThrough(
+            License::class,          // Modelo destino
+            EquipmentSoftware::class, // Modelo intermedio
+            'hardware_id',           // Llave foránea en la tabla intermedia hacia `hardware`
+            'software_id',           // Llave foránea en `licenses` hacia `softwares`
+            'id',                    // Llave local en `hardware`
+            'software_id'            // Llave local en `equipment_softwares`
+        );
+    }
+
+    public function softwares()
+    {
+        return $this->belongsToMany(Software::class, 'equipment_softwares', 'hardware_id', 'software_id')
+            ->withPivot('license_id') // Incluye el campo extra de la tabla pivot
+            ->withTimestamps(); // Para que los timestamps de la tabla pivot se incluyan
+    }
+
+    
 }
