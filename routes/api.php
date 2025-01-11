@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     // Puedes agregar otras rutas protegidas aquí
+    //CAMBIOOO CLAIRE
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/assignments', [AssignmentController::class, 'index']);
