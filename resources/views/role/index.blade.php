@@ -217,7 +217,7 @@
         Swal.fire({
             icon: 'success', // Ícono de éxito
             title: '{{ ucfirst($sessionKey) }}', // Título con la primera letra en mayúscula
-            text: 'Usuario {{ strtolower($sessionKey) }} correctamente.' // Texto con la acción en minúscula
+            text: 'Rol {{ strtolower($sessionKey) }} correctamente.' // Texto con la acción en minúscula
         });
     });
 </script>
@@ -228,7 +228,7 @@
         Swal.fire({
             icon: 'error', // Ícono de error
             title: 'Error', // Título de error
-            text: 'Usuario no se pudo {{ strtolower($sessionKey) }}' // Texto con la acción en minúscula
+            text: 'Rol no se pudo {{ strtolower($sessionKey) }}' // Texto con la acción en minúscula
         });
     });
 </script>

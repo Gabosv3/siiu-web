@@ -14,6 +14,14 @@ class Characteristic extends Model
         'description',
     ];
 
+
+
+    // Activar el log de cambios
+    protected static $logAttributes = ['name', 'description'];
+
+    // Nombre de la tabla
+    protected static $name = 'Característica';
+
     /**
      * Relación con la tabla pivot `model_characteristics`.
      * Una característica puede estar asociada a múltiples modelos.

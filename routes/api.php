@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\CategoriesController;
 use App\Http\Controllers\Api\V1\EquipmentHistoryController;
 use App\Http\Controllers\Api\V1\HardwareController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Modulos\ReportsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,6 +34,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/equipment-histories', [EquipmentHistoryController::class, 'index']);
     Route::get('/equipment-histories/{id}', [EquipmentHistoryController::class, 'show']);
     Route::get('/equipment-history/{categoryId}/{inventoryCode}', [EquipmentHistoryController::class, 'EquipmentHistory']);
+    // Ruta para generar el reporte por usuario (AJAX)
+    Route::get('/reportes/usuario', [ReportsController::class, 'userReport']);
 });
 
 

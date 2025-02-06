@@ -79,6 +79,11 @@ class Hardware extends Model
         return $this->hasOne(HardwareAssignment::class);
     }
 
+    public function hardwareAssignments()
+    {
+        return $this->hasMany(HardwareAssignment::class);
+    }
+
     public function equipmentHistories()
     {
         return $this->hasMany(EquipmentHistory::class);
@@ -112,5 +117,8 @@ class Hardware extends Model
             ->withTimestamps(); // Para que los timestamps de la tabla pivot se incluyan
     }
 
-    
+    public function files()
+    {
+        return $this->hasMany(HardwareFile::class);
+    }
 }

@@ -62,26 +62,29 @@ class LicenseController extends Controller
         $request->validate([
             'software_id' => 'required|exists:softwares,id',
             'license_key.*' => 'required|string|unique:licenses,license_key',
-            'max_licenses.*' => 'nullable|integer',
+            'max_devices.*' => 'nullable|integer|min:0|max:100',  // Cambiado de max_licenses a max_devices
             'purchase_date' => 'nullable|date',
             'expiration_date' => 'nullable|date|after_or_equal:purchase_date',
             'status' => 'required|string',
         ], [
             'software_id.exists' => 'El software no existe.',
-            'license_key.unique' => 'La clave de licencia ya existe.',
-            'purchase_date.date' => 'La fecha de compra no es una fecha válida.',
-            'expiration_date.date' => 'La fecha de expiración no es una fecha válida.',
+            'license_key.*.unique' => 'La clave de licencia ":input" ya está registrada.',
+            'license_key.*.required' => 'La clave de licencia es obligatoria.',
+            'max_devices.*.integer' => 'El número de dispositivos debe ser un número entero.', // Cambiado max_licenses a max_devices
+            'max_devices.*.min' => 'El número de dispositivos debe ser al menos 0.', // Cambiado max_licenses a max_devices
+            'max_devices.*.max' => 'El número de dispositivos no puede ser mayor a 100.', // Cambiado max_licenses a max_devices
+            'purchase_date.date' => 'La fecha de compra no es una fecha válida.',
+            'expiration_date.date' => 'La fecha de expiración no es una fecha válida.',
             'expiration_date.after_or_equal' => 'La fecha de expiración debe ser posterior o igual a la fecha de compra.',
             'status.required' => 'El estado es requerido.',
             'status.string' => 'El estado debe ser una cadena de texto.',
-
         ]);
 
-        foreach ($request->license_key as $license_key) {
+        foreach ($request->license_key as $index => $license_key) {
             License::create([
                 'software_id' => $request->software_id,
                 'license_key' => $license_key,
-                'max_licenses' => $request->max_licenses,
+                'max_devices' => !empty($request->max_devices[$index]) ? $request->max_devices[$index] : 1, // Asegurar valor
                 'purchase_date' => $request->purchase_date,
                 'expiration_date' => $request->expiration_date,
                 'status' => $request->status,
@@ -91,6 +94,8 @@ class LicenseController extends Controller
         return redirect()->route('licenses.index', ['software_id' => $request->software_id])
             ->with('success', 'Licencia creada exitosamente.');
     }
+
+
 
     // Mostrar una licencia específica
     public function show(License $license)
@@ -113,7 +118,7 @@ class LicenseController extends Controller
             'software_id' => 'required|exists:softwares,id',
             'license_key' => 'required|unique:licenses,license_key,' . $license->id,
             'expiration_date' => 'nullable|date',
-            
+
         ], [
             'software_id.exists' => 'El software no existe.',
             'license_key.unique' => 'La clave de licencia ya existe.',
@@ -129,13 +134,11 @@ class LicenseController extends Controller
     // Eliminar una licencia
     public function destroy(License $license)
     {
-        if ( $license->delete()) {
+        if ($license->delete()) {
             return redirect()->route('licenses.index')->with('success', 'Licencia eliminada exitosamente.');
         }
 
         return redirect()->route('licenses.index')->with('error', 'Licencia no encontrada.');
-
-        
     }
 
     public function restore($id)
@@ -147,6 +150,4 @@ class LicenseController extends Controller
         $license->restore();
         return redirect()->route('licenses.index')->with('success', 'Licencia restaurada exitosamente.');
     }
-
-    
 }

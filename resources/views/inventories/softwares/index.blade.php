@@ -1,7 +1,7 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-<div class="container">
+
     <h1>Listado de Softwares</h1>
 
     <a href="{{ route('softwares.create') }}" class="btn btn-primary mb-3">Agregar Software</a>
@@ -92,7 +92,7 @@
         </div>
     </div>
 
-</div>
+
 @include('components.script-btn') <!-- Incluir scripts necesarios -->
 
 <script src="{{ asset('assets/js/Tablas/tablas.js') }}"></script> <!-- Cargar scripts de tablas -->

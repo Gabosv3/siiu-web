@@ -15,6 +15,10 @@ class ModelCharacteristic extends Model
         'value',
     ];
 
+    protected static $logAttributes = ['model_id', 'characteristic_id', 'value'];
+
+    protected static $logName = 'caracteristicas de modelos';
+
     public function model()
     {
         return $this->belongsTo(Model::class, 'model_id'); // La relación debe ser con 'model_id'

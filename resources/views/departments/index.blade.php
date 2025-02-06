@@ -170,7 +170,7 @@
         };
 
         window.EquiposDepartamento = function(departmentId) {
-            window.location.href = `/equipos/${departmentId}`;
+            window.location.href = `/Departamentos/equipos/${departmentId}`;
         };
     });
 </script>

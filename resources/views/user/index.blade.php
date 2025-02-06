@@ -254,7 +254,7 @@
                             <a title="Editar técnico" href="{{ route('technician.edit', $technician->id) }}" class="btn btn-green-600 mb-3"><i class='bx bxs-edit-alt'></i></a>
                             @endcan
                             @can('technicians.destroy')
-                            <form method="POST" style="display:inline;" action="{{ route('technician.destroy', $technician->id) }}">
+                            <form method="POST" style="display:inline;" action="{{ route('technician.destroy', $technician->id) }}" class="formulario-eliminar">
                                 @method('DELETE')
                                 @csrf
                                 <button title="Eliminar técnico" class="btn btn-red-800"><i class='bx bxs-trash'></i></button>
@@ -287,11 +287,11 @@
                     <tr>
                         <th scope="row">{{ $key + 1 }}</th>
                         <td>{{ $technician->user->name }}</td>
-                        <td>{{ $technician->specialty }}</td>
-                        <td>{{ $technician->updated_at }}</td>
+                        <td>{{ $technician->specialty->name }}</td>
+                        <td>{{ $technician->deleted_at }}</td>
                         <td>
-                            @can('technician.restore')
-                            <form method="POST" action="{{ route('technician.restore', $technician->id) }}">
+                            @can('technicians.restore')
+                            <form method="POST" action="{{ route('technicians.restore', $technician->id) }}" class="formulario-restaurar">
                                 @csrf
                                 @method('PUT')
                                 <button class="btn btn-cyan-800 mb-3" type="submit">Restaurar</button>
@@ -373,5 +373,28 @@
 
 @endif
 @endforeach
+
+@if (session('tecnico_success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Técnico',
+                text: '{{ session('tecnico_success') }}'
+            });
+        });
+    </script>
+@elseif (session('tecnico_error'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('tecnico_error') }}'
+            });
+        });
+    </script>
+@endif
+
 
 @endsection

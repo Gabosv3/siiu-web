@@ -9,7 +9,7 @@
         <div class="row g-3">
             <div class="col-md-6 col-sm-12 mb-3">
                 <label for="title" class="form-label">Título del Ticket</label>
-                <p>{{ $ticket->title }}</p>
+                <p>{{ $ticket->title->name }}</p>
             </div>
             <div class="col-md-6 col-sm-12 mb-3">
                 <label for="description" class="form-label">Descripción del problema</label>

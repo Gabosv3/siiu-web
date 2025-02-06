@@ -3,9 +3,11 @@
 @section('content')
 <div class="container mb-3">
     <h2>Modelos</h2>
-    <div class="d-flex justify-content-end mb-3">
-        <a href="{{ route('models.create') }}" class="btn bg-gradient-2">Crear Modelo</a>
+    <div class="d-flex justify-content-end align-items-center mb-3">
+        <a href="{{ route('models.create') }}" class="btn bg-gradient-2 me-2">Crear Modelo</a>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCharacteristicModal"> Agregar Característica</button>
     </div>
+
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
            <button class="nav-link active" id="nav-models-tab" data-bs-toggle="tab" data-bs-target="#nav-models" type="button" role="tab" aria-controls="nav-models" aria-selected="true">Modelos</button>
@@ -89,7 +91,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -99,6 +101,40 @@
   </div>
 </div>
 
+<!-- Modal para agregar características -->
+<div class="modal fade" id="addCharacteristicModal" tabindex="-1" role="dialog"
+aria-labelledby="addCharacteristicModalLabel" aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="addCharacteristicModalLabel">Agregar Característica</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form id="addCharacteristicForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="characteristic_name">Nombre de la característica:</label>
+                    <input type="text" id="characteristic_name" name="characteristic_name" class="form-control"
+                        placeholder="Nombre de la característica" required>
+                </div>
+                <div class="form-group">
+                    <label for="characteristic_description">Descripción de la característica:</label>
+                    <textarea id="characteristic_description" name="characteristic_description" class="form-control"
+                        placeholder="Descripción de la característica" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="saveCharacteristic">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+
 
 
 
@@ -106,6 +142,55 @@
 @include('components.script-btn')
 
 <script src="{{ asset('assets/js/Tablas/tablas.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#saveCharacteristic').on('click', function() {
+            var name = $('#characteristic_name').val();
+            var description = $('#characteristic_description').val();
+
+            // Validar que el nombre no esté vacío
+            if (name.trim() === '') {
+                alert('El nombre de la característica es obligatorio.');
+                return;
+            }
+
+            // Enviar los datos al servidor mediante AJAX
+            $.ajax({
+                url: '{{ route("characteristics.store") }}', // Ruta al controlador para guardar la característica
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    name: name,
+                    description: description
+                },
+                success: function(response) {
+                    alert('La característica se agregó correctamente.');
+
+                    // Opcional: Agregar la nueva característica a una tabla o lista en la página
+                    // Aquí puedes renderizar dinámicamente
+                    var newRow = `
+                        <tr>
+                            <td>${response.id}</td>
+                            <td>${response.name}</td>
+                            <td>${response.description || 'Sin descripción'}</td>
+                        </tr>
+                    `;
+                    $('#characteristicsTable tbody').append(newRow);
+
+                    // Cerrar el modal y limpiar el formulario
+                    $('#addCharacteristicModal').modal('hide');
+                    $('#addCharacteristicForm')[0].reset();
+                },
+                error: function(xhr) {
+                    alert('Hubo un error al guardar la característica. Intente nuevamente.');
+                }
+            });
+        });
+    });
+</script>
+
+
 
 
 

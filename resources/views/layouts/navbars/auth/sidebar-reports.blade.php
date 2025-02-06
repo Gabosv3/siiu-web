@@ -32,28 +32,21 @@
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Reportes</h6>
       </li>
-      <!-- <li class="nav-item">
-        <a class="nav-link {{ (Request::is('inventarios/hardware*')  || Request::is('inventarios') ? 'active' : '') }}" href="{{ url('inventarios') }}" id="btn-module-mantenimiento">
-          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-desktop ps-2 pe-2 text-center text-dark {{ Request::is('inventarios/hardware*') || Request::is('inventarios') ? 'text-white' : 'text-dark' }} " aria-hidden="true"></i>
-          </div>
-          <span class="nav-link-text ms-1">Equipos</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{ (Request::is('reportes')   ? 'active' : '') }}" href="{{ url('reportes') }}" id="btn-module-mantenimiento">
-          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-bar-chart ps-2 pe-2 text-center text-dark {{ Request::is('reportes') ? 'text-white' : 'text-dark' }} " aria-hidden="true"></i>
-          </div>
-          <span class="nav-link-text ms-1">Equipos</span>
-        </a>
-      </li> -->
+
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('reportes/usuario*')  || Request::is('inventarios') ? 'active' : '') }}" href="{{ url('reportes/usuario') }}" id="btn-module-mantenimiento">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-bar-chart ps-2 pe-2 text-center text-dark {{ Request::is('inventarios/hardware*') || Request::is('reportes/usuario') ? 'text-white' : 'text-dark' }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="fa fa-users ps-2 pe-2 text-center text-dark {{ Request::is('inventarios/hardware*') || Request::is('reportes/usuario') ? 'text-white' : 'text-dark' }} " aria-hidden="true"></i>
           </div>
-          <span class="nav-link-text ms-1">Reportes</span>
+          <span class="nav-link-text ms-1"> Usuarios</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('reportes/equipo*')  || Request::is('inventarios') ? 'active' : '') }}" href="{{ url('reportes/equipo') }}" id="btn-module-mantenimiento">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="fa fa-laptop ps-2 pe-2 text-center text-dark {{ Request::is('inventarios/hardware*') || Request::is('reportes/equipo') ? 'text-white' : 'text-dark' }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1"> Equipos</span>
         </a>
       </li>
     </ul>

@@ -31,23 +31,23 @@ class UserController extends Controller
     public function index()
     {
         // Obtener usuarios con paginación
-        $users = User::withTrashed()->paginate(10); // Incluye los eliminados si es necesario
-    
+        $users = User::paginate(10); // Incluye los eliminados si es necesario
+
         // Obtener usuarios eliminados
         $deletedUsers = User::onlyTrashed()->get();
-    
+
         // Obtener todos los departamentos
         $departamentos = Departament::all();
-    
+
         // Obtener técnicos disponibles
         $technicians = Technician::where('available', true)->with('user')->get();
-    
+
         // Obtener técnicos desactivados
-        $deletedTechnicians = Technician::where('available', false)->with('user')->get();
-    
+        $deletedTechnicians = Technician::onlyTrashed()->get();
+
         // Obtener todos los roles excepto "SuperAdmin"
         $roles = Role::where('name', '!=', 'SuperAdmin')->get();
-    
+
         // Retornar la vista 'user.index' con las variables necesarias
         return view('user.index', compact('users', 'departamentos', 'deletedUsers', 'technicians', 'deletedTechnicians', 'roles'));
     }
@@ -61,37 +61,50 @@ class UserController extends Controller
 
     // Método para almacenar un nuevo usuario en la base de datos
     public function store(Request $request)
-    {
-        // Validación de los datos
-        $request->validate([
-            'email' => 'required|unique:users,email',
-            'password' => 'required|min:8',
-            'password_confirmation' => 'required|same:password',
-            'name' => 'required',
-            'departament_id' => 'required|exists:departaments,id',
-        ], [
-            'email.required' => 'El correo es requerido',
-            'email.unique' => 'El correo ya ha sido usado',
-            'password.required' => 'La contraseña es requerida',
-            'password.min' => 'La contraseña debe tener 8 caracteres',
-            'password_confirmation.required' => 'La confirmación de la contraseña es requerida',
-            'password.same' => 'Las contraseñas no coinciden',
-            'name.required' => 'El nombre es requerido',
-            'departament_id.required' => 'El departamento es requerido',
-            'departament_id.exists' => 'El departamento seleccionado no es válido',
-        ]);
+{
+    // Validación de los datos
+    $request->validate([
+        'email' => 'required|unique:users,email',
+        'password' => 'required|min:8|confirmed',
+        'name' => 'required',
+        'departament_id' => 'required|exists:departaments,id',
+        'role_id' => 'required', // Validación básica
+    ], [
+        'email.required' => 'El correo es requerido',
+        'email.unique' => 'El correo ya ha sido usado',
+        'password.required' => 'La contraseña es requerida',
+        'password.min' => 'La contraseña debe tener al menos 8 caracteres',
+        'password.confirmed' => 'Las contraseñas no coinciden',
+        'name.required' => 'El nombre es requerido',
+        'departament_id.required' => 'El departamento es requerido',
+        'departament_id.exists' => 'El departamento seleccionado no es válido',
+        'role_id.required' => 'Debe seleccionar al menos un rol',
+    ]);
 
-        // Crear un nuevo usuario
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'departament_id' => $request->departament_id,
-        ])->assignRole('Usuario');
+    // Si role_id es un solo valor, conviértelo en un array
+    $roles = is_array($request->role_id) ? $request->role_id : [$request->role_id];
 
-        // Redireccionamiento con mensaje de éxito
-        return redirect()->route('user.index')->with('agregado', 'SI');
-    }
+    // Validación adicional para asegurar que todos los roles existen
+    $request->validate([
+        'role_id.*' => 'exists:roles,id',
+    ], [
+        'role_id.*.exists' => 'Uno o más roles seleccionados no son válidos',
+    ]);
+
+    // Crear un nuevo usuario
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'departament_id' => $request->departament_id,
+    ]);
+
+    // Asignar roles seleccionados
+    $user->roles()->sync($roles);
+
+    // Redireccionamiento con mensaje de éxito
+    return redirect()->route('user.index')->with('agregado', 'SI');
+}
 
     // Método para mostrar los detalles de un usuario específico
     public function show($id)
@@ -205,7 +218,7 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $this->updateUser($request, $user, true, true); // Valida y actualiza roles y departamento
-        return redirect()->back()->with('Updated', 'YES');
+        return redirect()->back()->with('Actualizado', 'SI');
     }
 
     public function oneUpdate(Request $request, User $user)
@@ -219,9 +232,9 @@ class UserController extends Controller
     {
         // Buscar el usuario por su ID y eliminarlo
         if (User::find($id)->delete()) {
-            return redirect()->back()->with('deleted', 'YES');
+            return redirect()->back()->with('eliminado', 'SI');
         } else {
-            return redirect()->back()->with('deleted', 'NO');
+            return redirect()->back()->with('eliminado', 'NO');
         }
     }
 
@@ -234,9 +247,9 @@ class UserController extends Controller
         if ($user) {
             // Restaurar el usuario eliminado
             $user->restore();
-            return redirect()->back()->with('Restored', 'YES');
+            return redirect()->back()->with('Restaurado', 'SI');
         } else {
-            return redirect()->back()->with('Restored', 'NO');
+            return redirect()->back()->with('Restaurado', 'NO');
         }
     }
 }

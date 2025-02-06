@@ -15,7 +15,7 @@
             <form action="{{ route('departaments.store') }}" method="POST" class="needs-validation" novalidate>
                 @csrf
 
-                
+
                 <div class="mb-3">
                     <label for="name" class="form-label">NOMBRE:</label>
                     <input type="text" class="form-control" id="input-department-name" name="name" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required>
@@ -37,11 +37,11 @@
                 <div class="mb-3">
                     <label for="manager" class="form-label">ENCARGADO:</label>
                     <select class="form-control js-select-manager" id="input-department-manager" name="manager" required data-show-subtext="true" data-live-search="true">
-                        <option value="">Sin encargado</option> 
+                        <option value="">Sin encargado</option>
 
-                        @foreach ($users as $user) 
+                        @foreach ($users as $user)
                         <option value="{{ $user->id }}">
-                            {{$user->name}}{{ $user->personalInformation->first_name }} {{ $user->personalInformation->last_name }}
+                            {{ $user->name }} ({{ $user->email }})
                         </option>
                         @endforeach
                     </select>
@@ -89,7 +89,7 @@
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        
+
         var departmentName = document.getElementById('input-department-name').value;
 
         // INICIALIZAR EL MAPA Y ESTABLECER LA VISTA EN UNA UBICACIÓN POR DEFECTO

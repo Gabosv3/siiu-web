@@ -12,7 +12,7 @@ class LoginSecurity extends Model
 
     //especifica la tabla asociada
     protected $table = 'login_securities';
-    
+
     //especifica los campos de la tabla
     protected $fillable = [
         'user_id',  //ID del usuario
@@ -20,8 +20,14 @@ class LoginSecurity extends Model
         'google2fa_enable', //Indica si Google 2FA está habilitado
     ];
 
-    
-    
+    //especifica los atributos de auditoría
+    protected static $logAttributes = ['google2fa_secret', 'google2fa_enable'];
+
+
+    //especifica el nombre de la tabla
+    protected static $logName = 'Seguridad de inicio de sesión';
+
+
     /**
      * Relación muchos a uno con la clase User.
      */

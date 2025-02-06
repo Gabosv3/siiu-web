@@ -107,65 +107,27 @@
                         <div class="card p-3 border"
                             style="background-color: white; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
                             <h2>Detalles</h2>
-                            <div class="row row-cols-2 row-cols-lg-4 g-2 g-lg-3">
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-2 g-lg-3">
                                 <div class="col">
-                                    <div class="p-3 ">
-                                        <h5>Marca</h5>
-                                        <p>{{ $hardware->manufacturer->name }}</p>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="p-3 ">
-                                        <h5>Modelo</h5>
-                                        <p>{{ $hardware->model->name }}</p>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="p-3 ">
-                                        <h5>Procesador</h5>
-                                        <p>{{ $hardware->model->name }}</p>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="p-3 ">
-                                        <h5>Motherboard</h5>
-                                        <p>{{ $hardware->model->name }}</p>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="p-3 ">
-                                        <h5>Ram</h5>
-                                        <p>{{ $hardware->model->name }}</p>
-                                    </div>
-                                </div>
-
-                                <div class="col">
-                                    <div class="p-3 ">
-                                        <h5>Graficos</h5>
-                                        <p>{{ $hardware->model->name }}</p>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="p-3 ">
-                                        <h5>Audio</h5>
-                                        <p>{{ $hardware->model->name }}</p>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="p-3 ">
-                                        <h5>Almacenamiento</h5>
-                                        <p>{{ $hardware->model->name }}</p>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="p-3 ">
+                                    <div class="p-3">
                                         <h5>Numero de serie</h5>
                                         <p>{{ $hardware->serial_number }}</p>
                                     </div>
                                 </div>
+                                @foreach ($hardware->model->characteristics as $characteristic)
+                                    <div class="col">
+                                        <div class="p-3">
+                                            <h5>{{ $characteristic->name }}</h5>
+                                            <p>{{ $characteristic->pivot->value }}</p>
+                                            <!-- Muestra el valor de la característica -->
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>
+
+
                     <div class="col-6">
                         <div class="card p-3 border"
                             style="background-color: white; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
@@ -198,8 +160,13 @@
                 tabindex="0">
                 <h1>Licencias Vinculadas</h1>
 
+                <!-- Botón para abrir el modal -->
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#linkLicenseModal">
+                    Vincular Licencia
+                </button>
+
                 <!-- Tabla de licencias -->
-                <table class="table">
+                <table class="datatable2 w-100 responsive">
                     <thead>
                         <tr>
                             <th>Software</th>
@@ -209,40 +176,100 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if ($linkedLicenses->isNotEmpty())
-                            @foreach ($linkedLicenses as $link)
-                                <tr>
-                                    <td>{{ $link->software->software_name }}</td>
-                                    <td>{{ $link->license->license_key ?? 'No asignada' }}</td>
-                                    <td>{{ $link->license->expiration_date ?? 'N/A' }}</td>
-                                    <td>
-                                        {{ $link->license->status ?? 'N/A' }}
-                                        @if ($link->license && $link->license->expiration_date < now())
-                                            <span class="text-danger">(Expirada)</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @else
+
+                        @foreach ($linkedLicenses as $link)
                             <tr>
-                                <td colspan="4">No hay licencias vinculadas</td>
+                                <td>{{ $link->software->software_name }}</td>
+                                <td>{{ $link->license->license_key ?? 'No asignada' }}</td>
+                                <td>{{ $link->license->expiration_date ?? 'N/A' }}</td>
+                                <td>
+                                    {{ $link->license->status ?? 'N/A' }}
+                                    @if ($link->license && $link->license->expiration_date < now())
+                                        <span class="text-danger">(Expirada)</span>
+                                    @endif
+                                </td>
                             </tr>
-                        @endif
+                        @endforeach
+
                     </tbody>
                 </table>
 
-                <!-- Botón para abrir el modal -->
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#linkLicenseModal">
-                    Vincular Licencia
-                </button>
+
+
 
             </div>
 
             <!-- Culture Tab Content -->
-            <div class="tab-pane fade" id="culture-tab-pane" role="tabpanel" aria-labelledby="culture-tab"
+            <div class="tab-pane fade card p-5" id="culture-tab-pane" role="tabpanel" aria-labelledby="culture-tab"
                 tabindex="0">
-                <h1>Our Culture</h1>
-                <p>We value a work environment that fosters collaboration and innovation.</p>
+
+                <h1>Documentos</h1>
+                <!-- Botón de Crear Nuevo Archivo -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFileModal">
+                    Crear Nuevo Archivo
+                </button>
+
+                <!-- Tabla de Archivos -->
+                <table class="table datatable w-100 responsive">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Ubicación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($hardwareFiles as $file)
+                            <tr>
+                                <td>{{ $file->name }}</td>
+                                <td>{{ $file->description }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-cyan-800 btn-sm" data-toggle="modal"
+                                        data-target="#pdfModal{{ $file->id }}">
+                                        Previsualizar PDF
+                                    </button>
+                                    <a href="{{ route('download.file', $file->id) }}"
+                                        class="btn btn-green-600 btn-sm">Descargar</a>
+                                </td>
+                                <td>
+
+                                    <form action="{{ route('hardware.file.destroy', $file->id) }}" method="POST"
+                                        class=" formulario-eliminar">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-red-800 btn-sm">Eliminar</button>
+                                    </form>
+
+                                </td>
+                            </tr>
+
+                            <!-- Modal para previsualizar PDF -->
+                            <div class="modal fade" id="pdfModal{{ $file->id }}" tabindex="-1" role="dialog"
+                                aria-labelledby="pdfModalLabel{{ $file->id }}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="pdfModalLabel{{ $file->id }}">
+                                                Previsualización de PDF</h5>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Cerrar">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Visor de PDF en el modal -->
+                                            <iframe src="{{ Storage::url($file->location) }}" width="100%"
+                                                height="500px"></iframe>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </tbody>
+                </table>
+
+
             </div>
 
             <!-- Philosophy Tab Content -->
@@ -253,8 +280,29 @@
 
                     <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3">
                         @foreach ($histories as $history)
-                            <div class=" col">
-                                <div class="p-3 border bg-white ">{{ $history->action }}</div>
+                            <div class="col" data-toggle="modal" data-target="#historyModal{{ $history->id }}">
+                                <div class="p-3 border bg-white" style="cursor: pointer;">
+                                    {{ $history->action }}
+                                </div>
+                            </div>
+
+                            <!-- Modal para mostrar más información -->
+                            <div class="modal fade" id="historyModal{{ $history->id }}" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel{{ $history->id }}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="historyModalLabel{{ $history->id }}">Detalles de la acción</h5>
+                                            <button type="button " class="close btn btn-red-800" data-dismiss="modal" aria-label="Cerrar">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <strong>Acción:</strong> {{ $history->action }}<br>
+                                            <strong>Descripción:</strong> {{ $history->description }}<br>
+                                            <strong>Fecha:</strong> {{ $history->created_at }}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -356,6 +404,42 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="createFileModal" tabindex="-1" aria-labelledby="createFileModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createFileModalLabel">Crear Nuevo Archivo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createFileForm" enctype="multipart/form-data">
+                            @csrf
+                            <!-- Campo oculto para hardware_id -->
+                            <input type="hidden" id="hardware_id" name="hardware_id" value="{{ $hardware->id }}">
+
+                            <div class="mb-3">
+                                <label for="file-name" class="form-label">Nombre del Archivo</label>
+                                <input type="text" class="form-control" id="file-name" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="file-description" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="file-description" name="description" rows="3" required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="file-upload" class="form-label">Subir Archivo</label>
+                                <input type="file" class="form-control" id="file-upload" name="file-upload" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Crear</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
 
         <script>
             document.getElementById('softwareSelect').addEventListener('change', function() {
@@ -501,5 +585,130 @@
             }
         </script>
 
+        <script>
+            $(document).ready(function() {
+                $('#createFileForm').on('submit', function(e) {
+                    e.preventDefault();
 
+                    // Crear FormData para enviar los datos y archivo al backend
+                    var formData = new FormData(this);
+
+                    // Agregar el CSRF token al FormData
+                    formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+                    // Verificar los datos que se envían en la consola
+                    console.log(...formData);
+
+                    // Llamada AJAX para subir el archivo
+                    $.ajax({
+                        url: '{{ route('upload-file') }}', // URL de la ruta que maneja la carga de archivos
+                        type: 'POST',
+                        data: formData,
+                        processData: false, // No procesar los datos (esto es importante para FormData)
+                        contentType: false, // No establecer el tipo de contenido
+                        success: function(response) {
+                            // Mensaje de éxito
+                            Swal.fire({
+                                title: '¡Éxito!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Aceptar'
+                            });
+
+                            // Cierra el modal
+                            $('#createFileModal').modal('hide');
+
+                            // Limpia los campos del formulario
+                            $('#createFileForm')[0].reset();
+                        },
+                        error: function(xhr) {
+                            console.error(xhr); // Log para depuración
+
+                            let errorMessage = 'Hubo un error al subir el archivo.';
+
+                            // Manejo de errores de validación
+                            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                                let errors = '';
+                                $.each(xhr.responseJSON.errors, function(key, value) {
+                                    errors += value +
+                                        "\n"; // Concatenar los mensajes de error
+                                });
+                                errorMessage = errors;
+                            } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message; // Error genérico
+                            }
+
+                            Swal.fire({
+                                title: 'Error',
+                                text: errorMessage,
+                                icon: 'error',
+                                confirmButtonText: 'Aceptar'
+                            });
+                        }
+                    });
+                });
+
+            });
+
+            $(document).ready(function() {
+                // Verifica que los elementos están siendo seleccionados
+                console.log("Iniciando DataTables");
+
+                // Selecciona todas las tablas con las clases .datatable y .datatable2
+                $('.datatable, .datatable2').each(function() {
+                    console.log("Inicializando DataTable para una tabla"); // Verifica que se recorre cada tabla
+
+                    const table = $(this); // Obtén la tabla actual
+
+                    // Inicializa DataTables en la tabla actual
+                    table.DataTable({
+                        responsive: true,
+                        language: {
+                            sProcessing: "Procesando...",
+                            sLengthMenu: "Mostrar _MENU_ registros",
+                            sZeroRecords: "No se encontraron resultados",
+                            sEmptyTable: "Ningún dato disponible en esta tabla",
+                            sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                            sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+                            sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+                            sSearch: "Buscar:",
+                            sInfoThousands: ",",
+                            sLoadingRecords: "Cargando...",
+                            oPaginate: {
+                                sFirst: '<i class="fas fa-angle-double-left"></i>',
+                                sLast: '<i class="fas fa-angle-double-right"></i>',
+                                sNext: '<i class="fas fa-angle-right"></i>',
+                                sPrevious: '<i class="fas fa-angle-left"></i>'
+                            },
+                            oAria: {
+                                sSortAscending: ": Activar para ordenar la columna de manera ascendente",
+                                sSortDescending: ": Activar para ordenar la columna de manera descendente"
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+
+
+        @if ($errors->any())
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Muestra un SweetAlert con un mensaje de error si hay errores
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '{{ $errors->first() }}'
+                    }).then(() => {
+                        // Después de cerrar el SweetAlert, abre automáticamente el modal
+                        var modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+                        modal.show();
+                    });
+                });
+            </script>
+        @endif
+
+        @include('components.script-btn')
+
+        <script src="{{ asset('assets/js/Tablas/tablas.js') }}"></script>
     @endsection

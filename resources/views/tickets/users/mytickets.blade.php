@@ -23,7 +23,7 @@
                 @foreach($tickets as $ticket)
                 <tr>
                     <td>{{ $ticket->id }}</td>
-                    <td>{{ $ticket->title }}</td>
+                    <td>{{ $ticket->title->name }}</td>
                     <td>{{ $ticket->status }}</td>
                     <td>{{ $ticket->created_at }}</td>
                     <td>

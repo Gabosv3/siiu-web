@@ -3,7 +3,7 @@
 @section('content')
 <div class="card mt-4 p-3">
     <h2 class="mb-5">Actualizar Departamento/Sección/Unidad</h2>
-    
+
     <div class="row">
         <!-- Columna para el mapa -->
         <div class="col-md-6 map-container">
@@ -33,19 +33,13 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="manager" class="form-label">ENCARGADO:</label>
-                    <select class="form-control js-select-manager" id="input-department-manager" name="manager" required>
-                        @foreach ($users as $user)
+                <select class="form-control js-select-manager" id="input-department-manager" name="manager" required>
+                    @foreach ($users as $user)
                         <option value="{{ $user->id }}" {{ $departament->manager == $user->id ? 'selected' : '' }}>
-                            {{ $user->name }} {{ $user->personalInformation->first_name }} {{ $user->personalInformation->last_name }}
+                            {{ $user->name }} ({{ $user->email }})
                         </option>
-                        @endforeach
-                    </select>
-                    <div class="invalid-feedback">
-                        por favor, seleccione un encargado.
-                    </div>
-                </div>
+                    @endforeach
+                </select>
 
                 <div class="mb-3">
                     <label for="description" class="form-label">DESCRIPCIÓN:</label>

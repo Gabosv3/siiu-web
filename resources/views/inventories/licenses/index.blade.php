@@ -1,7 +1,7 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-<div class="container">
+
     <h1>Lista de Licencias</h1>
 
     <div class="form-group">
@@ -43,6 +43,7 @@
                             <th>Clave de Licencia</th>
                             <th>Fecha de Compra</th>
                             <th>Fecha de Expiración</th>
+                            <th>Maximo de Dispositivos</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -54,11 +55,10 @@
                             <td>{{ $license->license_key }}</td>
                             <td>{{ $license->purchase_date }}</td>
                             <td>{{ $license->expiration_date }}</td>
+                            <td>{{ $license->max_devices }}</td>
                             <td>{{ $license->status }}</td>
                             <td>
-                                <a href="#" class="btn btn-cyan-800" aria-label="Asignar" title="Asignar licencia">
-                                    <i class="fa fa-check"></i>
-                                </a>
+
                                 <a href="{{ route('licenses.show', $license->id) }}" title="Ver licencia" class="btn btn-cyan-800"><i class="fa fa-eye"></i></a>
                                 <a href="{{ route('licenses.edit', $license->id) }}" title="Editar licencia" class="btn btn-green-600"><i class='bx bxs-edit-alt'></i></a>
                                 <form action="{{ route('licenses.destroy', $license->id) }}" method="POST" style="display:inline;" class="formulario-eliminar">
@@ -115,7 +115,7 @@
     </div>
     <!-- Tabla de licencias -->
 
-</div>
+
 
 @include('components.script-btn') <!-- Incluir scripts necesarios -->
 

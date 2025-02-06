@@ -33,11 +33,11 @@ class AssignmentController extends Controller
         // Mapear los resultados
         $mappedAssignments = $assignments->map(function ($assignment) {
             return [
+                'id' => $assignment->id, // Asegúrate de incluir el ID
                 'title' => $assignment->technician->user->name . ' - ' . $assignment->task,
                 'start' => $assignment->initial_date, // Usar 'initial_date' desde assignments
             ];
         });
-
         return response()->json($mappedAssignments);
     }
 }

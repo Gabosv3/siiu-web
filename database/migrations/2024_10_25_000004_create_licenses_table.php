@@ -21,7 +21,8 @@ class CreateLicensesTable extends Migration
             $table->string('license_key')->unique(); // Clave única de la licencia
             $table->date('purchase_date')->nullable(); // Fecha de compra de la licencia (opcional)
             $table->date('expiration_date')->nullable(); // Fecha de expiración de la licencia (opcional)
-            $table->integer('max_devices')->default(1);
+            $table->integer('max_devices')->default(1);// Cantidad máxima de dispositivos que pueden usar esta licencia
+            $table->integer('used_devices')->default(0); // Cantidad de dispositivos que actualmente usan esta licencia
             $table->string('status')->default('active'); // Estado de la licencia (por defecto es 'active')
             $table->timestamps(); // Timestamps para created_at y updated_at
             $table->softDeletes(); // Agrega la columna 'deleted_at' para eliminaciones lógicas

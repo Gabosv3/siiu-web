@@ -13,14 +13,17 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\CsvController;
 use App\Http\Controllers\Modulos\BarcodeController;
 use App\Http\Controllers\Modulos\CategoriesController;
+use App\Http\Controllers\Modulos\CharacteristicController;
 use App\Http\Controllers\Modulos\DepartamentController;
 use App\Http\Controllers\Modulos\EquipmentSoftwareController;
 use App\Http\Controllers\Modulos\FabricanteController;
 use App\Http\Controllers\Modulos\HardwareController;
+use App\Http\Controllers\Modulos\HardwareFileController;
 use App\Http\Controllers\Modulos\LicenseController;
 use App\Http\Controllers\Modulos\ModeloController;
 use App\Http\Controllers\Modulos\NotificationController;
 use App\Http\Controllers\Modulos\ReportsController;
+use App\Http\Controllers\Modulos\ServiceSheetController;
 use App\Http\Controllers\Modulos\ShelfController;
 use App\Http\Controllers\Modulos\UserController;
 use App\Http\Controllers\Modulos\SoftwareController;
@@ -34,7 +37,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-
+use Maatwebsite\Excel\Row;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,7 +114,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::put('/user/{id}/restore', [UserController::class, 'restore'])->name('user.restore');
 
     // Muestra una vista para editar un solo campo del usuario.
-    Route::get('/user/{id}/one_edit', [UserController::class, 'one_edit'])->name('user.one_edit');
+    Route::get('/oneuser/{id}/one_edit', [UserController::class, 'one_edit'])->name('user.one_edit');
 
     // Actualiza un solo campo del usuario.
     Route::match(['put', 'patch'], '/user/one_update/{user}', [UserController::class, 'oneUpdate'])->name('user.one_update');
@@ -130,7 +133,8 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
 
     // Rutas CRUD para el recurso de departamentos.
     Route::resource('departaments', DepartamentController::class);
-
+    //
+    Route::get('/Departamentos/equipos/{departmentId}', [DepartamentController::class, 'equipos'])->name('Departamentos.equipos');
     // Restaura un departamento eliminado.
     Route::put('/departaments/{departament}/restore', [DepartamentController::class, 'restore'])->name('departamentos.restore');
 
@@ -197,6 +201,11 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::get('models/{id}/characteristics', [ModeloController::class, 'associateCharacteristics'])->name('models.characteristics.associate');
     Route::post('models/{id}/characteristics', [ModeloController::class, 'storeCharacteristics'])->name('models.characteristics.store');
 
+    Route::post('/models/{id}/addCharacteristic', [ModeloController::class, 'addCharacteristic'])->name('models.addCharacteristic');
+
+    Route::post('/characteristics', [CharacteristicController::class, 'store'])->name('characteristics.store');
+
+
     // Rutas CRUD para las licencias de software.
     Route::resource('inventarios/licenses', LicenseController::class);
 
@@ -216,6 +225,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
 
     // Rutas CRUD para técnicos.
     Route::resource('technician', TechnicianController::class);
+    Route::put('/technicians/{technician}/restore', [TechnicianController::class, 'restore'])->name('technicians.restore');
 
     // Rutas CRUD para especialidades.
     Route::post('/specialties', [SpecialtyController::class, 'store'])->name('specialties.store');
@@ -228,6 +238,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::get('/mytickets', [TicketController::class, 'Mytickets'])->name('Mytickets');
     Route::get('/mytickets/{id}', [TicketController::class, 'Myticketsshow'])->name('Mytickets.show');
     Route::get('/get-technicians/{specialty_id}', [AssignmentController::class, 'getTechniciansBySpecialty'])->name('get-technicians');
+    Route::post('/titles', [TicketController::class, 'titlestore'])->name('titles.store');
 
     // Rutas CRUD para estanterías.
     Route::get('inventarios/shelves', [ShelfController::class, 'index'])->name('shelves.index');
@@ -237,9 +248,19 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
 
     Route::resource('inventarios/models', ModeloController::class);
     Route::put('/inventarios/models/{modelos}/restore', [ModeloController::class, 'restore'])->name('models.restore');
+    Route::delete('models/{model}/characteristics/{characteristic}', [ModeloController::class, 'removeCharacteristic'])
+    ->name('models.removeCharacteristic');
 
     Route::post('/assign-equipment', [AssignmentController::class, 'assignEquipment'])->name('assign.equipment');
     Route::post('/assign-software', [EquipmentSoftwareController::class, 'assignSoftware']);
+    //file
+    Route::post('/upload-file', [HardwareFileController::class, 'store'])->name('upload-file');
+    Route::get('/download-file/{id}', [HardwareFileController::class, 'downloadFile'])->name('download.file');
+    Route::delete('/hardware/file/{id}', [HardwareFileController::class, 'destroy'])->name('hardware.file.destroy');
+    //hoja de servicios
+    Route::get('/service-sheet/{id}', [ServiceSheetController::class, 'show'])->name('service-sheet.show');
+Route::post('/service-sheet/{id}', [ServiceSheetController::class, 'store'])->name('service-sheet.store');
+
     Route::match(['get', 'post'], '/botman', function () {
         $config = [];
 
@@ -271,7 +292,13 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::get('/escaneo', [BarcodeController::class, 'index'])->name('procesar.index');
     Route::post('inventarios/hardware/barcode', [BarcodeController::class, 'procesarCodigo'])->name('procesar.codigo');
     Route::get('/reportes', [ReportsController::class, 'index'])->name('reportes');
+    Route::get('/reportes/inventario', [ReportsController::class, 'getHardwareReports'])->name('reportes.inventario');
+    Route::get('/reportes/ticket', [ReportsController::class, 'getTicketReports'])->name('reportes.ticket');
+    Route::get('/reportes/tecnico', [ReportsController::class, 'getTechnicianReports'])->name('reportes.tecnico');
     Route::get('/reportes/usuario', [ReportsController::class, 'getUserReports'])->name('reportes.usuario');
+    // Ruta para generar el reporte por usuario (AJAX)
+    
+    Route::post('/fetch-reports', [ReportsController::class, 'fetchReports']);
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);

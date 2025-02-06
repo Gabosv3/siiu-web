@@ -10,19 +10,21 @@ class Assignment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'technician_id', // El técnico al que se le asigna la tarea
-        'ticket_id', // Relación con el ticket
-        'task', // La tarea o acción que debe realizarse
-        'initial_date', // Fecha de inicio de la tarea
-        'status', // Estado de la tarea ('pendiente', 'en progreso', 'completada', etc.)
+        'technician_id',
+        'ticket_id',
+        'task',
+        'initial_date',
+        'status',
     ];
 
     protected $casts = [
         'initial_date' => 'datetime',
     ];
 
-    // Relación con el modelo Technician
-    
+    // Configuración de registro de actividad
+    protected static $logAttributes = ['technician_id', 'ticket_id', 'task', 'initial_date', 'status'];
+    protected static $logName = 'asignaciones';
+
     // Relación con el ticket
     public function ticket()
     {
@@ -33,5 +35,11 @@ class Assignment extends Model
     public function technician()
     {
         return $this->belongsTo(Technician::class);
+    }
+
+    // Relación con HardwareAssignment
+    public function hardwareAssignments()
+    {
+        return $this->hasMany(HardwareAssignment::class);
     }
 }

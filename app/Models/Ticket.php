@@ -18,6 +18,19 @@ class Ticket extends Model
         'priority',
     ];
 
+    protected static $logAttributes = [
+        'user_id',
+        'technician_id',
+        'title_id',
+        'description',
+        'status',
+        'priority',
+    ];
+
+    protected static $logOnlyDirty = true;
+
+    protected static $logName = 'ticket';
+
     // Relación con el modelo Technician
     public function technician()
     {

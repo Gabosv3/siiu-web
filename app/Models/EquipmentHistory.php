@@ -20,6 +20,18 @@ class EquipmentHistory extends Model
         'performed_at',
     ];
 
+    // Campos que se van a registrar en el historial
+    protected static $logAttributes = [
+        'hardware_id',
+        'user_id',
+        'action',
+        'description',
+        'performed_at',
+    ];
+
+    // Nombre del log
+    protected static $logName = 'Historial de Equipos';
+
     /**
      * Relación con el equipo (Equipment).
      * Un registro de historial pertenece a un equipo.

@@ -36,33 +36,44 @@
         @foreach($hardwares as $hardware)
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-3 hardware-item">
             <div class="card shadow-sm boxx">
-                <div class="card-header text-center d-flex justify-content-around align-items-center">
-                    <div class="card-icon">
-                        <img src="{{ asset($hardware->category->image) }}" alt="{{ $hardware->category->name }}" style="width: 100px; height: 100px; object-fit: cover">
+                <div class="card-header text-center d-flex flex-column justify-content-center align-items-center">
+                    <div class="card-icon mb-3">
+                        <img src="{{ asset($hardware->category->image) }}" alt="{{ $hardware->category->name }}"
+                             style="width: 100px; height: 100px; object-fit: cover;">
                     </div>
-                    <div class="card-title">{{ $hardware->name }}
-                        <h4><a href="{{ route('hardwares.show', $hardware) }}">{{ $hardware->inventory_code }} </a></h4>
+                    <div class="card-title text-truncate" style="max-width: 100%;">
+                        <strong>{{ $hardware->name }}</strong>
+                        <h4 class="text-truncate">
+                            <a href="{{ route('hardwares.show', $hardware) }}" class="text-decoration-none">
+                                {{ $hardware->inventory_code }}
+                            </a>
+                        </h4>
                     </div>
                 </div>
                 <div class="card-body row text-center">
                     <div class="col-6">
-                        <p>Fabricante/modelo</p>
-                        <a href="#" class="text-decoration-none">{{ optional($hardware->manufacturer)->name ?? 'N/A' }}/{{ optional($hardware->model)->name ?? 'N/A' }}</a>
+                        <p class="mb-1">Fabricante/Modelo</p>
+                        <a href="#" class="text-decoration-none d-inline-block text-truncate" style="max-width: 100%;">
+                            {{ optional($hardware->manufacturer)->name ?? 'N/A' }}/{{ optional($hardware->model)->name ?? 'N/A' }}
+                        </a>
                     </div>
                     <div class="col-6">
-                        <p>Estatus</p>
-                        <a href="#" class="text-decoration-none">{{ $hardware->status }}</a>
+                        <p class="mb-1">Estatus</p>
+                        <a href="#" class="text-decoration-none d-inline-block text-truncate" style="max-width: 100%;">
+                            {{ $hardware->status }}
+                        </a>
                     </div>
                     <div class="col-12 mt-3">
                         @if($hardware->barcode_path)
-                        <img src="{{ asset('storage/' . $hardware->barcode_path) }}" class="img-fluid" alt="Código de Barras">
+                            <img src="{{ asset('storage/' . $hardware->barcode_path) }}" class="img-fluid" alt="Código de Barras">
                         @else
-                        <p class="text-muted">No disponible</p>
+                            <p class="text-muted">No disponible</p>
                         @endif
                     </div>
                 </div>
             </div>
         </div>
+
         @endforeach
     </div>
     <div class="mt-auto">

@@ -33,7 +33,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title text-center">DETALLES DEL TICKET</h5>
-                    <p class="card-text"><b>Título:</b> {{ $ticket->title }}</p>
+                    <p class="card-text"><b>Título:</b> {{ $ticket->title->name }}</p>
                     <p class="card-text"><b>Descripción:</b> {{ $ticket->description }}</p>
                     <p class="card-text"><b>Lugar:</b> {{ $ticket->user->departament->name }}</p>
                 </div>

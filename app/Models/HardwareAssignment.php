@@ -17,6 +17,12 @@ class HardwareAssignment extends Model
         'departament_id', // Si se asigna a un departamento
     ];
 
+    // Atributos de logs
+    protected static $logsAttributes = ['hardware_id', 'user_id', 'departament_id'];
+
+    // Configuración de logs
+    protected static $logName = 'Asignación de equipos';
+
     /**
      * Relación con el modelo Hardware
      */

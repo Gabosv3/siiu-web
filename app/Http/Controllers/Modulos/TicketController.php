@@ -50,7 +50,7 @@ class TicketController extends Controller
 
     public function Mytickets()
     {
-        $tickets = auth()->user()->tickets()->get();
+        $tickets = auth()->user()->tickets;
         return view('tickets.users.mytickets', compact('tickets'));
     }
 
@@ -62,13 +62,7 @@ class TicketController extends Controller
         // Retorna la vista con el ticket y sus asignaciones (historial)
         return view('tickets.users.show', compact('ticket'));
     }
-
-
-
-
-
-
-
+    
     public function assignTicket(Request $request, $ticketId)
     {
         $request->validate([
@@ -100,5 +94,22 @@ class TicketController extends Controller
         ]);
 
         return redirect()->route('tickets.show', $ticketId)->with('success', 'Ticket asignado exitosamente.');
+    }
+    public function titlestore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|unique:titles,name|max:255',
+        ]);
+
+        $title = new Title();
+        $title->name = $request->name;
+        $title->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function show($id)  {
+        $ticket = Ticket::findOrFail($id);
+        return view('tickets.show', compact('ticket'));
     }
 }

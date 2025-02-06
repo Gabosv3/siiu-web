@@ -17,6 +17,14 @@ class EquipmentSoftware extends Model
         'license_id',     // Relación con la licencia (opcional)
     ];
 
+    protected static $logAttributes = [
+        'hardware_id',    // Relación con el equipo
+        'software_id',    // Relación con el software
+        'license_id',     // Relación con la licencia (opcional)
+    ];
+
+    protected static $logName = 'equipo_software';
+
     // Relación con el equipo (hardware)
     public function hardware()
     {

@@ -56,7 +56,7 @@ class Models extends Model
      */
     public function modelCharacteristics()
     {
-        return $this->hasMany(ModelCharacteristic::class, 'model_id'); // Asegúrate de que la relación usa 'model_id'
+        return $this->hasMany(ModelCharacteristic::class, 'models_id'); // Asegúrate de que la relación usa 'model_id'
     }
 }
 

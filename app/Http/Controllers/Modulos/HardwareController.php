@@ -136,26 +136,55 @@ class HardwareController extends Controller
     }
 
     public function show(Hardware $hardware)
-{
-    $hardware->load(['softwares.licencias', 'equipmentHistories', 'users', 'category', 'manufacturer', 'model']);
-    $histories = EquipmentHistory::where('hardware_id', $hardware->id)->get();
-    $users = User::with('personalInformation', 'departament')->get();
-    $departaments = Departament::all();
+    {
+        // Cargar las relaciones del hardware, incluido el modelo asociado
+        $hardware->load([
+            'model.characteristics',
+            'softwares.licencias',
+            'equipmentHistories',
+            'users',
+            'category',
+            'manufacturer'
+        ]);
 
-    // Obtener todos los softwares gratuitos y de pago
-    $freeSoftwares = Software::where('type', 'free')->get();
-    $paidSoftwares = Software::where('type', 'paid')->get();
+        // Obtener el historial de equipo del hardware
+        $histories = EquipmentHistory::where('hardware_id', $hardware->id)->get();
 
-    // Obtener licencias que pueden ser usadas en al menos un dispositivo
-    $availableLicenses = License::where('max_devices', '>=', 1)->get();
+        // Obtener todos los usuarios con información personal y departamento
+        $users = User::with('personalInformation', 'departament')->get();
 
-    // Obtener las licencias vinculadas al hardware
-    $linkedLicenses = $hardware->softwares->flatMap(function ($software) {
-        return $software->licencias;
-    });
+        // Obtener todos los departamentos
+        $departaments = Departament::all();
 
-    return view('inventories.hardwares.show', compact('hardware', 'users', 'histories', 'departaments', 'freeSoftwares', 'paidSoftwares', 'availableLicenses', 'linkedLicenses'));
-}
+        // Obtener todos los softwares gratuitos y de pago
+        $freeSoftwares = Software::where('type', 'free')->get();
+        $paidSoftwares = Software::where('type', 'paid')->get();
+
+        // Obtener licencias disponibles que pueden ser usadas en al menos un dispositivo
+        $availableLicenses = License::where('max_devices', '>=', 1)->get();
+
+        // Obtener las licencias vinculadas al hardware
+        $linkedLicenses = $hardware->softwares->flatMap(function ($software) {
+            return $software->licencias;
+        });
+
+        // Obtener solo los archivos relacionados con el hardware
+        $hardwareFiles = $hardware->files()->get();
+
+        // Retornar la vista con todos los datos necesarios
+        return view('inventories.hardwares.show', compact(
+            'hardware',
+            'users',
+            'histories',
+            'departaments',
+            'freeSoftwares',
+            'paidSoftwares',
+            'availableLicenses',
+            'linkedLicenses',
+            'hardwareFiles'
+        ));
+    }
+
 
 
 

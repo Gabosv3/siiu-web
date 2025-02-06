@@ -17,7 +17,7 @@ class TechnicianController extends Controller
         // Obtener los usuarios que no están relacionados con un técnico
         $users = User::whereDoesntHave('technician')->get();
         $specialties  = Specialty::all();
-    
+
         // Retornar la vista 'user.technician.create' con los usuarios disponibles
         return view('user.technician.create', compact('users', 'specialties'));
     }
@@ -36,7 +36,8 @@ class TechnicianController extends Controller
             'available' => $validated['available'],
         ]);
 
-        return redirect()->route('user.index')->with('success', 'Técnico creado con éxito');
+        return redirect()->route('user.index')->with('tecnico_success', 'Técnico creado con éxito');
+
     }
 
     public function edit($id){
@@ -64,7 +65,7 @@ class TechnicianController extends Controller
             'available' => $validated['available'],
         ]);
 
-        return redirect()->route('technician.index')->with('success', 'Técnico actualizado con éxito');
+        return redirect()->route('user.index')->with('tecnico_success', 'Técnico actualizado con éxito');
     }
 
     // Eliminar un técnico
@@ -73,7 +74,15 @@ class TechnicianController extends Controller
         $technician = Technician::findOrFail($id);
         $technician->delete();
 
-        return redirect()->route('technician.index')->with('success', 'Técnico eliminado con éxito');
+        return redirect()->route('user.index')->with('tecnico_success', 'Técnico eliminado con éxito');
+    }
+
+    public function restore($id)
+    {
+        $technician = Technician::withTrashed()->findOrFail($id);
+        $technician->restore();
+
+        return redirect()->route('user.index')->with('tecnico_success', 'Técnico restaurado conxito');
     }
 
 

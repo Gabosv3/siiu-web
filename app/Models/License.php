@@ -21,6 +21,7 @@ class License extends Model
         'purchase_date',// Fecha de compra de la licencia
         'expiration_date', // Fecha de expiración de la licencia
         'max_devices', // Cantidad de equipos permitidos
+        'used_devices', // Cantidad de equipos en uso
         'status'// Estado de la licencia
     ];
 
@@ -35,14 +36,14 @@ class License extends Model
     ];
 
     // Puedes personalizar el nombre de registro de actividad
-    protected static $logName = 'license';
+    protected static $logName = 'licencias';
 
      // Cada licencia pertenece a un software
      public function software()
     {
         return $this->belongsTo(Software::class)->withTrashed();
     }
- 
+
      // Una licencia puede estar asignada a un equipo
      public function equipo()
      {

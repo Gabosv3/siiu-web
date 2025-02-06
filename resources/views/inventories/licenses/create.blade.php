@@ -78,26 +78,31 @@
 
 <script>
     document.getElementById('add-license-key').addEventListener('click', function() {
-        const container = document.getElementById('license-keys-container');
-        const newLicenseKeyEntry = `
-            <div class="row g-3 align-items-center mb-2">
-                <div class="col-auto">
-                    <label>Clave de Licencia:</label>
-                </div>
-                <div class="col">
-                    <input type="text" name="license_key[]" class="form-control" required>
-                </div>
-                <div class="col-auto pt-3">
-                    <button type="button" class="btn btn-primary remove-key">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-                <small id="license-key-requirements" class="text-muted">La clave debe tener entre 5 y 30 caracteres y no debe contener espacios.</small>
+    const container = document.getElementById('license-keys-container');
+    const newLicenseKeyEntry = `
+        <div class="row g-3 align-items-center mb-2">
+            <div class="col-auto">
+                <label>Clave de Licencia:</label>
+            </div>
+            <div class="col">
+                <input type="text" name="license_key[]" class="form-control" required>
+            </div>
+            <div class="col-auto">
+                <label for="max_devices">Máquinas permitidas:</label>
+            </div>
+            <div class="col">
+                <input type="number" name="max_devices[]" class="form-control max-devices" min="0" max="100" required>
+            </div>
+            <div class="col-auto pt-3">
+                <button type="button" class="btn btn-primary remove-key">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <small class="text-muted">La clave debe tener entre 5 y 30 caracteres y no debe contener espacios.</small>
+        </div>`;
 
-                
-            </div>`;
-        container.insertAdjacentHTML('beforeend', newLicenseKeyEntry);
-    });
+    container.insertAdjacentHTML('beforeend', newLicenseKeyEntry);
+});
 
     document.getElementById('process-file').addEventListener('click', function() {
         const fileInput = document.getElementById('file');
@@ -172,9 +177,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const today = new Date();
         const oneMonthAgo = new Date();
         oneMonthAgo.setMonth(today.getMonth() - 1);
-        
+
         const purchaseDate = new Date(purchaseDateInput.value);
-        
+
         // Reiniciar los mensajes de error
         purchaseDateError.style.display = 'none';
         purchaseDateRequirements.style.display = 'block'; // Mostrar requisitos
@@ -195,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
     expirationDateInput.addEventListener('input', function() {
         const purchaseDate = new Date(purchaseDateInput.value);
         const expirationDate = new Date(expirationDateInput.value);
-        
+
         // Reiniciar los mensajes de error
         expirationDateError.style.display = 'none';
         expirationDateRequirements.style.display = 'block'; // Mostrar requisitos
@@ -217,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.name === 'license_key[]') {
             const keyValue = e.target.value.trim();
             const isValid = keyValue.length >= 5 && keyValue.length <= 30 && !/\s/.test(keyValue);
-            
+
             if (!isValid) {
                 e.target.classList.add('is-invalid');
                 e.target.classList.remove('is-valid');
@@ -228,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-   
+
 });
 </script>
 

@@ -96,24 +96,13 @@ class AssignmentController extends Controller
     ]);
 
     // Buscar el hardware
-    $hardware = Hardware::find($request->hardware_id);
-    if (!$hardware) {
-        return response()->json([
-            'success' => false,
-            'message' => 'El equipo solicitado no existe.',
-        ], 404);
-    }
+    $hardware = Hardware::findOrFail($request->hardware_id);
 
-    // Verificar si el equipo ya está asignado a algún usuario
+    // Verificar y asignar a usuarios
     if ($request->filled('user_ids')) {
         foreach ($request->user_ids as $userId) {
-            // Verificar si ya está asignado el equipo a ese usuario
-            if ($hardware->users()->where('user_id', $userId)->exists()) {
-                continue; // Si ya está asignado, continuar con el siguiente usuario
-            }
-
-            // Asignar el equipo al usuario si no está asignado
-            $hardware->users()->attach($userId);
+            // Asignar solo si no está ya asignado
+            $hardware->users()->syncWithoutDetaching([$userId]);
 
             // Registrar en el historial
             EquipmentHistory::create([
@@ -126,38 +115,58 @@ class AssignmentController extends Controller
         }
     }
 
-    // Asignación a departamento
+    // Verificar y asignar a un departamento
     if ($request->filled('departament_id')) {
-        // Solo asignar el departamento si no existe un usuario asignado
-        HardwareAssignment::create([
-            'hardware_id' => $hardware->id,
-            'user_id' => null, // Asignamos null a user_id ya que no se asigna un usuario
-            'departament_id' => $request->departament_id,
-        ]);
+        // Si no hay un usuario asignado, asignamos 'user_id' como null
+        $userId = $hardware->users()->exists() ? $hardware->users->first()->id : null;
+
+        HardwareAssignment::updateOrCreate(
+            [
+                'hardware_id' => $hardware->id,
+                'departament_id' => $request->departament_id,
+            ],
+            [
+                'user_id' => $userId, // Asignamos 'user_id' según esté vacío o no
+                'departament_id' => $request->departament_id,
+            ]
+        );
 
         // Registrar en el historial
         EquipmentHistory::create([
             'hardware_id' => $hardware->id,
-            'user_id' => null,
+            'user_id' => $userId,
             'action' => 'Asignación a departamento',
             'description' => "Equipo asignado al departamento ID: {$request->departament_id}.",
             'performed_at' => now(),
         ]);
     }
 
+
     // Actualizar el estado del hardware
-    $hardware->status = 'Asignado';
-    $hardware->save();
+    $hardware->update(['status' => 'Asignado']);
 
     return response()->json([
         'success' => true,
         'message' => 'Equipo asignado correctamente.',
         'status' => $hardware->status,
-        'assigned_to' => $hardware->users()->pluck('name')->join(', '),
+        'assigned_to' => $hardware->users()->pluck('name')->join(', ') ?: 'Departamento',
         'department_name' => $hardware->hardwareAssignments->first()->department->name ?? null,
     ]);
 }
 
+public function getTechniciansBySpecialty($specialty_id)
+    {
+        try {
+            // Obtener técnicos con su relación de usuario
+            $technicians = Technician::where('specialty_id', $specialty_id)->with('user')->get();
+
+            return response()->json($technicians);
+        } catch (\Exception $e) {
+            // Registrar el error y devolver una respuesta JSON con el mensaje de error
+
+            return response()->json(['error' => 'Ocurrió un error al obtener los técnicos.'], 500);
+        }
+    }
 
 
 

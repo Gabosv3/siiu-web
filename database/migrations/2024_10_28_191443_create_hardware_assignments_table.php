@@ -11,8 +11,8 @@ class CreateHardwareAssignmentsTable extends Migration
         Schema::create('hardware_assignments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('hardware_id');
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('departament_id')->nullable(); // Agregando departament_id directamente
+            $table->unsignedBigInteger('user_id')->nullable(); // Permitir que user_id sea nullable
+            $table->unsignedBigInteger('departament_id')->nullable();
             $table->timestamps();
 
             $table->foreign('hardware_id')->references('id')->on('hardware')->onDelete('cascade');

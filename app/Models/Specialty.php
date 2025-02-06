@@ -13,7 +13,13 @@ class Specialty extends Model
     protected $fillable = [
         'name',  // Nombre de la especialidad
     ];
-    
+
+    protected static $logAttributes = ['name'];
+
+    protected static $logOnlyDirty = true;
+
+    protected static $logName = 'specialty';
+
 
     // Puedes agregar relaciones si las necesitas
     // Ejemplo: una especialidad puede tener muchos técnicos
