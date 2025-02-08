@@ -54,6 +54,10 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Relación muchos a uno con la clase Departamento.
      */
+
+    public function department(){
+        return $this->belongsTo(Departament::class);
+    }
     public function departament()
     {
         return $this->belongsTo(Departament::class)->withTrashed();

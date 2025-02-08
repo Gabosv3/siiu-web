@@ -249,7 +249,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::resource('inventarios/models', ModeloController::class);
     Route::put('/inventarios/models/{modelos}/restore', [ModeloController::class, 'restore'])->name('models.restore');
     Route::delete('models/{model}/characteristics/{characteristic}', [ModeloController::class, 'removeCharacteristic'])
-    ->name('models.removeCharacteristic');
+        ->name('models.removeCharacteristic');
 
     Route::post('/assign-equipment', [AssignmentController::class, 'assignEquipment'])->name('assign.equipment');
     Route::post('/assign-software', [EquipmentSoftwareController::class, 'assignSoftware']);
@@ -258,8 +258,12 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::get('/download-file/{id}', [HardwareFileController::class, 'downloadFile'])->name('download.file');
     Route::delete('/hardware/file/{id}', [HardwareFileController::class, 'destroy'])->name('hardware.file.destroy');
     //hoja de servicios
-    Route::get('/service-sheet/{id}', [ServiceSheetController::class, 'show'])->name('service-sheet.show');
-Route::post('/service-sheet/{id}', [ServiceSheetController::class, 'store'])->name('service-sheet.store');
+    Route::get('/service-sheet/{id}', [ServiceSheetController::class, 'create'])->name('service-sheet.create');
+    Route::post('/service-sheets/store', [ServiceSheetController::class, 'store'])->name('service_sheets.store');
+    Route::get('/service-sheets/get-hardware/{categoryId}', [ServiceSheetController::class, 'getHardware']);
+    Route::get('/service-sheets/get-supplies/{categoryId}', [ServiceSheetController::class, 'getSupplies']);
+    Route::get('/service-sheets/get-hardware-details/{id}', [ServiceSheetController::class, 'getHardwareDetails']);
+
 
     Route::match(['get', 'post'], '/botman', function () {
         $config = [];
@@ -297,7 +301,7 @@ Route::post('/service-sheet/{id}', [ServiceSheetController::class, 'store'])->na
     Route::get('/reportes/tecnico', [ReportsController::class, 'getTechnicianReports'])->name('reportes.tecnico');
     Route::get('/reportes/usuario', [ReportsController::class, 'getUserReports'])->name('reportes.usuario');
     // Ruta para generar el reporte por usuario (AJAX)
-    
+
     Route::post('/fetch-reports', [ReportsController::class, 'fetchReports']);
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
