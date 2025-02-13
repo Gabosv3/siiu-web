@@ -6,7 +6,7 @@
 
 
     @if(request()->has('category_id') && request()->input('category_id') !== 'all')
-        <a href="{{ route('supplies.create', ['category_id' => request()->input('category_id')]) }}" class="btn btn-primary">Agregar Hardware</a>
+        <a href="{{ route('supplies.create', ['category_id' => request()->input('category_id')]) }}" class="btn btn-primary">Agregar Insumo</a>
         @endif
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -69,7 +69,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
                     </tbody>
                 </table>
             </div>

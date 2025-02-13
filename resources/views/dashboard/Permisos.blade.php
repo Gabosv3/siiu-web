@@ -98,8 +98,7 @@ $fechaActual = date("j M, Y"); // M: mes (e.g. Jan), j: día del mes (1-31), Y: 
     // Obtener los datos de usuarios creados por día desde PHP usando json_encode()
     var dates = <?php echo json_encode($dates); ?>;
     var counts = <?php echo json_encode($counts); ?>;
-    console.log('Fechas:', dates); // Verificación en consola
-    console.log('Conteos:', counts); // Verificación en consola
+    
 
     // Crear gráfico de línea para usuarios creados por día
     var ctx2 = document.getElementById('usersByDayChart').getContext('2d');
@@ -129,34 +128,5 @@ $fechaActual = date("j M, Y"); // M: mes (e.g. Jan), j: día del mes (1-31), Y: 
     });
 </script>
 
-<script>
-    // Habilitar el registro de Pusher - no incluyas esto en producción
-    Pusher.logToConsole = true;
 
-    var pusher = new Pusher('2b6780ac7d04cb62f599', {
-        cluster: 'us2',
-        authEndpoint: '/broadcasting/auth', // Asegúrate de que este sea tu endpoint de autenticación
-        auth: {
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Incluye el token CSRF si es necesario
-            }
-        }
-    });
-
-    // Sustituye 'userId' por el ID del usuario autenticado
-    var userId = '{{ Auth::user()->id }}';
-    var channel = pusher.subscribe('my-private-channel.' + userId);
-
-    channel.bind('my-event', function(data) {
-        alert(JSON.stringify(data));
-    });
-
-    channel.bind('pusher:subscription_succeeded', function() {
-        console.log('Subscribed successfully to my-private-channel.' + userId);
-    });
-
-    channel.bind('pusher:subscription_error', function(status) {
-        console.error('Subscription error: ' + status);
-    });
-</script>
 @endsection

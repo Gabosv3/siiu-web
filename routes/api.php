@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //CAMBIOOO CLAIRE
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/users', [UserController::class, 'index']);
-    Route::get('/assignments', [AssignmentController::class, 'index']);
+
     Route::get('/hardware', [HardwareController::class, 'index']);
     Route::get('/hardware/{id}', [HardwareController::class, 'show']);
     Route::get('/categories', [CategoriesController::class, 'index']);
@@ -37,7 +37,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Ruta para generar el reporte por usuario (AJAX)
     Route::get('/reportes/usuario', [ReportsController::class, 'userReport']);
 });
-
 
 
 Route::post('/login', [AuthController::class, 'login']);

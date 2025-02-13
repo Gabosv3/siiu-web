@@ -39,7 +39,7 @@
                         <label for="estado" class="form-label">Estado</label>
                         <select id="estado" name="status" class="form-control" required>
                             <option value="nuevo">Nuevo</option>
-                            <option value="asignado">Asignado</option>
+                            
                         </select>
                     </div>
 

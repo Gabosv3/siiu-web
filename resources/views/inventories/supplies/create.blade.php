@@ -76,12 +76,12 @@
             <div class="row">
                 <div class="col-lg-4 mb-3">
                     <label for="quantity" class="form-label">Cantidad</label>
-                    <input type="number" name="quantity" class="form-control" id="quantity" required>
+                    <input type="number" name="quantity" class="form-control" min="0" value="0" id="quantity" required>
                 </div>
 
                 <div class="col-lg-4 mb-3">
-                    <label for="unit" class="form-label">Unidad</label>
-                    <input type="text" name="unit" class="form-control" id="unit" required>
+                    <label for="unit" class="form-label">Medida del insumo</label>
+                    <input type="text" name="unit" class="form-control" placeholder="Ejemplo: 500ml" id="unit"  required >
                 </div>
 
                 <div class="col-lg-4 mb-3">

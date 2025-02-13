@@ -11,6 +11,7 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            var events = {!! json_encode($events) !!}; // Cargar datos desde Laravel
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
@@ -26,7 +27,7 @@
                     day: 'Día',
                     list: 'Lista'
                 },
-                events: '/api/assignments', // Ruta que carga las asignaciones desde el servidor
+                events: events, // Ruta que carga las asignaciones desde el servidor
                 locale: 'es', // Cambiar el idioma a español
                 eventClick: function(info) {
                     // Redirige a la vista de la hoja de servicio

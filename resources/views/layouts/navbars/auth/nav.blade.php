@@ -62,7 +62,7 @@ $breadcrumbHtml = implode(' / ', $breadcrumbItems);
         </nav>
     </div>
 
-    <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4 d-flex justify-content-end" id="navbar">
+    <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4  d-flex justify-content-end" id="navbar">
         <ul class="navbar-nav  justify-content-end ">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><i class="fa fa-user me-sm-1"></i> Usuarios</a>
