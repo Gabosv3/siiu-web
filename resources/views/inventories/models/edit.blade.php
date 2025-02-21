@@ -59,8 +59,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="selectCharacteristicModalLabel">Seleccionar Característica</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                        
                     </button>
                 </div>
                 <form id="selectCharacteristicForm">
@@ -68,7 +68,7 @@
                         <div class="form-group">
                             <label for="existing_characteristic">Característica existente:</label>
                             <select id="existing_characteristic" class="form-control"
-                                data-placeholder="Seleccione una característica">
+                                data-placeholder="Seleccione una característica" required>
                                 <option value="" disabled selected></option>
                                 @foreach ($characteristics as $characteristic)
                                     <option value="{{ $characteristic->id }}"
@@ -81,7 +81,7 @@
                         <div class="form-group">
                             <label for="characteristic_value">Valor de la característica:</label>
                             <input type="text" id="characteristic_value" name="characteristic_value" class="form-control"
-                                placeholder="Ingresa el valor">
+                                placeholder="Ingresa el valor" required>
                         </div>
                     </div>
                     <div class="modal-footer">

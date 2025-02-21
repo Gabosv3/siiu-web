@@ -73,6 +73,7 @@
                         <label for="nuevo_fabricante_nombre" class="form-label">Nombre del Fabricante</label>
                         <input type="text" class="form-control" id="nuevo_fabricante_nombre" name="nombre" required>
                     </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </form>
             </div>

@@ -54,6 +54,7 @@ class ModeloController extends Controller
 
         // Devolver respuesta en formato JSON
         return response()->json([
+            'success' => true,
             'message' => 'Modelo creado con éxito',
             'modelo' => $modelo
         ], 201);

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="p-3">
-    <h3>Crear Insumo</h3>
+    <h3>Editar Insumo</h3>
 
     @if ($errors->any())
     <div class="alert alert-danger">
@@ -14,8 +14,9 @@
     </div>
     @endif
 
-    <form action="{{ route('supplies.store') }}" method="POST">
+    <form action="{{ route('supplies.update', $insumo->id) }}" method="POST">
         @csrf
+        @method('PUT')
         <div class="card border border-dark p-3 my-3">
             <div class="card-header">General
                 <hr>
@@ -25,94 +26,76 @@
                     <input type="hidden" name="category_id" value="{{ $categoria->id }}">
                     <div class="mb-3">
                         <label for="name" class="form-label">Nombre</label>
-                        <input type="text" name="name" class="form-control" id="name" required>
+                        <input type="text" name="name" class="form-control" id="name" value="{{ $insumo->name }}" required>
                     </div>
 
-                    <!-- Fabricante -->
                     <div class="mb-3">
                         <label for="fabricante_id" class="form-label">Fabricante</label>
                         <div class="d-flex align-items-center">
-                            <!-- Select2 Fabricante -->
                             <select id="fabricante_id" name="manufacturer_id" class="form-control js-select-fabricante" style="width: 90%;" required>
-                                <option value="" disabled selected>Seleccione un fabricante</option>
+                                <option value="" disabled>Seleccione un fabricante</option>
                                 @foreach($fabricantes as $fabricante)
-                                <option value="{{ $fabricante->id }}">{{ $fabricante->name }}</option>
+                                <option value="{{ $fabricante->id }}" {{ $insumo->manufacturer_id == $fabricante->id ? 'selected' : '' }}>{{ $fabricante->name }}</option>
                                 @endforeach
                             </select>
-
-                            <!-- Botón para agregar nuevo fabricante -->
                             <button type="button" class="btn btn-green-600 ms-2 m-auto" title="agregar fabricante" data-bs-toggle="modal" data-bs-target="#createFabricanteModal" style="height: 38px;">
                                 <i class="fa fa-plus" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Modelo -->
                     <div class="mb-3">
                         <label for="modelo_id" class="form-label">Modelo</label>
                         <div class="d-flex align-items-center">
-                            <!-- Select2 Modelos -->
-                            <select id="modelo_id" name="model_id" class="form-control js-select-modelo" style="width: 90%;" data-show-subtext="true" data-live-search="true" required>
-                                <option value="" disabled selected>Seleccione un modelo</option>
+                            <select id="modelo_id" name="model_id" class="form-control js-select-modelo" style="width: 90%;" required>
+                                <option value="" disabled>Seleccione un modelo</option>
+                                @foreach($modelos as $modelo)
+                                <option value="{{ $modelo->id }}" {{ $insumo->model_id == $modelo->id ? 'selected' : '' }}>{{ $modelo->name }}</option>
+                                @endforeach
                             </select>
-
-                            <!-- Botón para agregar nuevo modelo -->
-                            <button type="button" class="btn btn-green-600 ms-2 m-auto" title="agregar modelo" id="addModeloBtn" disabled data-bs-toggle="modal" data-bs-target="#createModeloModal" style="height: 38px;">
+                            <button type="button" class="btn btn-green-600 ms-2 m-auto" title="agregar modelo" id="addModeloBtn" data-bs-toggle="modal" data-bs-target="#createModeloModal" style="height: 38px;">
                                 <i class="fa fa-plus" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
-
                 </div>
                 <div class="col-lg-5 d-flex align-items-center justify-content-center">
-                    <img src="{{ asset( $categoria->image) }}" alt="Categoría" class="img-fluid rounded shadow" style="max-width: 300px; height: auto; border: 2px solid #ccc; padding: 10px;">
+                    <img src="{{ asset($categoria->image) }}" alt="Categoría" class="img-fluid rounded shadow" style="max-width: 300px; height: auto; border: 2px solid #ccc; padding: 10px;">
                 </div>
             </div>
         </div>
 
         <div class="card border border-dark p-3 my-3">
-            <div class="card-header">Especificos</div>
+            <div class="card-header">Específicos</div>
             <hr>
             <div class="row">
                 <div class="col-lg-4 mb-3">
                     <label for="quantity" class="form-label">Cantidad</label>
-                    <input type="number" name="quantity" class="form-control" min="0" value="0" id="quantity" required>
+                    <input type="number" name="quantity" class="form-control" min="0" value="{{ $insumo->quantity }}" id="quantity" required>
                 </div>
-
                 <div class="col-lg-4 mb-3">
                     <label for="unit" class="form-label">Medida del insumo</label>
-                    <input type="text" name="unit" class="form-control" placeholder="Ejemplo: 500ml" id="unit"  required >
+                    <input type="text" name="unit" class="form-control" value="{{ $insumo->unit }}" id="unit" required>
                 </div>
-
                 <div class="col-lg-4 mb-3">
                     <label for="status" class="form-label">Estado</label>
                     <select name="status" id="status" class="form-control" required>
-                        <option value="active">Activo</option>
-                        <option value="inactive">Inactivo</option>
+                        <option value="active" {{ $insumo->status == 'active' ? 'selected' : '' }}>Activo</option>
+                        <option value="inactive" {{ $insumo->status == 'inactive' ? 'selected' : '' }}>Inactivo</option>
                     </select>
                 </div>
-
                 <div class="col-lg-6 mb-3">
                     <label for="description" class="form-label">Descripción</label>
-                    <textarea name="description" class="form-control" id="description" rows="3" required></textarea>
+                    <textarea name="description" class="form-control" id="description" rows="3">{{ $insumo->description }}</textarea>
                 </div>
                 <div class="col-6 text-end align-self-end">
-                    
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="submit" class="btn btn-primary">Actualizar</button>
                 </div>
-
             </div>
-
         </div>
+    </form>
 
-</div>
-
-
-
-
-</form>
-
-
+    
 <!-- Modal para crear fabricante -->
 <div class="modal fade" id="createFabricanteModal" tabindex="-1" aria-labelledby="createFabricanteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -162,6 +145,8 @@
         </div>
     </div>
 </div>
+
+
 </div>
 
 <script>
@@ -307,4 +292,7 @@
 
     });
 </script>
+
+
+
 @endsection

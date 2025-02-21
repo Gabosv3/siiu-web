@@ -214,7 +214,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
 
     // Rutas CRUD para los insumos
     Route::resource('inventarios/supplies', SupplyController::class);
-
+    Route::put('/inventarios/supplies/{supply}/restore', [SupplyController::class, 'restore'])->name('supplies.restore');
 
     // Rutas CRUD para tickets.
     Route::resource('/tickets', TicketController::class);
@@ -315,7 +315,8 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
 
 
 });
-
+//reportes
+Route::get('/reportes/datausuario', [ReportsController::class, 'userReport']);
 //notificaciones
 Route::post('/pusher/auth', [NotificationController::class, 'auth'])->middleware('auth');
 

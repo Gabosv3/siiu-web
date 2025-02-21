@@ -180,7 +180,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="createModeloModalLabel">Añadir Nuevo Modelo para <span id="selectedFabricante"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
             </div>
             <div class="modal-body">
                 <form id="createModeloForm">
@@ -190,7 +190,7 @@
                         <input type="text" class="form-control" id="nuevo_modelo_nombre" name="nombre" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 </form>
             </div>
         </div>

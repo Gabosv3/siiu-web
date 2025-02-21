@@ -8,7 +8,7 @@
         @csrf
 
         <fieldset class="border rounded-3 p-3 mb-3 card">
-            <legend class="float-none w-auto px-3">Importar:</legend>
+            <h3 class="float-none w-auto px-3">Importar</h3>
             <h4>Importar Claves de Licencia desde Archivo</h4>
             <div class="form-group">
                 <label for="file">Subir archivo (CSV):</label>
@@ -21,7 +21,7 @@
         </fieldset>
 
         <fieldset class="border rounded-3 p-3 mb-3 card">
-            <legend class="float-none w-auto px-3">Detalles:</legend>
+            <h2 class="float-none w-auto px-3">Detalles</h2>
             <div class="row g-3">
                 <div class="col-md-12">
                     <div class="form-group">

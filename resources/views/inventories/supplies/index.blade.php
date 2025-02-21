@@ -59,8 +59,8 @@
         <!-- Contenido de la pestaña de desactivados -->
         <div class="tab-pane fade" id="nav-deactivateds" role="tabpanel" aria-labelledby="nav-deactivated-tab">
             <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
-                <table id="restaurar" class="table align-items-center mb-0 text-center" style="width:100%">
-                    <thead>
+                <table id="restaurar" class="table align-items-center mb-0 text-center " style="width:100%">
+                    <thead class="table-primary text-center">
                         <tr>
                             <th>ID</th>
                             <th>NOMBRE</th>
@@ -69,6 +69,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach ($deletedSupplies as $supply)
+                        <tr>
+                            <td>{{ $supply->id }}</td>
+                            <td>{{ $supply->name }}</td>
+                            <td>{{ $supply->deleted_at }}</td>
+                            <td>
+                                @can('user.restore')
+                                <!-- Form to restore department -->
+                                <form action="{{ route('supplies.restore', $supply->id) }}" class="formulario-restaurar" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <button id="btn-restore-department" class="btn btn-cyan-800 mb-3" type="submit">Restore</button>
+                                </form>
+                                @endcan
+                            </td>
+                        </tr>
+                        @endforeach
 
                     </tbody>
                 </table>

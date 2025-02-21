@@ -44,7 +44,8 @@ class AssignmentController extends Controller
 
         // Comprobar si hay asignaciones
         if ($assignments->isEmpty()) {
-            return response()->json(['message' => 'No hay asignaciones disponibles.'], 404);
+            $events = "No hay asignaciones disponibles.";
+            return view('components.calendar', compact('events'));
         }
 
         // Mapear los resultados

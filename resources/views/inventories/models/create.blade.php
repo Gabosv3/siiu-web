@@ -147,7 +147,7 @@
                 },
                 
                 success: function(response) {
-                    if (response.status == 'success') {
+                    if (response.success) {
                         Swal.fire({
                             icon: 'success',
                             title: '¡Éxito!',

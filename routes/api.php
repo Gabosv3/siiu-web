@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/equipment-histories/{id}', [EquipmentHistoryController::class, 'show']);
     Route::get('/equipment-history/{categoryId}/{inventoryCode}', [EquipmentHistoryController::class, 'EquipmentHistory']);
     // Ruta para generar el reporte por usuario (AJAX)
-    Route::get('/reportes/usuario', [ReportsController::class, 'userReport']);
+   
 });
 
 

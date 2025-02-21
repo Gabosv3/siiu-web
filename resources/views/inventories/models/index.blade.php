@@ -108,8 +108,8 @@ aria-labelledby="addCharacteristicModalLabel" aria-hidden="true">
     <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title" id="addCharacteristicModalLabel">Agregar Característica</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Cerrar">
+                
             </button>
         </div>
         <form id="addCharacteristicForm">
@@ -122,7 +122,7 @@ aria-labelledby="addCharacteristicModalLabel" aria-hidden="true">
                 <div class="form-group">
                     <label for="characteristic_description">Descripción de la característica:</label>
                     <textarea id="characteristic_description" name="characteristic_description" class="form-control"
-                        placeholder="Descripción de la característica" rows="3"></textarea>
+                        placeholder="Descripción de la característica" rows="3" required></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -150,14 +150,18 @@ aria-labelledby="addCharacteristicModalLabel" aria-hidden="true">
             var description = $('#characteristic_description').val();
 
             // Validar que el nombre no esté vacío
-            if (name.trim() === '') {
-                alert('El nombre de la característica es obligatorio.');
+            if (name.trim() === '' || description.trim() === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campo obligatorio',
+                    text: 'El nombre y la descripción de la característica es obligatorio.',
+                });
                 return;
             }
 
             // Enviar los datos al servidor mediante AJAX
             $.ajax({
-                url: '{{ route("characteristics.store") }}', // Ruta al controlador para guardar la característica
+                url: '{{ route("characteristics.store") }}', // Ruta al controlador
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
@@ -165,10 +169,15 @@ aria-labelledby="addCharacteristicModalLabel" aria-hidden="true">
                     description: description
                 },
                 success: function(response) {
-                    alert('La característica se agregó correctamente.');
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Guardado!',
+                        text: 'La característica se agregó correctamente.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
 
-                    // Opcional: Agregar la nueva característica a una tabla o lista en la página
-                    // Aquí puedes renderizar dinámicamente
+                    // Agregar la nueva característica a la tabla
                     var newRow = `
                         <tr>
                             <td>${response.id}</td>
@@ -183,7 +192,11 @@ aria-labelledby="addCharacteristicModalLabel" aria-hidden="true">
                     $('#addCharacteristicForm')[0].reset();
                 },
                 error: function(xhr) {
-                    alert('Hubo un error al guardar la característica. Intente nuevamente.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hubo un problema al guardar la característica. Inténtalo de nuevo.',
+                    });
                 }
             });
         });

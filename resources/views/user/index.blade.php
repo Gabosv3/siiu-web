@@ -380,7 +380,7 @@
             Swal.fire({
                 icon: 'success',
                 title: 'Técnico',
-                text: '{{ session('tecnico_success') }}'
+                text: "{{ session('tecnico_success') }}"
             });
         });
     </script>
@@ -390,7 +390,7 @@
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: '{{ session('tecnico_error') }}'
+                text: "{{ session('tecnico_error') }}"
             });
         });
     </script>
