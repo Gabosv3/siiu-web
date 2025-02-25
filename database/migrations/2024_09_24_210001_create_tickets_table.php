@@ -26,6 +26,7 @@ class CreateTicketsTable extends Migration
             $table->enum('status', ['abierto', 'en proceso', 'resuelto', 'cerrado'])->default('abierto'); // Estado del ticket (por defecto es 'abierto')
             $table->enum('priority', ['alta', 'media', 'baja'])->default('media'); // Prioridad del ticket (por defecto es 'media')
 
+            $table->softDeletes();
             $table->timestamps(); // Timestamps para created_at y updated_at
         });
     }

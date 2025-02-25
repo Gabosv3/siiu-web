@@ -11,6 +11,20 @@ use Illuminate\Http\Request;
 
 class LicenseController extends Controller
 {
+    /**
+     * Constructor del controlador.
+     *
+     * Establece middleware para controlar los permisos de acceso a los métodos
+     * del controlador. Los middleware se aplican a los métodos según se indica
+     * a continuación:
+     *
+     * - index: can:licencias.index
+     * - create y store: can:licencias.create
+     * - edit y update: can:licencias.edit
+     * - destroy: can:licencias.destroy
+     * - restore: can:licencias.restore
+     *
+     */
     public function __construct()
     {
         $this->middleware('can:licencias.index')->only('index');
@@ -19,8 +33,17 @@ class LicenseController extends Controller
         $this->middleware('can:licencias.destroy')->only('destroy');
         $this->middleware('can:licencias.restore')->only('restore');
     }
-    //
-    // Mostrar todas las licencias
+    
+    /**
+     * Muestra la lista de licencias, con opción de filtrar por software.
+     *
+     * Si se proporciona el ID de un software en el query string,
+     * se muestran solo las licencias para ese software.
+     * Si no se proporciona, se muestran todas las licencias.
+     *
+     * @param \Illuminate\Http\Request $request La solicitud que contiene el ID del software.
+     * @return \Illuminate\Http\Response La respuesta con la vista de la lista de licencias.
+     */
     public function index(Request $request)
     {
         $licesesdeleted = License::onlyTrashed()->get();
@@ -45,7 +68,17 @@ class LicenseController extends Controller
         return view('inventories.licenses.index', compact('licenses', 'software', 'softwares', 'licesesdeleted'));
     }
 
-    // Mostrar formulario para crear una nueva licencia
+
+    /**
+     * Muestra la vista para crear una nueva licencia.
+     *
+     * Obtiene el software correspondiente a partir del ID proporcionado
+     * en la solicitud y lo pasa a la vista de creación de licencias.
+     *
+     * @param \Illuminate\Http\Request $request La solicitud que contiene el ID del software.
+     * @return \Illuminate\View\View La vista para crear una nueva licencia.
+     */
+
     public function create(Request $request)
     {
         $software_id = $request->input('software_id');
@@ -56,7 +89,18 @@ class LicenseController extends Controller
         return view('inventories.licenses.create', compact('software'));
     }
 
-    // Guardar una nueva licencia
+    
+    /**
+     * Crea una nueva licencia para un software.
+     *
+     * Valida los datos de la solicitud y crea una o varias licencias
+     * según la cantidad de claves de licencia proporcionadas.
+     * Si la validación falla, se muestra un mensaje de error.
+     * Si la creación es exitosa, se muestra un mensaje de éxito.
+     *
+     * @param \Illuminate\Http\Request $request La solicitud que contiene los datos de la licencia a crear.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección a la lista de licencias.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -95,23 +139,41 @@ class LicenseController extends Controller
             ->with('success', 'Licencia creada exitosamente.');
     }
 
-
-
-    // Mostrar una licencia específica
+    /**
+     * Muestra la vista de detalles de una licencia.
+     *
+     * @param \App\Models\License $license La licencia a mostrar.
+     * @return \Illuminate\View\View La vista de detalles de la licencia.
+     */
     public function show(License $license)
     {
         return view('inventories.licenses.show', compact('license'));
     }
 
-    // Mostrar formulario para editar una licencia existente
+    /**
+     * Muestra la vista de edición de una licencia.
+     *
+     * @param \App\Models\License $license La licencia a editar.
+     * @return \Illuminate\View\View La vista de edición de la licencia.
+     */
     public function edit(License $license)
     {
         $softwares = Software::all();
         $equipos = Hardware::all();
         return view('inventories.licenses.edit', compact('license', 'softwares', 'equipos'));
-    }
 
-    // Actualizar una licencia existente
+    }
+    /**
+     * Actualiza una licencia.
+     *
+     * Valida los datos de la solicitud y actualiza la licencia correspondiente.
+     * Si la validación falla, se muestra un mensaje de error.
+     * Si la actualización es exitosa, se muestra un mensaje de éxito.
+     *
+     * @param \Illuminate\Http\Request $request La solicitud que contiene los datos de la licencia a actualizar.
+     * @param \App\Models\License $license La licencia a actualizar.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección a la lista de licencias.
+     */
     public function update(Request $request, License $license)
     {
         $request->validate([
@@ -131,7 +193,16 @@ class LicenseController extends Controller
         return redirect()->route('licenses.index')->with('success', 'Licencia actualizada exitosamente.');
     }
 
-    // Eliminar una licencia
+    /**
+     * Elimina una licencia.
+     *
+     * Elimina la licencia solicitada de la base de datos.
+     * Si la eliminación es exitosa, se muestra un mensaje de éxito.
+     * Si la eliminación falla, se muestra un mensaje de error.
+     *
+     * @param \App\Models\License $license La licencia a eliminar.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección a la lista de licencias.
+     */
     public function destroy(License $license)
     {
         if ($license->delete()) {
@@ -140,6 +211,17 @@ class LicenseController extends Controller
 
         return redirect()->route('licenses.index')->with('error', 'Licencia no encontrada.');
     }
+
+    /**
+     * Restaura una licencia eliminada.
+     *
+     * Busca la licencia eliminada por su ID y la restaura.
+     * Luego redirige a la lista de licencias con un mensaje de éxito.
+     * Si la licencia no se encuentra, redirige con un mensaje de error.
+     *
+     * @param int $id El ID de la licencia a restaurar.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección a la lista de licencias.
+     */
 
     public function restore($id)
     {

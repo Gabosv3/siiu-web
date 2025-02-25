@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class LoginSecurity extends Model
 {
-    use HasFactory,LogsActivity;
+    use HasFactory,LogsActivity,SoftDeletes;
 
     //especifica la tabla asociada
     protected $table = 'login_securities';
@@ -28,11 +29,17 @@ class LoginSecurity extends Model
     protected static $logName = 'Seguridad de inicio de sesión';
 
 
+    
     /**
-     * Relación muchos a uno con la clase User.
+     * Relación con el modelo User.
+     *
+     * Esta función devuelve una relación 'belongsTo' con el modelo User,
+     * indicando que cada registro de seguridad de inicio de sesión pertenece a un usuario.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 }

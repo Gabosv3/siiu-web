@@ -14,7 +14,14 @@ use Illuminate\Http\Request;
 
 class ServiceSheetController extends Controller
 {
-    // Mostrar la vista de la hoja de servicio
+
+    /**
+     * Muestra la vista para crear una hoja de servicios
+     *
+     * @param int $id Identificador del registro de la asignaci n
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create($id)
     {
         $CategoryListhardware = Category::where('type', 'Equipo')->get();
@@ -23,6 +30,17 @@ class ServiceSheetController extends Controller
         $supplies = Supply::all();
         return view('service_sheets.create', compact('CategoryListhardware', 'CategoryListInsumo', 'data', 'supplies'));
     }
+
+    /**
+     * Almacena nuevas hojas de servicio en la base de datos.
+     *
+     * Valida los datos de la solicitud antes de crear una o más hojas de servicio.
+     * Cada hoja de servicio está asociada a un hardware, un ticket y puede incluir
+     * insumos. Se adjuntan insumos a la hoja de servicio si se proporcionan.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
 
     public function store(Request $request)
     {
@@ -37,6 +55,17 @@ class ServiceSheetController extends Controller
             'sheets.*.observations' => 'nullable|string',
             'sheets.*.supplies' => 'array',
             'sheets.*.supplies.*' => 'exists:supplies,id',
+        ], [
+            'sheets.*.hardware_id.exists' => 'El equipo seleccionado no existe.',
+            'sheets.*.ticket_id.exists' => 'El ticket seleccionado no existe.',
+            'sheets.*.task.required' => 'La tarea es obligatoria.',
+            'sheets.*.initial_date.required' => 'La fecha inicial es obligatoria.',
+            'sheets.*.status.required' => 'El estado es obligatorio.',
+            'sheets.*.description.required' => 'La descripción es obligatoria.',
+            'sheets.*.supplies.*.exists' => 'El insumo seleccionado no existe.',
+            'sheets.required' => 'Las hojas de servicio son obligatorias.',
+            'sheets.*.required' => 'Las hojas de servicio son obligatorias.',
+
         ]);
 
         foreach ($request->sheets as $sheetData) {
@@ -58,22 +87,55 @@ class ServiceSheetController extends Controller
 
         return redirect()->route('service_sheets.index')->with('success', 'Hojas de servicio creadas exitosamente.');
     }
+
+    /**
+     * Muestra una hoja de servicio en detalle.
+     *
+     * @param ServiceSheet $serviceSheet La hoja de servicio a mostrar.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function show(ServiceSheet $serviceSheet)
     {
         return view('service_sheets.show', compact('serviceSheet'));
     }
 
+
+    /**
+     * Obtiene una lista de hardware que pertenecen a una categoría específica.
+     *
+     * @param int $categoryId La ID de la categoría a la que pertenece el hardware.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getHardware($categoryId)
     {
         $hardware = Hardware::where('category_id', $categoryId)->get();
         return response()->json($hardware);
     }
 
+
+    /**
+     * Obtiene una lista de insumos que pertenecen a una categoría específica.
+     *
+     * @param int $categoryId La ID de la categoría a la que pertenecen los insumos.
+     *
+     * @return \Illuminate\Http\Response La lista de insumos en formato JSON.
+     */
     public function getSupplies($categoryId)
     {
         $supplies = Supply::where('category_id', $categoryId)->get();
+        //comentario español
         return response()->json($supplies);
     }
+
+    /**
+     * Obtiene los detalles de un hardware por su ID.
+     *
+     * @param int $id La ID del hardware a obtener.
+     *
+     * @return \Illuminate\Http\Response Un objeto JSON con los detalles del hardware.
+     */
 
     public function getHardwareDetails($id)
     {

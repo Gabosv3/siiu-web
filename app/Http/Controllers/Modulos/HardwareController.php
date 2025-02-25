@@ -6,13 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Departament;
 use App\Models\EquipmentHistory;
-use App\Models\EquipmentSoftware;
 use App\Models\Hardware;
 use App\Models\License;
 use App\Models\Manufacturer;
 use App\Models\Models;
 use App\Models\Software;
-use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -20,6 +18,19 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class HardwareController extends Controller
 {
+    /**
+     * Constructor del controlador.
+     *
+     * Establece middleware para controlar los permisos de acceso a los métodos
+     * del controlador. Los middleware se aplican a los métodos según se indica
+     * a continuación:
+     *
+     * - index: can:hardware.index
+     * - create y store: can:hardware.create
+     * - edit y update: can:hardware.edit
+     * - destroy: can:hardware.destroy
+     * - restore: can:hardware.restore
+     */
     public function __construct()
     {
         $this->middleware('can:hardware.index')->only('index');
@@ -41,6 +52,18 @@ class HardwareController extends Controller
         return view('inventories.hardwares.index', compact('hardwares', 'viewType'));
     }
 
+    /**
+     * Muestra la vista para crear un nuevo hardware.
+     *
+     * Si se proporciona un ID de categoría en la solicitud, se obtiene la categoría
+     * correspondiente y se pasa a la vista.
+     *
+     * Si se ha enviado un archivo CSV en la solicitud, se almacena en la sesión
+     * y se pasa a la vista.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function create(Request $request)
     {
         // Obtener las variables necesarias
@@ -71,6 +94,19 @@ class HardwareController extends Controller
     }
 
 
+    /**
+     * Crea un nuevo hardware en la base de datos.
+     *
+     * Verifica que los datos sean válidos y crea un nuevo hardware
+     * individualmente por cada conjunto de datos en el array.
+     *
+     * Adicionalmente, genera un código de barras para cada hardware
+     * basado en su código de inventario y lo guarda como imagen
+     * en el servidor.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -135,6 +171,17 @@ class HardwareController extends Controller
         return redirect()->route('hardwares.index')->with('success', 'Hardware(s) creado(s) exitosamente con código de barras.');
     }
 
+    /**
+     * Muestra la vista para ver un hardware en particular.
+     *
+     * Carga las relaciones del hardware y los datos necesarios para mostrar
+     * toda la información del hardware, incluyendo su historial de asignaciones,
+     * software y licencias relacionadas, departamentos y usuarios con los
+     * que se relaciona.
+     *
+     * @param  \App\Models\Hardware  $hardware
+     * @return \Illuminate\Http\Response
+     */
     public function show(Hardware $hardware)
     {
         // Cargar las relaciones del hardware, incluido el modelo asociado
@@ -189,16 +236,42 @@ class HardwareController extends Controller
 
 
 
+    /**
+     * Muestra la vista para editar un hardware.
+     *
+     * @param  \App\Models\Hardware  $hardware
+     * @return \Illuminate\Http\Response
+     */
     public function edit(Hardware $hardware)
     {
         return view('inventories.hardwares.edit', compact('hardware'));
     }
 
+    /**
+     * Actualiza un hardware existente.
+     *
+     * Valida los datos del request y actualiza el hardware correspondiente.
+     * Luego redirige a la lista de hardwares con un mensaje de éxito.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Hardware  $hardware
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request, Hardware $hardware)
     {
 
         return redirect()->route('hardwares.index')->with('success', 'Hardware actualizado exitosamente.');
     }
+
+    /**
+     * Elimina un hardware específico.
+     *
+     * Desvincula las etiquetas y sistemas relacionados antes de eliminar el hardware
+     * de la base de datos. Luego redirige a la lista de hardwares con un mensaje de éxito.
+     *
+     * @param  \App\Models\Hardware  $hardware  El hardware a eliminar.
+     * @return \Illuminate\Http\Response
+     */
 
     public function destroy(Hardware $hardware)
     {
@@ -209,6 +282,15 @@ class HardwareController extends Controller
         return redirect()->route('hardwares.index')->with('success', 'Hardware eliminado exitosamente.');
     }
 
+    /**
+     * Restaura un hardware eliminado.
+     *
+     * Busca el hardware eliminado por su ID y lo restaura.
+     * Luego redirige a la lista de hardwares con un mensaje de éxito.
+     *
+     * @param  \App\Models\Hardware  $hardware
+     * @return \Illuminate\Http\Response
+     */
     public function restore(Hardware $hardware)
     {
         $hardware->restore();

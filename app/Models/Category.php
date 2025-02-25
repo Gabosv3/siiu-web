@@ -13,14 +13,21 @@ class Category extends Model
 
     protected $table = 'categories';
 
-    protected $fillable = ['name', 'code', 'description','type', 'image']; // Campos en inglés
+    protected $fillable = ['name', 'code', 'description', 'type', 'image']; // Campos en inglés
 
     // Configurar los atributos que se registrarán
-    protected static $logAttributes = ['name', 'code', 'description','type', 'image'];
+    protected static $logAttributes = ['name', 'code', 'description', 'type', 'image'];
 
     // Puedes personalizar el nombre del registro de actividad
     protected static $logName = 'category';
 
+    /**
+     * Se ejecuta cuando se crea un registro en la tabla categories.
+     *
+     * Genera un código único para la categoría, utilizando las primeras
+     * tres letras del nombre en mayúsculas y un número correlativo de
+     * tres dígitos.
+     */
     protected static function boot()
     {
         parent::boot();
@@ -33,16 +40,31 @@ class Category extends Model
         });
     }
 
-    // Relación uno a muchos con el modelo Hardware
+
+    /**
+     * Establece una relación uno a muchos con el modelo Hardware.
+     *
+     * Esta función devuelve una relación 'hasMany' con el modelo Hardware,
+     * incluyendo los registros que han sido eliminados de manera suave (soft deleted).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
     public function hardware()
     {
-        return $this->hasMany(Hardware::class); // Relación con el modelo Hardware
+        return $this->hasMany(Hardware::class)->withTrashed(); // Relación con el modelo Hardware
     }
-    
+
+    /**
+     * Relación uno a muchos con el modelo Hardware.
+     *
+     * Esta función devuelve una relación 'hasMany' con el modelo Hardware, que
+     * incluye los registros que se encuentran activos en la base de datos.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function equipments()
-{
-    return $this->hasMany(Hardware::class, 'category_id');
-}
-
-
+    {
+        return $this->hasMany(Hardware::class, 'category_id')->withTrashed();
+    }
 }

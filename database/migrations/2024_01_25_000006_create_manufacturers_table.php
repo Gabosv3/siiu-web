@@ -18,6 +18,7 @@ class CreateManufacturersTable extends Migration
             $table->string('name'); // Nombre del fabricante
             $table->string('type'); // Descripción del fabricante (opcional)
             $table->timestamps(); // Timestamps para created_at y updated_at
+            $table->softDeletes();
         });
     }
 

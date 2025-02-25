@@ -38,13 +38,25 @@ class License extends Model
     // Puedes personalizar el nombre de registro de actividad
     protected static $logName = 'licencias';
 
-     // Cada licencia pertenece a un software
+    
+    /**
+     * Relación con el software (Software).
+     * Una licencia pertenece a un software.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
      public function software()
     {
         return $this->belongsTo(Software::class)->withTrashed();
     }
 
-     // Una licencia puede estar asignada a un equipo
+     
+     /**
+      * Relación con el equipo (Hardware).
+      * Una licencia se asigna a un equipo.
+      *
+      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+      */
      public function equipo()
      {
          return $this->belongsTo(Hardware::class)->withTrashed();

@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\Storage;
 
 class SQLMaintenanceController extends Controller
 {
+    
+    /**
+     * Constructor del controlador.
+     *
+     * Establece middleware para controlar los permisos de acceso a los métodos
+     * del controlador. Los middleware se aplican a los métodos según se indica
+     * a continuación:
+     *
+     * - index, download y upload: can:Mantenimiento
+     *
+     */
     public function __construct()
     {
         // Middleware para verificar permisos antes de ejecutar los métodos específicos
@@ -22,6 +33,12 @@ class SQLMaintenanceController extends Controller
         return view('components.sql_maintenance', compact('tables'));
     }
 
+    /**
+     * Descarga los datos de las tablas seleccionadas en un archivo SQL.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function download(Request $request)
     {
         $tables = $request->input('tables', []);
@@ -30,7 +47,6 @@ class SQLMaintenanceController extends Controller
             return back()->with('error', 'No tables selected for download.');
         }
 
-        $database = env('DB_DATABASE');
         $sqlFile = '';
 
         foreach ($tables as $table) {

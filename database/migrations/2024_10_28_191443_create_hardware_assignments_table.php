@@ -13,6 +13,7 @@ class CreateHardwareAssignmentsTable extends Migration
             $table->unsignedBigInteger('hardware_id');
             $table->unsignedBigInteger('user_id')->nullable(); // Permitir que user_id sea nullable
             $table->unsignedBigInteger('departament_id')->nullable();
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('hardware_id')->references('id')->on('hardware')->onDelete('cascade');
@@ -25,11 +26,12 @@ class CreateHardwareAssignmentsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('hardware_id');
             $table->unsignedBigInteger('user_id');
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('hardware_id')->references('id')->on('hardware')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
+            
             $table->unique(['hardware_id', 'user_id']);
         });
     }

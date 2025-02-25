@@ -19,6 +19,7 @@ class CreateHardwareFilesTable extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('location'); // Ruta del archivo
+            $table->softDeletes();
             $table->timestamps();
         });
     }

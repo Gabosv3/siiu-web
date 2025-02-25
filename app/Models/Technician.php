@@ -34,25 +34,44 @@ class Technician extends Model
      */    // Relación con el usuario (datos del técnico)
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
-    // Relación con la especialidad del técnico
+    
+    /**
+     * Relación con la especialidad del técnico.
+     * Un técnico pertenece a una especialidad.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function specialty()
     {
-        return $this->belongsTo(Specialty::class);
+        return $this->belongsTo(Specialty::class)->withTrashed();
     }
 
-    // Relación con las asignaciones (tareas asignadas a este técnico)
+    
+    /**
+     * Relación con las asignaciones de este técnico.
+     * Un técnico tiene muchas asignaciones.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function assignments()
     {
-        return $this->hasMany(Assignment::class);
+        return $this->hasMany(Assignment::class)->withTrashed();
     }
 
-    // Relación con los tickets asignados a este técnico
+    
+    /**
+     * Relación con las entradas (tickets) asociadas a este técnico.
+     * Un técnico puede tener múltiples tickets asignados.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
     public function tickets()
     {
-        return $this->hasMany(Ticket::class);
+        return $this->hasMany(Ticket::class)->withTrashed();
     }
 
 }

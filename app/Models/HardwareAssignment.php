@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class HardwareAssignment extends Model
 {
-    use HasFactory;
+    use HasFactory,LogsActivity,SoftDeletes;
 
     // Campos rellenables
     protected $fillable = [
@@ -23,28 +24,47 @@ class HardwareAssignment extends Model
     // Configuración de logs
     protected static $logName = 'Asignación de equipos';
 
+
     /**
      * Relación con el modelo Hardware
+     *
+     * Esta función devuelve una relación 'belongsTo' con el modelo Hardware,
+     * indicando que cada asignación de hardware pertenece a un hardware en particular.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function hardware()
     {
-        return $this->belongsTo(Hardware::class);
+        return $this->belongsTo(Hardware::class)->withTrashed();
     }
 
+
     /**
-     * Relación con el modelo User
+     * Relación con el modelo User.
+     *
+     * Esta función devuelve una relación 'belongsTo' con el modelo User,
+     * indicando que cada asignación de hardware pertenece a un usuario específico.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
+    
     /**
-     * Relación con el modelo Department (asumiendo que tienes un modelo Department)
+     * Relación con el modelo Departament.
+     *
+     * Esta función devuelve una relación 'belongsTo' con el modelo Departament,
+     * indicando que cada asignación de hardware pertenece a un departamento específico.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+
     public function departament()
     {
-        return $this->belongsTo(Departament::class);
+        return $this->belongsTo(Departament::class)->withTrashed();
     }
 }
-

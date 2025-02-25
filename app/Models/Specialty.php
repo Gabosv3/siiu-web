@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Specialty extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'name',  // Nombre de la especialidad
@@ -21,11 +22,16 @@ class Specialty extends Model
     protected static $logName = 'specialty';
 
 
-    // Puedes agregar relaciones si las necesitas
-    // Ejemplo: una especialidad puede tener muchos técnicos
+    
+    /**
+     * Devuelve una lista de todos los tecnicos que
+     * est n relacionados con esta especialidad.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function technicians()
     {
-        return $this->hasMany(Technician::class);
+        return $this->hasMany(Technician::class)->withTrashed();
     }
 
 

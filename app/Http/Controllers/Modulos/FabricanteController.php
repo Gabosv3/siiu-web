@@ -9,8 +9,16 @@ use Illuminate\Http\Request;
 
 class FabricanteController extends Controller
 {
-    //
-    // Método para crear un nuevo fabricante
+    
+    /**
+     * Crea un nuevo fabricante en la base de datos.
+     *
+     * Valida los datos del formulario y crea un nuevo fabricante con los datos
+     * proporcionados.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         // Verifica que el método se esté llamando

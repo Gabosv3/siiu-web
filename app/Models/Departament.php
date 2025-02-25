@@ -30,21 +30,40 @@ class Departament extends Model
     // Puedes personalizar el mensaje de registro de actividad
     protected static $logName = 'department';
 
-    // Relación: Un departamento puede tener muchos usuarios
+    
+    /**
+     * Relación uno a muchos con la clase User.
+     * Un departamento puede tener múltiples usuarios asignados.
+     */
+
+
     public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class)->withTrashed();
     }
 
-    // Relación: Un departamento tiene un encargado (manager), que es un usuario
+    
+    /**
+     * Relación: Un departamento tiene un encargado.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function manager()
     {
-        return $this->belongsTo(User::class, 'manager');
+        return $this->belongsTo(User::class, 'manager')->withTrashed();
     }
 
-    // Relación: Un departamento puede tener muchas asignaciones de hardware
+    
+    /**
+     * Relación uno a muchos con el modelo HardwareAssignment.
+     *
+     * Un departamento puede tener múltiples asignaciones de hardware asociadas.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
     public function hardwareAssignments()
     {
-        return $this->hasMany(HardwareAssignment::class);
+        return $this->hasMany(HardwareAssignment::class)->withTrashed();
     }
 }

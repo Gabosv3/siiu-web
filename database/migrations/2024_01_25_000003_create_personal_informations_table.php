@@ -26,6 +26,7 @@ class CreatePersonalInformationsTable extends Migration
             $table->string('dui')->unique()->nullable(); // DUI único del usuario
             $table->string('phone')->unique()->nullable(); // Número de teléfono único del usuario
             
+            $table->softDeletes();
             $table->timestamps(); // Timestamps para created_at y updated_at
             
             

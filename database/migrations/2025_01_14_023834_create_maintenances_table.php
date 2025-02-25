@@ -19,6 +19,7 @@ class CreateMaintenancesTable extends Migration
         $table->foreignId('technician_id')->constrained('technicians');
         $table->date('maintenance_date');
         $table->text('description')->nullable();
+        $table->softDeletes();
         $table->timestamps();
     });
 }

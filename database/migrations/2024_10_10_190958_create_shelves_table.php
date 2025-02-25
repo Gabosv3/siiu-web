@@ -16,6 +16,7 @@ class CreateShelvesTable extends Migration
         Schema::create('shelves', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // Nombre del estante
+            $table->softDeletes();
             $table->timestamps();
         });
     }

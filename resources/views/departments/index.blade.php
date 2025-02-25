@@ -113,66 +113,66 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Coordenadas por defecto para centrar el mapa
-        var defaultLat = 13.43931902478275;
-        var defaultLng = -88.15837383270265;
+    // Coordenadas por defecto para centrar el mapa
+    let defaultLat = 13.43931902478275;
+    let defaultLng = -88.15837383270265;
 
-        // Inicializar el mapa
-        var map = L.map('map').setView([defaultLat, defaultLng], 16);
+    // Inicializar el mapa
+    let map = L.map('map').setView([defaultLat, defaultLng], 16);
 
-        // Capas base
-        var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+    // Capas base
+    let osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-        var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 18,
-            attribution: '© <a href="https://www.esri.com/en-us/arcgis/about-arcgis/overview">Esri</a>'
-        });
-
-        // Selector de capas
-        var baseMaps = {
-            "Map": osmLayer,
-            "Satellite": satelliteLayer
-        };
-        L.control.layers(baseMaps).addTo(map);
-
-        // Añadir marcadores para cada departamento
-        var departments = @json($departments); // Convertir datos desde Laravel a JSON
-
-        departments.forEach(function(department) {
-            if (department.latitude && department.longitude) {
-                var marker = L.marker([department.latitude, department.longitude]).addTo(map);
-
-                // Contenido del popup con opciones
-                var popupContent = `
-                    <div>
-                        <h5>${department.name}</h5>
-                        <p>Latitud: ${department.latitude}<br>Longitud: ${department.longitude}</p>
-                        <button onclick="navigateTo('${department.id}')">Ver Detalles</button>
-                        <button onclick="editDepartment('${department.id}')">Editar</button>
-                        <button onclick="EquiposDepartamento('${department.id}')">Equipos</button>
-                    </div>
-                `;
-
-                marker.bindPopup(popupContent);
-            }
-        });
-
-        // Funciones para los botones
-        window.navigateTo = function(departmentId) {
-            window.location.href = `/departaments/${departmentId}`;
-        };
-
-        window.editDepartment = function(departmentId) {
-            window.location.href = `/departaments/${departmentId}/edit`;
-        };
-
-        window.EquiposDepartamento = function(departmentId) {
-            window.location.href = `/Departamentos/equipos/${departmentId}`;
-        };
+    let satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18,
+        attribution: '© <a href="https://www.esri.com/en-us/arcgis/about-arcgis/overview">Esri</a>'
     });
+
+    // Selector de capas
+    let baseMaps = {
+        "Map": osmLayer,
+        "Satellite": satelliteLayer
+    };
+    L.control.layers(baseMaps).addTo(map);
+
+    // Añadir marcadores para cada departamento
+    let departments = @json($departments); // Convertir datos desde Laravel a JSON
+
+    departments.forEach(function(department) {
+        if (department.latitude && department.longitude) {
+            let marker = L.marker([department.latitude, department.longitude]).addTo(map);
+
+            // Contenido del popup con opciones
+            let popupContent = `
+                <div>
+                    <h5>${department.name}</h5>
+                    <p>Latitud: ${department.latitude}<br>Longitud: ${department.longitude}</p>
+                    <button onclick="navigateTo('${department.id}')">Ver Detalles</button>
+                    <button onclick="editDepartment('${department.id}')">Editar</button>
+                    <button onclick="EquiposDepartamento('${department.id}')">Equipos</button>
+                </div>
+            `;
+
+            marker.bindPopup(popupContent);
+        }
+    });
+
+    // Funciones para los botones
+    window.navigateTo = function(departmentId) {
+        window.location.href = `/departaments/${departmentId}`;
+    };
+
+    window.editDepartment = function(departmentId) {
+        window.location.href = `/departaments/${departmentId}/edit`;
+    };
+
+    window.EquiposDepartamento = function(departmentId) {
+        window.location.href = `/Departamentos/equipos/${departmentId}`;
+    };
+});
 </script>
 
 

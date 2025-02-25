@@ -9,6 +9,19 @@ use Illuminate\Http\Request;
 
 class DepartamentController extends Controller
 {
+    /**
+     * Constructor del controlador.
+     *
+     * Establece middleware para controlar los permisos de acceso a los métodos
+     * del controlador. Los middleware se aplican a los métodos según se indica
+     * a continuación:
+     *
+     * - index: can:departamentos.index
+     * - create y store: can:departamentos.create
+     * - edit y update: can:departamentos.edit
+     * - destroy: can:departamentos.destroy
+     * - restore: can:departamentos.restore
+     */
     public function __construct()
     {
         // Middleware para verificar permisos antes de ejecutar los métodos específicos
@@ -19,7 +32,12 @@ class DepartamentController extends Controller
         $this->middleware('can:departamentos.restore')->only('restore');
     }
 
-    // Mostrar una lista de todos los departamentos
+
+    /**
+     * Muestra una lista de todos los departamentos existentes en la base de datos
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $deletedDepartments = Departament::onlyTrashed()->get();
@@ -27,7 +45,12 @@ class DepartamentController extends Controller
         return view('departments.index', compact('departments', 'deletedDepartments')); // Pasar los departamentos a la vista de índice
     }
 
-    // Mostrar el formulario para crear un nuevo departamento
+
+    /**
+     * Muestra el formulario para crear un nuevo departamento
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
     {
         $users = User::all();
@@ -35,7 +58,19 @@ class DepartamentController extends Controller
         return view('departments.create', compact('users'));
     }
 
-    // Almacenar un nuevo departamento en la base de datos
+
+    /**
+     * Crea un nuevo departamento en la base de datos.
+     *
+     * Verifica que los datos del formulario sean válidos según las reglas de validación
+     * definidas en la clase y crea un nuevo registro en la base de datos con los datos
+     * proporcionados. Si el formulario contiene un ID de encargado, se obtiene el nombre
+     * del encargado desde la tabla 'users' y se almacena en la base de datos. Finalmente,
+     * se redirige a la lista de departamentos con un mensaje de éxito.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         // Validar los datos del formulario
@@ -85,13 +120,26 @@ class DepartamentController extends Controller
             ->with('status', 'Departamento creado exitosamente.');
     }
 
-    // Mostrar los detalles de un departamento específico
+
+    /**
+     * Muestra los detalles de un departamento específico
+     *
+     * @param \App\Models\Departament $departament
+     * @return \Illuminate\Http\Response
+     */
     public function show(Departament $departament)
     {
         return view('departments.show', compact('departament'));
     }
 
-    // Mostrar el formulario para editar un departamento específico
+
+    /**
+     * Muestra el formulario para editar un departamento específico.
+     *
+     * @param \App\Models\Departament $departament El departamento que se va a editar.
+     * @return \Illuminate\Http\Response La vista de edición del departamento con los datos del departamento y los usuarios asociados.
+     */
+
     public function edit(Departament $departament)
     {
         $users = User::where('departament_id', $departament->id)->get();
@@ -101,7 +149,21 @@ class DepartamentController extends Controller
         return view('departments.edit', compact('departament', 'users'));
     }
 
-    // Actualizar un departamento específico en la base de datos
+
+    /**
+     * Actualiza un departamento específico en la base de datos.
+     *
+     * Verifica que los datos del formulario sean válidos según las reglas de validación
+     * definidas en la clase y actualiza un registro existente en la base de datos
+     * con los datos proporcionados. Si el formulario contiene un ID de encargado,
+     * se obtiene el nombre del encargado desde la tabla 'users' y se almacena en
+     * la base de datos. Finalmente, se redirige a la lista de departamentos con un
+     * mensaje de éxito.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Departament  $departament
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request, Departament $departament)
     {
         // Validar los datos del formulario
@@ -150,20 +212,38 @@ class DepartamentController extends Controller
             ->with('status', 'Departamento actualizado exitosamente.');
     }
 
-    // Eliminar un departamento específico de la base de datos
+
+    /**
+     * Elimina un departamento de la base de datos.
+     *
+     * Recibe el ID del departamento a eliminar y lo busca en la base de datos.
+     * Si el departamento existe, se elimina y se redirige a la lista de departamentos
+     * con un mensaje de éxito.
+     *
+     * @param int $id El ID del departamento a eliminar.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function destroy($id)
     {
-
         $departamento = Departament::find($id);
         $departamento->delete(); // Eliminar el departamento de la base de datos
-
-
-
         // Redirigir a la lista de departamentos con un mensaje de éxito
         return redirect()->route('departaments.index')
             ->with('status', 'Departamento Eliminada con éxito.');
     }
 
+    /**
+     * Restaura un departamento eliminado de la base de datos.
+     *
+     * Recibe el ID del departamento eliminado y lo busca en la base de datos.
+     * Si el departamento existe, se restaura y se redirige a la lista de departamentos
+     * con un mensaje de éxito.
+     *
+     * @param int $id El ID del departamento eliminado a restaurar.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function restore($id)
     {
         // Buscar el departamento eliminado por su ID
@@ -178,13 +258,24 @@ class DepartamentController extends Controller
         }
     }
 
+    /**
+     * Muestra la lista de hardware asignado a un departamento específico.
+     *
+     * Recibe el ID del departamento y busca el registro en la base de datos.
+     * Si el departamento existe, se obtiene la lista de hardware asociados
+     * a ese departamento y se muestra en una vista con paginación de 10 elementos.
+     *
+     * @param int $departmentId El ID del departamento a buscar.
+     *
+     * @return \Illuminate\Http\Response La vista de la lista de hardware con paginación.
+     */
     public function equipos($departmentId)
-{
-    $departament = Departament::find($departmentId);
+    {
+        $departament = Departament::find($departmentId);
 
-    // Paginación de 10 elementos
-    $hardwares = $departament->hardwareAssignments()->with('hardware')->paginate(10);
+        // Paginación de 10 elementos
+        $hardwares = $departament->hardwareAssignments()->with('hardware')->paginate(10);
 
-    return view('inventories.hardwares.Equipoporfiltro', compact('hardwares', 'departament'));
-}
+        return view('inventories.hardwares.Equipoporfiltro', compact('hardwares', 'departament'));
+    }
 }

@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Storage;
 
 class CategoriesController extends Controller
 {
+    //--------------------------------------------------------------------------
+    // Constructor del controlador.
+    //
+    // Establece middleware para controlar los permisos de acceso a los métodos
+    // del controlador. Los middleware se aplican a los métodos según se indica
+    // a continuación:
+    //
+    // - index: can:categorias.index
+    // - create y store: can:categorias.create
+    // - edit y update: can:categorias.edit
+    // - destroy: can:categorias.destroy
+    // - restore: can:categorias.restore
+    //
     //
     public function __construct()
     {
@@ -20,12 +33,12 @@ class CategoriesController extends Controller
         $this->middleware('can:categorias.restore')->only('restore');
     }
 
-/*************  ✨ Codeium Command ⭐  *************/
+   
     /**
-     * Muestra una lista de las categorías existentes en la base de datos.
+     * Muestra una lista de las categorías.
      *
      * @return \Illuminate\Http\Response
-/******  ee3d40ff-92df-4e82-85fc-5ed010535390  *******/
+     */
     public function index()
     {
         // Obtener todas las categorías de la base de datos con paginación
@@ -37,12 +50,29 @@ class CategoriesController extends Controller
             ->with('i', (request()->input('page', 1) - 1) * $categories->perPage());
     }
 
+    /**
+     * Muestra el formulario para crear una categoría.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
     {
         // Retornar la vista 'categories.create' para mostrar el formulario de creación
         return view('categories.create');
     }
 
+    /**
+     * Crea una nueva categoría en la base de datos.
+     *
+     * Verifica que los datos sean válidos y crea una nueva categoría individualmente
+     * por cada conjunto de datos en el array.
+     *
+     * Adicionalmente, almacena la imagen en el servidor y la guarda como URL
+     * en el modelo.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         // Validar los datos del formulario
@@ -83,17 +113,46 @@ class CategoriesController extends Controller
         return redirect()->route('categories.index')->with('status', 'Categoría Creado con éxito.');
     }
 
+    /**
+     * Muestra una categoría específica por su ID.
+     *
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\Response
+     */
     public function show(Category $category)
     {
         // Retornar la vista 'categories.show' con la categoría específica
         return view('categories.show', compact('category'));
     }
 
+    /**
+     * Muestra el formulario para editar una categoría existente.
+     *
+     * Mostrará la vista 'categories.edit' con la categoría específica
+     * para que el usuario pueda editarla.
+     *
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\Response
+     */
     public function edit(Category $category)
     {
         // Retornar la vista 'categories.edit' con la categoría específica
         return view('categories.edit', compact('category'));
     }
+
+    /**
+     * Actualiza una categoría existente en la base de datos.
+     *
+     * Verifica que los datos sean válidos y actualiza la categoría
+     * correspondiente en la base de datos.
+     *
+     * Adicionalmente, almacena la imagen cargada en el servidor y la
+     * guarda como URL en el modelo.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\RedirectResponse
+     */
 
     public function update(Request $request, Category $category)
     {
@@ -142,6 +201,7 @@ class CategoriesController extends Controller
         // Redireccionar al índice de categorías con un mensaje de éxito
         return redirect()->route('categories.index')->with('status', 'Categoría actualizada con éxito.');
     }
+
     public function destroy($id)
     {
         // Buscar la categoría por su ID y eliminarla
@@ -154,6 +214,7 @@ class CategoriesController extends Controller
             return redirect()->back()->with('error', 'Categoría no encontrada.');
         }
     }
+
 
     public function restore($id)
     {
@@ -169,6 +230,12 @@ class CategoriesController extends Controller
         }
     }
 
+        /**
+         * Muestra una lista de las categorías de equipo.
+         *
+         * @return \Illuminate\Http\Response
+         */
+
     public function categoryViews()
     {
         // Obtener todas las categorías de la base de datos con paginación
@@ -177,6 +244,7 @@ class CategoriesController extends Controller
         return view('inventories.index', compact('categories'))
             ->with('i', (request()->input('page', 1) - 1) * $categories->perPage());
     }
+
 
     public function categoryViewsForSupply()
     {

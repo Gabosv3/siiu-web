@@ -20,6 +20,7 @@ class CreatePositionsTable extends Migration
             $table->string('estado')->default('empty'); // Estado de la posición (vacía o ocupada)
             $table->foreign('shelf_id')->references('id')->on('shelves')->onDelete('cascade');
             $table->foreign('hardware_id')->references('id')->on('hardware')->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

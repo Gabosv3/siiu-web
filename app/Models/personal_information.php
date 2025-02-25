@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class personal_information extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory,LogsActivity,SoftDeletes;
 
     // Especifica la tabla asociada
     protected $table = 'personal_informations';
@@ -40,12 +41,17 @@ class personal_information extends Model
     // Puedes personalizar el nombre de registro de actividad
     protected static $logName = 'personal_informations';
 
+    
     /**
-     * Relación muchos a uno con la clase User.
-     * Un registro de información personal pertenece a un usuario.
+     * Relación con el modelo User.
+     *
+     * Esta función devuelve una relación 'belongsTo' con el modelo User,
+     * indicando que cada registro de información personal pertenece a un usuario.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
-        return $this->belongsTo(User::class); // Clave foránea con la tabla 'users'
+        return $this->belongsTo(User::class)->withTrashed(); // Clave foránea con la tabla 'users'
     }
 }

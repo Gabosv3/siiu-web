@@ -10,7 +10,21 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    // Constructor para aplicar middleware a ciertos métodos
+
+    /**
+     * Constructor del controlador.
+     *
+     * Establece middleware para controlar los permisos de acceso a los métodos
+     * del controlador. Los middleware se aplican a los métodos según se indica
+     * a continuación:
+     *
+     * - index: can:role.index
+     * - create y store: can:role.create
+     * - edit y update: can:role.edit
+     * - destroy: can:role.destroy
+     * - restore: can:role.restore
+     */
+
     public function __construct()
     {
         // Middleware para verificar permisos antes de ejecutar los métodos específicos
@@ -21,7 +35,13 @@ class RoleController extends Controller
         $this->middleware('can:role.restore')->only('restore');
     }
 
-    // Método para listar roles y mostrar la vista de índice
+
+    /**
+     * Muestra una lista de los roles registrados en la aplicación,
+     * incluyendo los eliminados.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         // Obtener roles con paginación
@@ -36,14 +56,28 @@ class RoleController extends Controller
             ->with('i', (request()->input('page', 1) - 1) * $roles->perPage());
     }
 
-    // Método para mostrar la vista de creación de un nuevo rol
+
+    /**
+     * Muestra la vista de creación de un nuevo rol.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
     {
         $role = new Role();
         return view('role.create', compact('role'));
     }
 
-    // Método para almacenar un nuevo rol en la base de datos
+
+    /**
+     * Crea un nuevo rol en la base de datos.
+     *
+     * Valida los datos del formulario y crea un nuevo rol con los datos
+     * proporcionados.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         // Validación de los datos
@@ -61,14 +95,32 @@ class RoleController extends Controller
         return redirect()->route('role.index')->with('agregado', 'SI');
     }
 
-    // Método para mostrar los detalles de un rol específico
+
+    /**
+     * Muestra la vista de detalles de un rol en particular.
+     *
+     * Obtiene el rol por su ID y lo pasa a la vista 'role.show' para mostrar
+     * sus detalles.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function show($id)
     {
         $role = Role::find($id);
         return view('role.show', compact('role'));
     }
 
-    // Método para mostrar la vista de edición de un rol
+
+    /**
+     * Muestra la vista de edición de un rol en particular.
+     *
+     * Obtiene el rol por su ID y lo pasa a la vista 'role.edit' para mostrar
+     * sus detalles y permitir la edición de sus permisos.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function edit($id)
     {
         // Buscar el rol por su ID
@@ -84,7 +136,19 @@ class RoleController extends Controller
         return view('role.edit', compact('role', 'permissionsGrouped', 'rolePermissions'));
     }
 
-    // Método para actualizar un rol en la base de datos
+
+    /**
+     * Actualiza un rol existente en la base de datos.
+     *
+     * Valida los datos del formulario y actualiza el nombre
+     * del rol y sus permisos asociados.
+     * En caso de éxito, redirige a la vista de roles con un mensaje de éxito.
+     * Si ocurre un error, redirige con un mensaje de error.
+     *
+     * @param \Illuminate\Http\Request $request La solicitud HTTP que contiene los datos del rol a actualizar.
+     * @param int $id El ID del rol que se va a actualizar.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección a la vista de roles.
+     */
     public function update(Request $request, $id)
     {
         // Validación de los datos
@@ -107,6 +171,18 @@ class RoleController extends Controller
         return redirect()->route('role.index')->with('Actualizado', 'SI');
     }
 
+    /**
+     * Actualiza el nombre de un rol existente en la base de datos.
+     *
+     * Valida el nombre del rol y actualiza el nombre
+     * del rol en la base de datos.
+     * En caso de éxito, devuelve una respuesta JSON con un mensaje de éxito.
+     * Si ocurre un error, devuelve una respuesta JSON con un mensaje de error.
+     *
+     * @param \Illuminate\Http\Request $request La solicitud HTTP que contiene el nuevo nombre del rol.
+     * @param int $id El ID del rol que se va a actualizar.
+     * @return \Illuminate\Http\JsonResponse La respuesta JSON con el resultado de la operación.
+     */
     public function updateName(Request $request, $id)
     {
         $request->validate([
@@ -123,6 +199,19 @@ class RoleController extends Controller
         return response()->json(['success' => true]);
     }
 
+    
+    /**
+     * Actualiza un permiso asociado a un rol existente en la base de datos.
+     *
+     * Valida los datos del request y actualiza el permiso
+     * asociado al rol en la base de datos.
+     * En caso de éxito, devuelve una respuesta JSON con un mensaje de éxito.
+     * Si ocurre un error, devuelve una respuesta JSON con un mensaje de error.
+     *
+     * @param \Illuminate\Http\Request $request La solicitud HTTP que contiene los datos del permiso a actualizar.
+     * @param int $id El ID del rol que se va a actualizar.
+     * @return \Illuminate\Http\JsonResponse La respuesta JSON con el resultado de la operación.
+     */
     public function updatePermission(Request $request, $id)
     {
         $request->validate([
@@ -133,7 +222,7 @@ class RoleController extends Controller
             'permission_id.exists' => 'El permiso seleccionado no existe.',
             'group.string' => 'El campo "group" debe ser una cadena de texto.',
             'is_checked.boolean' => 'El campo "is_checked" debe ser un booleano.',
-            
+
         ]);
 
         $role = Role::findOrFail($id);
@@ -149,27 +238,53 @@ class RoleController extends Controller
         return response()->json(['success' => true]);
     }
 
+    /**
+     * Clona un rol existente en la base de datos.
+     *
+     * El método encuentra el rol original mediante su ID, clona el rol
+     * y asigna el nuevo nombre proporcionado en la solicitud. Luego,
+     * clona los permisos asociados y los asigna al nuevo rol. El
+     * método devuelve una respuesta JSON con un mensaje de éxito y
+     * el nuevo rol.
+     *
+     * @param \Illuminate\Http\Request $request La solicitud HTTP que
+     *        contiene el nombre del nuevo rol.
+     * @param int $roleId El ID del rol que se va a clonar.
+     * @return \Illuminate\Http\JsonResponse La respuesta JSON con el
+     *         resultado de la operación.
+     */
     public function clone(Request $request, $roleId)
     {
         // Encontrar el rol original
         $role = Role::findOrFail($roleId);
-    
+
         // Clonar el rol
         $newRole = $role->replicate();
         $newRole->name = $request->input('name');  // Asignar el nuevo nombre
         $newRole->save();
-    
+
         // Clonar los permisos asociados
         $rolePermissions = $role->permissions;
         $newRole->permissions()->sync($rolePermissions);
-    
+
         return response()->json([
             'message' => 'Rol clonado con éxito',
             'role' => $newRole
         ]);
     }
 
-    // Método para eliminar un rol
+
+    /**
+     * Elimina un rol de la base de datos.
+     *
+     * El método busca el rol por su ID y lo elimina. Si el rol existe,
+     * se redirige a la lista de roles con un mensaje de éxito. De lo
+     * contrario, se redirige con un mensaje de error.
+     *
+     * @param int $id El ID del rol a eliminar.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección
+     *         con el resultado de la operación.
+     */
     public function destroy($id)
     {
         // Buscar el rol por su ID y eliminarlo
@@ -180,6 +295,17 @@ class RoleController extends Controller
         }
     }
 
+    /**
+     * Restaura un rol eliminado de la base de datos.
+     *
+     * Busca el rol eliminado por su ID y lo restaura. Si el rol existe,
+     * se redirige a la lista de roles con un mensaje de éxito. De lo
+     * contrario, se redirige con un mensaje de error.
+     *
+     * @param int $id El ID del rol a restaurar.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección
+     *         con el resultado de la operación.
+     */
     public function restore($id)
     {
         // Buscar el rol eliminado por su ID

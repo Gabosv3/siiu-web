@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Hash;
 
 class PasswordController extends Controller
 {
+    /**
+     * Actualiza la contraseña de un usuario autenticado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     //
     public function update(Request $request)
     {

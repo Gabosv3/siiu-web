@@ -13,6 +13,20 @@ use Illuminate\Http\Request;
 class TicketController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('can:tickets.index')->only('index');
+        $this->middleware('can:tickets.create')->only('createTicket');
+        $this->middleware('can:tickets.show')->only('show');
+        $this->middleware('can:tickets.edit')->only('edit', 'update');
+        $this->middleware('can:tickets.destroy')->only('destroy');
+    }
+
+    /**
+     * Muestra una lista de los tickets que ha creado el usuario autenticado.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $tickets = Ticket::where('user_id', auth()->id())->get();
@@ -20,11 +34,24 @@ class TicketController extends Controller
         return view('tickets.index', compact('tickets'));
     }
 
+    /**
+     * Muestra el formulario para crear un nuevo ticket.
+     *
+     * @return \Illuminate\View\View La vista para crear un ticket con los títulos disponibles.
+     */
+
     public function crearTicketindex()
     {
         $titles = Title::all();
         return view('tickets.users.create', compact('titles'));
     }
+    /**
+     * Crea un nuevo ticket con la información proporcionada por el usuario
+     * autenticado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function createTicket(Request $request)
     {
         $request->validate([
@@ -48,12 +75,28 @@ class TicketController extends Controller
         return redirect()->back()->with('success', 'Ticket creado exitosamente.');
     }
 
+    /**
+     * Muestra una lista de los tickets que ha creado el usuario autenticado.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function Mytickets()
     {
         $tickets = auth()->user()->tickets;
         return view('tickets.users.mytickets', compact('tickets'));
     }
 
+    /**
+     * Muestra un ticket y su historial de asignaciones
+     *
+     * Busca el ticket por su ID y muestra su título, descripción,
+     * estado, fecha de creación y el historial de asignaciones
+     * (técnicos asignados y fechas de inicio y fin de la
+     * asignación).
+     *
+     * @param int $id El ID del ticket a mostrar
+     * @return \Illuminate\Http\Response
+     */
     public function Myticketsshow($id)
     {
         // Busca el ticket por su ID, junto con las asignaciones
@@ -62,7 +105,18 @@ class TicketController extends Controller
         // Retorna la vista con el ticket y sus asignaciones (historial)
         return view('tickets.users.show', compact('ticket'));
     }
-    
+
+    /**
+     * Asigna un técnico a un ticket y crea una asignación con los datos proporcionados.
+     *
+     * Esta función actualiza el ticket con la prioridad, técnico y estado proporcionados,
+     * y crea una asignación con la tarea, fecha inicial y estado pendiente.
+     *
+     * @param \Illuminate\Http\Request $request La petición HTTP con los datos del formulario.
+     * @param int $ticketId El ID del ticket que se va a asignar.
+     *
+     * @return \Illuminate\Http\RedirectResponse Una redirección a la ruta de asignación con un mensaje de éxito.
+     */
     public function assignTicket(Request $request, $ticketId)
     {
         $request->validate([
@@ -72,6 +126,14 @@ class TicketController extends Controller
             'task' => 'required|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
+        ], [
+            'priority.required' => 'La prioridad es requerida.',
+            'specialty_id.required' => 'La especialidad es requerida.',
+            'technician_id.required' => 'El técnico es requerido.',
+            'task.required' => 'La tarea es requerida.',
+            'start_date.required' => 'La fecha de inicio es requerida.',
+            'end_date.required' => 'La fecha de fin es requerida.',
+            'end_date.after_or_equal' => 'La fecha de fin debe ser posterior o igual a la fecha de inicio.',
         ]);
 
         $ticket = Ticket::findOrFail($ticketId);
@@ -95,6 +157,17 @@ class TicketController extends Controller
 
         return redirect()->route('tickets.show', $ticketId)->with('success', 'Ticket asignado exitosamente.');
     }
+    
+    /**
+     * Crea un nuevo título para los tickets
+     *
+     * Valida que el nombre del título sea único y tenga un máximo de 255 caracteres.
+     * Luego, crea un nuevo título con el nombre proporcionado y lo guarda en la base de datos.
+     * Finalmente, devuelve una respuesta en formato JSON con un mensaje de éxito.
+     *
+     * @param \Illuminate\Http\Request $request La petición HTTP con el nombre del título.
+     * @return \Illuminate\Http\Response La respuesta en formato JSON con un mensaje de éxito.
+     */
     public function titlestore(Request $request)
     {
         $request->validate([
@@ -108,7 +181,14 @@ class TicketController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function show($id)  {
+    /**
+     * Muestra la información de un ticket en particular.
+     *
+     * @param int $id El ID del ticket que se va a mostrar.
+     * @return \Illuminate\Http\Response La vista con la información del ticket.
+     */
+    public function show($id)
+    {
         $ticket = Ticket::findOrFail($id);
         return view('tickets.show', compact('ticket'));
     }

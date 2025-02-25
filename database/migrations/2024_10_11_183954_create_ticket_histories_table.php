@@ -18,6 +18,7 @@ class CreateTicketHistoriesTable extends Migration
             $table->foreignId('ticket_id')->constrained('tickets')->onDelete('cascade');
             $table->string('action'); // Ej: 'Estado cambiado', 'Asignación creada'
             $table->text('description'); // Detalle de la acción
+            $table->softDeletes();
             $table->timestamps();
         });
         

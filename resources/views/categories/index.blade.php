@@ -1,7 +1,7 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-<h1>Categories</h1> <!-- Título de la página -->
+<h1>CATEGORIAS</h1> <!-- Título de la página -->
 <a href="{{ route('categories.create') }}" class="btn btn-primary mb-3">CREAR CATEGORIA</a> <!-- Botón para crear una nueva categoría -->
 
 <nav>

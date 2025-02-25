@@ -17,7 +17,7 @@ class CreateTagsTable extends Migration
             $table->id(); // Clave primaria: id
             
             $table->string('name'); // Nombre del tag
-        
+            $table->softDeletes();
             $table->timestamps(); // Timestamps para created_at y updated_at
         });
     }

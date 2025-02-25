@@ -9,6 +9,20 @@ use Illuminate\Http\Request;
 
 class SoftwareController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:softwares.index')->only('index');
+        $this->middleware('can:softwares.create')->only('create', 'store');
+        $this->middleware('can:softwares.edit')->only('edit', 'update');
+        $this->middleware('can:softwares.destroy')->only('destroy');
+        $this->middleware('can:softwares.restore')->only('restore');
+    }
+    /**
+     * Muestra una lista de todos los softwares, incluyendo los eliminados,
+     * con sus respectivos fabricantes y licencias.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $softwaresdeleted = Software::onlyTrashed()->get();
@@ -17,12 +31,31 @@ class SoftwareController extends Controller
         return view('inventories.softwares.index', compact('softwares', 'softwaresdeleted'));
     }
 
+
+   
+    /**
+     * Muestra la vista para crear un nuevo software.
+     * Recibe un objeto Manufacturer como parámetro y utiliza el método compact para
+     * pasar los datos a la vista.
+     * La vista create.blade.php utiliza el fabricante para mostrar
+     * los datos del fabricante en un select.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
     {
         $fabricantes = Manufacturer::where('type', 'Software')->get();
         return view('inventories.softwares.create', compact('fabricantes'));
     }
 
+
+    
+    /**
+     * Crea un nuevo software en la base de datos.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $validatedData = $request->validate(
@@ -51,12 +84,32 @@ class SoftwareController extends Controller
         return redirect()->route('softwares.index')->with('success', 'Software creado exitosamente');
     }
 
+    //
+    // Muestra la vista para editar un software.
+    // Recibe un objeto Software como parámetro y utiliza el método compact para
+    // pasar los datos a la vista.
+    // La vista edit.blade.php utiliza el software y los fabricantes para mostrar
+    // los datos del software y un select para elegir el fabricante.
+    //
+    //
     public function edit(Software $software)
     {
         $fabricantes = Manufacturer::all();
         return view('inventories.softwares.edit', compact('software', 'fabricantes'));
     }
 
+    
+
+    /**
+     * Actualiza un software existente.
+     *
+     * Valida los datos del request y actualiza el software correspondiente.
+     * Luego redirige a la lista de softwares con un mensaje de éxito.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Software  $software
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request, Software $software)
     {
         $validatedData = $request->validate(
@@ -85,6 +138,16 @@ class SoftwareController extends Controller
         return redirect()->route('softwares.index')->with('success', 'Software actualizado exitosamente');
     }
 
+    
+    /**
+     * Muestra los detalles de un software.
+     *
+     * Muestra la vista con los detalles del software solicitado, incluyendo
+     * sus licencias y el total de licencias.
+     *
+     * @param int $id La ID del software a mostrar.
+     * @return \Illuminate\Http\Response
+     */
     public function show($id)
     {
         // Encontrar el software por su ID
@@ -100,6 +163,15 @@ class SoftwareController extends Controller
         return view('inventories.softwares.show', compact('software', 'licencias', 'totalLicencias'));
     }
 
+    
+    /**
+     * Elimina un software.
+     *
+     * Elimina el software solicitado y todos sus registros relacionados.
+     *
+     * @param \App\Models\Software $software El software a eliminar.
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Software $software)
     {
         $software->delete();
@@ -112,6 +184,17 @@ class SoftwareController extends Controller
         return redirect()->route('softwares.index')->with('error', 'Software no encontrado');
     }
 
+    
+
+    /**
+     * Restaura un software eliminado.
+     *
+     * Busca el software eliminado por su ID y lo restaura.
+     * Luego redirige a la lista de softwares con un mensaje de éxito.
+     *
+     * @param int $id La ID del software a restaurar.
+     * @return \Illuminate\Http\Response
+     */
     public function restore($id)
     {
         // Buscar el software eliminado por su ID

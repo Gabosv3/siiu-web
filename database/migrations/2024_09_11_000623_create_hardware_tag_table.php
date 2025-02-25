@@ -18,7 +18,7 @@ class CreateHardwareTagTable extends Migration
 
             $table->foreignId('hardware_id')->constrained('hardware'); // Llave foránea con la tabla 'hardware'
             $table->foreignId('tag_id')->constrained('tags'); // Llave foránea con la tabla 'tags'
-            
+            $table->softDeletes();
             $table->timestamps();
         });
     }

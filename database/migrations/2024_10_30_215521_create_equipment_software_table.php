@@ -18,6 +18,7 @@ class CreateEquipmentSoftwareTable extends Migration
             $table->foreignId('hardware_id')->constrained('hardware')->onDelete('cascade'); // Relación con 'hardware'
             $table->foreignId('software_id')->constrained('softwares')->onDelete('cascade'); // Relación con 'softwares'
             $table->foreignId('license_id')->nullable()->constrained('licenses')->onDelete('set null'); // Relación opcional con 'licenses'
+            $table->softDeletes();
             $table->timestamps(); // Timestamps
         });
     }

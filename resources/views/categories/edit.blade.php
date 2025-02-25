@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container card" style="min-height: 70vh;">
-    <h1 class="text-center mb-3">Edit Category</h1>
+    <h1 class="text-center mb-3">Editar Categoria</h1>
 
     <form action="{{ route('categories.update', $category->id) }}" method="POST" class="row g-3" enctype="multipart/form-data">
         @csrf
@@ -45,7 +45,7 @@
 
             <div class="mb-3">
                 <label for="image" class="form-label">IMAGEN:</label>
-                <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage()">
+                <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage()" required>
                 <div class="invalid-feedback">
                     Por favor, seleccione una imagen.
                 </div>
@@ -57,37 +57,5 @@
     </form>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Selecciona el formulario para la validación
-        var form = document.querySelector('.needs-validation');
-        // Selecciona el campo de entrada de nombre
-        var nameInput = document.getElementById('name');
-
-        // Agrega un evento al campo de nombre para validar la entrada
-        nameInput.addEventListener('input', function() {
-            var pattern = /^[A-Za-z\s]+$/; // Patrón para letras y espacios
-            if (pattern.test(nameInput.value)) {
-                // Si el patrón es válido
-                nameInput.classList.remove('is-invalid');
-                nameInput.classList.add('is-valid');
-            } else {
-                // Si el patrón es inválido
-                nameInput.classList.remove('is-valid');
-                nameInput.classList.add('is-invalid');
-            }
-        });
-
-        // Maneja el envío del formulario
-        form.addEventListener('submit', function(event) {
-            if (form.checkValidity() === false) {
-                // Si el formulario no es válido, previene el envío
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            // Agrega clase de validación al formulario
-            form.classList.add('was-validated');
-        }, false);
-    }, false);
-</script>
+<script src="{{ asset('assets/js/Categories/edit.js') }}"></script>
 @endsection

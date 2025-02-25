@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class EquipmentSoftware extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $table = 'equipment_softwares';
 
@@ -25,19 +27,37 @@ class EquipmentSoftware extends Model
 
     protected static $logName = 'equipo_software';
 
-    // Relación con el equipo (hardware)
+
+    /**
+     * Relación con el hardware (Hardware).
+     * Un software en un equipo, pertenece a un hardware.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function hardware()
     {
         return $this->belongsTo(Hardware::class)->withTrashed();
     }
 
-    // Relación con el software
+
+    /**
+     * Relación con el software (Software).
+     * Un software en un equipo, pertenece a un software.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function software()
     {
         return $this->belongsTo(Software::class)->withTrashed();
     }
 
-    // Relación con la licencia
+
+    /**
+     * Relación con la licencia (License).
+     * Un software en un equipo, puede tener una licencia asignada.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function license()
     {
         return $this->belongsTo(License::class)->withTrashed();

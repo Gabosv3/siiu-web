@@ -23,6 +23,7 @@ class CreateLoginSecuritiesTable extends Migration
             $table->boolean('google2fa_enable')->default(false); // Indica si Google 2FA está habilitado
             $table->string('google2fa_secret')->nullable(); // Clave secreta de Google 2FA (opcional)
 
+            $table->softDeletes();
             $table->timestamps(); // Timestamps para created_at y updated_at
         });
     }

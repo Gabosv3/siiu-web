@@ -65,18 +65,7 @@
     </div>
 </div>
 
-
-
-
-<script>
-    $(document).ready(function() {
-        $('.js-select-manager').select2({
-            placeholder: "Seleccione un encargado",
-            theme: "bootstrap-5",
-            width: '100%',
-        });
-    });
-</script>
+<script src="{{ asset('assets/js/departments/edit.js') }}"></script>
 
 @if ($errors->any())
     <script>
@@ -97,48 +86,5 @@
     </script>
 @endif
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var departmentName = document.getElementById('input-department-name').value;
 
-        var defaultLat = parseFloat(document.getElementById('latitude').value) || 13.43931902478275;
-        var defaultLng = parseFloat(document.getElementById('longitude').value) || -88.15837383270265;
-        var map = L.map('map').setView([defaultLat, defaultLng], 17);
-
-        var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 18,
-            attribution: '© <a href="https://www.esri.com/en-us/arcgis/about-arcgis/overview">Esri</a>'
-        });
-
-        var baseMaps = {
-            "Map": osmLayer,
-            "Satellite": satelliteLayer
-        };
-
-        L.control.layers(baseMaps).addTo(map);
-
-        var marker = L.marker([defaultLat, defaultLng]).addTo(map)
-            .bindTooltip(departmentName, {
-                permanent: true,
-                direction: 'top'
-            })
-            .openTooltip();
-
-        map.on('click', function(e) {
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
-            marker.setLatLng([lat, lng]).bindTooltip(departmentName, {
-                permanent: true,
-                direction: 'top'
-            }).openTooltip();
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-        });
-    });
-</script>
 @endsection

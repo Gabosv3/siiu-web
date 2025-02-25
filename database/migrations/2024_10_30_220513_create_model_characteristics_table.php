@@ -18,6 +18,7 @@ class CreateModelCharacteristicsTable extends Migration
             $table->foreignId('models_id')->constrained('models')->onDelete('cascade'); // Relación con el modelo
             $table->foreignId('characteristic_id')->constrained('characteristics')->onDelete('cascade'); // Relación con la característica
             $table->string('value'); // Valor de la característica (ej., '16GB', 'Intel i5', 'mecánico')
+            $table->softDeletes();
             $table->timestamps();
         });
     }

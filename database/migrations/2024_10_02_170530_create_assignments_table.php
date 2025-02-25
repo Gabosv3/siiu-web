@@ -19,6 +19,7 @@ class CreateAssignmentsTable extends Migration
             $table->foreignId('ticket_id')->constrained('tickets')->onDelete('cascade'); // Debe estar aquí
             $table->string('task'); // O el tipo de dato que estés utilizando
             $table->enum('status', ['pendiente', 'en progreso', 'finalizado'])->default('pendiente');
+            $table->softDeletes();
             $table->timestamp('initial_date');
             $table->timestamps();
         });

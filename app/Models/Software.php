@@ -36,21 +36,38 @@ class Software extends Model
     // Descripción personalizada del evento
     protected static $logName = 'software';
 
-    // Función para registrar el evento de creación del log
+   
+    /**
+     * Personaliza la descripción del evento para que sea mas amigable
+     *
+     * @param string $eventName
+     * @return string
+     */
     public function getDescriptionForEvent(string $eventName): string
     {
         return "El software ha sido {$eventName}";
     }
-    // Relación con la fabricante
+    
+    
+    /**
+     * Relación con el fabricante.
+     * Un software pertenece a un fabricante.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function manufacturer()
     {
-        return $this->belongsTo(Manufacturer::class);
+        return $this->belongsTo(Manufacturer::class)->withTrashed();
     }
 
-    // Relación con la licencia
+    
+    /**
+     * Relación con las licencias.
+     * Un software puede tener varias licencias.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function licencias()
     {
-        return $this->hasMany(License::class);
+        return $this->hasMany(License::class)->withTrashed();
     }
 
 }

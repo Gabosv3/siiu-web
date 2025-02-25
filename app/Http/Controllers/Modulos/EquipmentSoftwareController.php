@@ -9,7 +9,45 @@ use Illuminate\Http\Request;
 
 class EquipmentSoftwareController extends Controller
 {
-     // Asignar software y licencia a un equipo
+     
+    /**
+     * Asigna un software y su licencia a un equipo.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    /**
+     * @OA\Post(
+     *     path="/api/equipment-software",
+     *     summary="Asigna un software y su licencia a un equipo.",
+     *     description="",
+     *     tags={"EquipmentSoftware"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="hardware_id", type="integer", example=1),
+     *             @OA\Property(property="software_id", type="integer", example=1),
+     *             @OA\Property(property="license_id", type="integer", example=1, nullable=true),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Software y licencia asignados correctamente.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Software y licencia asignados correctamente."),
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/EquipmentSoftware"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="La licencia seleccionada ha expirado o ya alcanzó el máximo de dispositivos permitidos.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="La licencia seleccionada ha expirado."),
+     *         ),
+     *     ),
+     * )
+     */
      public function assignSoftware(Request $request)
      {
          // Validar datos recibidos
@@ -17,6 +55,10 @@ class EquipmentSoftwareController extends Controller
              'hardware_id' => 'required|exists:hardware,id',
              'software_id' => 'required|exists:softwares,id',
              'license_id'  => 'nullable|exists:licenses,id',
+         ], [
+             'hardware_id.exists' => 'El equipo no existe.',
+             'software_id.exists' => 'El software no existe.',
+             'license_id.exists'  => 'La licencia no existe.',
          ]);
 
          // Verificar si la licencia es válida

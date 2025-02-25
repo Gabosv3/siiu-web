@@ -19,6 +19,7 @@ class CreateEquipmentHistoriesTable extends Migration
             $table->unsignedBigInteger('user_id')->nullable(); // Optional, if you want to record who performed the action
             $table->string('action', 255);
             $table->text('description')->nullable();
+            $table->softDeletes();
             $table->timestamp('performed_at');
             $table->timestamps();
     

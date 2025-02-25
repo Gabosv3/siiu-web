@@ -6,13 +6,38 @@ use App\Http\Controllers\Controller;
 use App\Models\Characteristic;
 use App\Models\Manufacturer;
 use App\Models\Models;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+
 
 class ModeloController extends Controller
 {
-    // Obtener todos los modelos
+    /**
+     * Constructor del controlador.
+     *
+     * Establece middleware para controlar los permisos de acceso a los métodos
+     * del controlador. Los middleware se aplican a los métodos según se indica
+     * a continuación:
+     *
+     * - index: can:modelos.index
+     * - create y store: can:modelos.create
+     * - edit y update: can:modelos.edit
+     * - destroy: can:modelos.destroy
+     * - restore: can:modelos.restore
+     *
+     * -*/
+     public function __construct()
+    {
+       $this->middleware('can:modelos.index')->only('index');
+       $this->middleware('can:modelos.create')->only('create', 'store');
+        $this->middleware('can:modelos.edit')->only('edit', 'update');
+        $this->middleware('can:modelos.destroy')->only('destroy');
+        $this->middleware('can:modelos.restore')->only('restore');
+    }
+    /**
+     * Muestra una lista de todos los modelos con sus características.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         // Obtener todos los modelos
@@ -23,13 +48,33 @@ class ModeloController extends Controller
         return view('inventories.models.index', compact('models', 'deletedModels'));
     }
 
-    // Mostrar el formulario para crear un nuevo modelo
+
+    /**
+     * Muestra el formulario para crear un nuevo modelo.
+     *
+     * Recibe un objeto Manufacturer como parámetro y utiliza el método compact para
+     * pasar los datos a la vista. La vista create.blade.php utiliza el fabricante para
+     * mostrar los datos del fabricante en un select.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
     public function create()
     {
         $fabricantes = Manufacturer::all();
         return view('inventories.models.create', compact('fabricantes'));
     }
-    // Crear nuevo modelo
+
+
+    /**
+     * Crea un nuevo modelo en la base de datos.
+     *
+     * Valida los datos del formulario y crea un nuevo modelo con los datos
+     * proporcionados.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         // Método para crear un nuevo modelo
@@ -60,12 +105,19 @@ class ModeloController extends Controller
         ], 201);
     }
 
-    // Método para obtener los modelos por fabricante
+
+    /**
+     * Obtiene los modelos asociados a un fabricante.
+     *
+     * Hace una petición GET a /modelos/por-fabricante/{fabricante_id} y devuelve
+     * los modelos asociados al fabricante en formato JSON.
+     *
+     * @param int $fabricante_id ID del fabricante
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getModelosPorFabricante($fabricante_id)
     {
-        // Validación para asegurarse de que el fabricante existe
-        $fabricante = Manufacturer::findOrFail($fabricante_id);
-
         // Obtener los modelos asociados al fabricante
         $modelos = Models::where('manufacturer_id', $fabricante_id)->get();
 
@@ -75,6 +127,17 @@ class ModeloController extends Controller
         ], 200);
     }
 
+
+    /**
+     * Muestra las características de un modelo específico.
+     *
+     * Busca el modelo por su ID y carga sus características asociadas.
+     * Si no hay características disponibles, se devuelve una vista con un mensaje
+     * indicando la ausencia de características.
+     *
+     * @param int $id ID del modelo
+     * @return \Illuminate\View\View
+     */
 
     public function show($id)
     {
@@ -89,6 +152,15 @@ class ModeloController extends Controller
         return view('inventories.models.show', compact('model'));
     }
 
+    /**
+     * Muestra el formulario de edición de un modelo específico.
+     *
+     * Busca el modelo por su ID y carga sus características asociadas. Luego, pasa
+     * el modelo y todas las características disponibles a la vista de edición.
+     *
+     * @param int $id ID del modelo
+     * @return \Illuminate\View\View
+     */
     public function edit($id)
     {
         $model = Models::with('characteristics')->findOrFail($id); // Cargar el modelo junto con las características asociadas
@@ -97,47 +169,69 @@ class ModeloController extends Controller
         return view('inventories.models.edit', compact('model', 'characteristics'));
     }
 
+    /**
+     * Actualiza un modelo existente en la base de datos.
+     *
+     * Este método valida los datos proporcionados en el request y actualiza el nombre
+     * del modelo y sus características asociadas. Si las características son proporcionadas,
+     * se actualizan sus valores en la tabla pivote.
+     * En caso de éxito, redirige a la vista de edición del modelo con un mensaje de éxito.
+     * Si ocurre un error, redirige con un mensaje de error.
+     *
+     * @param \Illuminate\Http\Request $request La solicitud HTTP que contiene los datos del modelo a actualizar.
+     * @param int $id El ID del modelo que se va a actualizar.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección a la vista de edición del modelo.
+     */
     public function update(Request $request, $id)
-{
-    try {
-        // Validación de los datos recibidos
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'characteristics_values' => 'array', // Aseguramos que sea un array
-            'characteristics_values.*' => 'nullable|string', // Cada valor puede ser nulo o una cadena
-        ], [
-            'name.required' => 'El nombre es obligatorio',
-            'name.string' => 'El nombre debe ser una cadena de texto',
-            'name.max' => 'El nombre no debe superar los 255 caracteres',
-        ]);
+    {
+        try {
+            // Validación de los datos recibidos
+            $request->validate([
+                'name' => 'required|string|max:255', // Validación de los datos recibidos
+                'characteristics_values' => 'array', // Aseguramos que sea un array
+                'characteristics_values.*' => 'nullable|string', // Cada valor puede ser nulo o una cadena
+            ], [
+                'name.required' => 'El nombre es obligatorio',
+                'name.string' => 'El nombre debe ser una cadena de texto',
+                'name.max' => 'El nombre no debe superar los 255 caracteres',
+            ]);
 
-        // Actualizar el modelo
-        $modelo = Models::findOrFail($id);
-        $modelo->update([
-            'name' => $request->name,
-        ]);
+            // Actualizar el modelo
+            $modelo = Models::findOrFail($id);
+            $modelo->update([
+                'name' => $request->name,
+            ]);
 
-        // Actualizar las características
-        if ($request->has('characteristics_values')) {
-            foreach ($request->characteristics_values as $characteristic_id => $value) {
-                // Encontrar la característica en la tabla pivote y actualizar su valor
-                $modelo->characteristics()->updateExistingPivot($characteristic_id, [
-                    'value' => $value,
-                ]);
+            // Actualizar las características
+            if ($request->has('characteristics_values')) {
+                foreach ($request->characteristics_values as $characteristic_id => $value) {
+                    // Encontrar la característica en la tabla pivote y actualizar su valor
+                    $modelo->characteristics()->updateExistingPivot($characteristic_id, [
+                        'value' => $value,
+                    ]);
+                }
             }
+            //Si todo es exitoso, retornar la respuesta
+            return redirect()->route('models.edit', $id)->with('success', 'Modelo actualizado exitosamente'); 
+        } catch (\Exception $e) {
+            // Si ocurre un error, retornar con el mensaje de error
+            return redirect()->route('models.edit', $id)
+                ->with('error', 'Ocurrió un error al actualizar el modelo: ' . $e->getMessage());
         }
-
-        // Si todo es exitoso, retornar la respuesta
-        return redirect()->route('models.edit', $id)
-                         ->with('success', 'Modelo actualizado exitosamente');
-    } catch (\Exception $e) {
-        // Si ocurre un error, retornar con el mensaje de error
-        return redirect()->route('models.edit', $id)
-                         ->with('error', 'Ocurrió un error al actualizar el modelo: ' . $e->getMessage());
     }
-}
 
 
+
+    /**
+     * Elimina un modelo existente de la base de datos.
+     *
+     * Busca el modelo por su ID y lo elimina, redirigiendo a la lista de modelos
+     * con un mensaje de éxito si se elimina correctamente, o un mensaje de error
+     * si el modelo no se encuentra.
+     *
+     * @param int $id El ID del modelo a eliminar.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección a la lista de modelos.
+     */
 
     public function destroy($id)
     {
@@ -151,6 +245,17 @@ class ModeloController extends Controller
         return redirect()->route('models.index')->with('error', 'Modelo no encontrado');
     }
 
+    /**
+     * Restaura un modelo eliminado de la base de datos.
+     *
+     * Busca el modelo eliminado por su ID y lo restaura.
+     * Si se restaura con éxito, redirige a la lista de modelos con un mensaje de éxito.
+     * Si el modelo no se encuentra, redirige con un mensaje de error.
+     *
+     * @param int $id El ID del modelo a restaurar.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección a la lista de modelos.
+     */
+
     public function restore($id)
     {
         $model = Models::withTrashed()->findOrFail($id);
@@ -161,6 +266,16 @@ class ModeloController extends Controller
         return redirect()->route('models.index')->with('error', 'Modelo no encontrado');
     }
 
+    /**
+     * Muestra la vista para asociar características a un modelo específico.
+     *
+     * Busca un modelo por su ID y obtiene todas las características disponibles.
+     * Devuelve la vista de asociación con el modelo y las características listadas.
+     *
+     * @param int $id El ID del modelo al que se asociarán las características.
+     * @return \Illuminate\View\View La vista para asociar características al modelo.
+     */
+
     public function associateCharacteristics($id)
     {
         $model = Models::findOrFail($id); // Encontrar el modelo
@@ -169,6 +284,18 @@ class ModeloController extends Controller
         return view('inventories.models.associate', compact('model', 'caracteristicas'));
     }
 
+    /**
+     * Almacena las características asociadas a un modelo en la base de datos.
+     *
+     * Valida que el request contenga un arreglo de características con sus respectivos valores.
+     * Luego, busca el modelo por su ID y utiliza un bucle para asociar cada característica con su valor
+     * a través de la relación `model_characteristics`. Si la característica ya existe, la actualiza.
+     * Si se asocia con éxito, redirige a la vista de detalles del modelo con un mensaje de éxito.
+     *
+     * @param \Illuminate\Http\Request $request El request que contiene el arreglo de características.
+     * @param int $id El ID del modelo al que se asociarán las características.
+     * @return \Illuminate\Http\RedirectResponse La respuesta de redirección a la vista de detalles del modelo.
+     */
     public function storeCharacteristics(Request $request, $id)
     {
         $request->validate([
@@ -189,12 +316,31 @@ class ModeloController extends Controller
         return redirect()->route('models.show', $id)->with('success', 'Características asociadas exitosamente');
     }
 
+    /**
+     * Adds a characteristic to a model.
+     *
+     * Validates the request to ensure a characteristic ID and value are provided and exist.
+     * Checks if the characteristic with the given value already exists for the model, and if so,
+     * returns a 422 error response. If not, it attaches the characteristic to the model with the specified value.
+     * Returns a JSON response with the characteristic details for AJAX consumption.
+     *
+     * @param \Illuminate\Http\Request $request The incoming request with characteristic data.
+     * @param int $id The ID of the model to which the characteristic will be added.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the added characteristic details.
+     */
+
     public function addCharacteristic(Request $request, $id)
     {
         // Validar la solicitud
         $request->validate([
             'characteristic_id' => 'required|exists:characteristics,id',
             'value' => 'required|string|max:255',
+        ], [
+            'characteristic_id.required' => 'La característica es obligatoria.',
+            'characteristic_id.exists' => 'La característica no existe.',
+            'value.required' => 'El valor es obligatorio.',
+            'value.string' => 'El valor debe ser una cadena de texto.',
+            'value.max' => 'El valor no debe superar los 255 caracteres.',
         ]);
 
         $model = Models::findOrFail($id);
@@ -227,20 +373,29 @@ class ModeloController extends Controller
 
     // Asignar la característica al modelo
 
+    /**
+     * Elimina una característica de un modelo.
+     *
+     * Encuentra el modelo y la característica por sus IDs y elimina la relación
+     * en la tabla pivote. Devuelve una respuesta JSON con el resultado de la
+     * operación.
+     *
+     * @param int $modelId El ID del modelo del que se eliminará la característica.
+     * @param int $characteristicId El ID de la característica que se eliminará.
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function removeCharacteristic($modelId, $characteristicId)
-{
-    try {
-        $model = Models::findOrFail($modelId);
+    {
+        try {
+            $model = Models::findOrFail($modelId);
 
-        // Eliminar la relación en la tabla pivote
-        $model->characteristics()->detach($characteristicId);
+            // Eliminar la relación en la tabla pivote
+            $model->characteristics()->detach($characteristicId);
 
-        return response()->json(['message' => 'Característica eliminada correctamente.'], 200);
-    } catch (\Exception $e) {
+            return response()->json(['message' => 'Característica eliminada correctamente.'], 200);
+        } catch (\Exception $e) {
 
-        return response()->json(['message' => 'No se pudo eliminar la característica.'], 500);
+            return response()->json(['message' => 'No se pudo eliminar la característica.'], 500);
+        }
     }
-}
-
-
 }

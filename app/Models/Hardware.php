@@ -44,59 +44,141 @@ class Hardware extends Model
     // Personalizar el nombre del registro de actividad
     protected static $logName = 'hardware';
 
-    // Relación con la categoría
+
+    /**
+     * Relación muchos a uno con el modelo Category.
+     *
+     * Esta función devuelve una relación 'belongsTo' con el modelo Category,
+     * indicando que cada hardware pertenece a una categoría específica.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class)->withTrashed();
     }
 
-    // Relación con el usuario (dueño)
+
+    /**
+     * Relación muchos a uno con el modelo User.
+     *
+     * Esta función devuelve una relación 'belongsTo' con el modelo User,
+     * indicando que cada hardware pertenece a un usuario específico.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
-    // Relación con la ubicación (departamento)
+    
+    /**
+     * Relación muchos a uno con el modelo Departament.
+     *
+     * Esta función devuelve una relación 'belongsTo' con el modelo
+     * Departament, indicando que cada hardware está asociado a una
+     * ubicación específica.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function location()
     {
-        return $this->belongsTo(Departament::class);
+        return $this->belongsTo(Departament::class)->withTrashed();
     }
 
-    // Relación con el fabricante
+    
+    /**
+     * Relación muchos a uno con el modelo Manufacturer.
+     *
+     * Esta función devuelve una relación 'belongsTo' con el modelo Manufacturer,
+     * indicando que cada hardware pertenece a un fabricante específico.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function manufacturer()
     {
-        return $this->belongsTo(Manufacturer::class);
+        return $this->belongsTo(Manufacturer::class)->withTrashed();
     }
 
-    // Relación con el modelo
+    
+    /**
+     * Relación muchos a uno con el modelo Model.
+     *
+     * Esta función devuelve una relación 'belongsTo' con el modelo Model,
+     * indicando que cada hardware pertenece a un modelo específico.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function model()
     {
-        return $this->belongsTo(Models::class);
+        return $this->belongsTo(Models::class)->withTrashed();
     }
 
+    
+    /**
+     * Relación uno a uno con el modelo HardwareAssignment.
+     *
+     * Esta función devuelve una relación 'hasOne' con el modelo HardwareAssignment,
+     * indicando que cada hardware tiene una asignación de hardware asociada.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function hardwareAssigned()
     {
-        return $this->hasOne(HardwareAssignment::class);
+        return $this->hasOne(HardwareAssignment::class)->withTrashed();
     }
 
+    /**
+     * Relación uno a muchos con el modelo HardwareAssignment.
+     *
+     * Esta función devuelve una relación 'hasMany' con el modelo HardwareAssignment,
+     * indicando que cada hardware tiene varias asignaciones de hardware asociadas.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function hardwareAssignments()
     {
-        return $this->hasMany(HardwareAssignment::class);
+        return $this->hasMany(HardwareAssignment::class)->withTrashed();
     }
 
+    /**
+     * Relación uno a muchos con el modelo EquipmentHistory.
+     *
+     * Esta función devuelve una relación 'hasMany' con el modelo EquipmentHistory,
+     * indicando que cada hardware tiene varios registros de historial de equipo
+     * asociados.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function equipmentHistories()
     {
-        return $this->hasMany(EquipmentHistory::class);
+        return $this->hasMany(EquipmentHistory::class)->withTrashed();
     }
-    // Relación muchos a muchos con los sistemas asignados
-
-
-    // Relación con las licencias
-
+    
+    /**
+     * Relación muchos a muchos con el modelo User.
+     *
+     * Esta función devuelve una relación 'belongsToMany' con el modelo User,
+     * indicando que cada hardware puede ser asignado a varios usuarios.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function users()
     {
-        return $this->belongsToMany(User::class, 'hardware_user', 'hardware_id', 'user_id');
+        return $this->belongsToMany(User::class, 'hardware_user', 'hardware_id', 'user_id')->withTrashed();
     }
+
+    /**
+     * Relación de muchos a muchos a través de EquipmentSoftware con el modelo License.
+     *
+     * Esta función devuelve una relación 'hasManyThrough' con el modelo License,
+     * indicando que cada hardware puede tener múltiples licencias a través del modelo
+     * intermedio EquipmentSoftware. Esto permite acceder a las licencias asociadas a
+     * los softwares instalados en el hardware.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
 
     public function licencias()
     {
@@ -110,6 +192,17 @@ class Hardware extends Model
         );
     }
 
+    /**
+     * Relación de muchos a muchos con el modelo Software.
+     *
+     * Esta función devuelve una relación 'belongsToMany' con el modelo Software,
+     * indicando que cada hardware puede tener varios softwares instalados.
+     * La relación se establece a través de la tabla pivot 'equipment_softwares'.
+     * La función 'withPivot' se utiliza para incluir el campo extra 'license_id'
+     * de la tabla pivot en la relación.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function softwares()
     {
         return $this->belongsToMany(Software::class, 'equipment_softwares', 'hardware_id', 'software_id')
@@ -117,8 +210,16 @@ class Hardware extends Model
             ->withTimestamps(); // Para que los timestamps de la tabla pivot se incluyan
     }
 
+    /**
+     * Relación de uno a muchos con el modelo HardwareFile.
+     *
+     * Esta función devuelve una relación 'hasMany' con el modelo HardwareFile,
+     * indicando que cada hardware puede tener varios archivos relacionados.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function files()
     {
-        return $this->hasMany(HardwareFile::class);
+        return $this->hasMany(HardwareFile::class)->withTrashed();
     }
 }

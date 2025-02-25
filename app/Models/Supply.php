@@ -26,7 +26,7 @@ class Supply extends Model
         'category_id',
         'manufacturer_id',
         'model_id',
-        'name', 
+        'name',
         'quantity',
         'unit',
         'description',
@@ -35,22 +35,37 @@ class Supply extends Model
 
     protected static $logName = 'supply';
 
-    // Relación con la categoría
+    
+    /**
+     * Relación con la categoría del insumo.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class)->withTrashed();
     }
 
-    // Relación con el fabricante
+    
+    /**
+     * Relación con el fabricante del insumo.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function manufacturer()
     {
-        return $this->belongsTo(Manufacturer::class);
+        return $this->belongsTo(Manufacturer::class)->withTrashed();
     }
 
-    // Relación con el modelo
+    
+    /**
+     * Relación con el modelo del insumo.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function model()
     {
-        return $this->belongsTo(Models::class);
+        return $this->belongsTo(Models::class)->withTrashed();
     }
 
 

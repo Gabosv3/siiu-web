@@ -27,6 +27,7 @@ class CreateServiceSheetsTable extends Migration
             $table->text('description');
             $table->text('observations')->nullable();
             $table->boolean('use_supply')->default(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
