@@ -482,7 +482,7 @@
 
                     // Llamada AJAX para asignar equipo
                     $.ajax({
-                        url: '{{ route('assign.equipment') }}',
+                        url: "{{ route('assign.equipment') }}",
                         type: 'POST',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content'),
@@ -601,7 +601,7 @@
 
                     // Llamada AJAX para subir el archivo
                     $.ajax({
-                        url: '{{ route('upload-file') }}', // URL de la ruta que maneja la carga de archivos
+                        url: "{{ route('upload-file') }}", // URL de la ruta que maneja la carga de archivos
                         type: 'POST',
                         data: formData,
                         processData: false, // No procesar los datos (esto es importante para FormData)

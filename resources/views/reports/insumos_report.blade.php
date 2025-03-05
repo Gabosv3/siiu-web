@@ -5,24 +5,14 @@
     <!-- Columna izquierda: Filtros -->
     <div class="col-md-3">
         <div class="card p-3">
-            <!-- Filtro de tipo de reporte -->
-            <div id="reportTypeFilterContainer" class="mb-3">
-                <label for="reportTypeFilter">Elige el tipo de reporte</label>
-                <select id="reportTypeFilter" class="form-select">
-                    <option value="usersByDepartment">Usuarios por Departamento</option>
-                    <option value="ticketsByUser">Tickets por Usuario</option>
-                    <option value="hardwareByUser">Equipos Asignados por Usuario</option>
-                </select>
-            </div>
-
-            <!-- Filtro de usuarios (solo visible para los reportes de Tickets por Usuario y Equipos Asignados por Usuario) -->
-            <div id="userFilterContainer" class="mb-3" style="display: none;">
-                <label for="userFilter">Elige el usuario</label>
-                <select id="userFilter" class="form-select" multiple>
-                    <option value="todos">Todos</option>
-                    @foreach ($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
+            <!-- Filtro de tipo de insumo -->
+            <div id="insumoTypeFilterContainer" class="mb-3">
+                <label for="insumoTypeFilter">Elige el tipo de insumo</label>
+                <select id="insumoTypeFilter" class="form-select">
+                    <option value="byCategory">Insumos por Categoría</option>
+                    <option value="byManufacturer">Insumos por Fabricante</option>
+                    <option value="byModel">Insumos por Modelo</option>
+                    <option value="byStatus">Insumos por Estado</option>
                 </select>
             </div>
 
@@ -38,28 +28,24 @@
 
             <!-- Contenedor para el mensaje de error -->
             <div id="errorContainer" class="text-danger small mt-2 d-none" style="font-size: 0.85rem;">
-                ⚠️ Por favor, selecciona un tipo de reporte válido y completa los filtros necesarios.
+                ⚠️ Por favor, selecciona un tipo de insumo válido y completa los filtros necesarios.
             </div>
 
             <!-- Botones de acción -->
             <div class="d-grid gap-2">
-                <button class="btn" style="background-color: #A52A2A; color: white;"
-                    id="generateReportBtn">Consultar</button>
-                <button class="btn" style="background-color: #8B0000; color: white;"
-                    onclick="generateReport('pdf')">Generar PDF</button>
-                <button class="btn" style="background-color: #B5651D; color: white;"
-                    onclick="generateReport('excel')">Exportar a Excel</button>
+                <button class="btn" style="background-color: #A52A2A; color: white;" id="generateInsumoReportBtn">Consultar</button>
+                <button class="btn" style="background-color: #8B0000; color: white;" onclick="generateInsumoReport('pdf')">Generar PDF</button>
+                <button class="btn" style="background-color: #B5651D; color: white;" onclick="generateInsumoReport('excel')">Exportar a Excel</button>
             </div>
         </div>
     </div>
 
     <!-- Columna derecha: Resultados -->
     <div class="col-md-8">
-        <div class="card p-3" id="reportResult">
-            <h2 class="mb-3" id="reportTitle">Reportes por Usuario</h2>
-            <div id="resultContent">
-                <p class="text-muted">Selecciona un usuario, un departamento o un rango de fechas para generar el
-                    reporte.</p>
+        <div class="card p-3" id="insumoResult">
+            <h2 class="mb-3" id="insumoReportTitle">Reporte de Insumos</h2>
+            <div id="insumoResultContent">
+                <p class="text-muted">Selecciona los filtros para generar el reporte de insumos.</p>
             </div>
         </div>
     </div>
@@ -82,31 +68,24 @@
         document.getElementById('startDate').value = formatDate(threeDaysAgo);
         document.getElementById('endDate').value = formatDate(today);
 
-        // Inicializar Select2
-        $('#userFilter').select2({
-            placeholder: "Seleccione una opción",
-            theme: "bootstrap-5",
-            width: '100%',
-        });
+        
     };
 
-    // Mostrar u ocultar el filtro de usuarios dependiendo del tipo de reporte
-    document.getElementById('reportTypeFilter').addEventListener('change', function() {
-        const reportType = this.value;
+    // Mostrar u ocultar el filtro de usuarios dependiendo del tipo de insumo
+    document.getElementById('insumoTypeFilter').addEventListener('change', function() {
+        const insumoType = this.value;
         const userFilterContainer = document.getElementById('userFilterContainer');
 
-        if (reportType === 'ticketsByUser' || reportType === 'hardwareByUser') {
+        if (insumoType === 'byLocation') {
             userFilterContainer.style.display = 'block';
         } else {
             userFilterContainer.style.display = 'none';
         }
     });
 
-    // Función para manejar la consulta y los filtros
-    document.getElementById('generateReportBtn').addEventListener('click', function() {
-        const reportType = document.getElementById('reportTypeFilter').value;
-        const userIds = Array.from(document.getElementById('userFilter').selectedOptions).map(option => option
-            .value);
+    // Función para manejar la consulta y los filtros de insumos
+    document.getElementById('generateInsumoReportBtn').addEventListener('click', function() {
+        const insumoType = document.getElementById('insumoTypeFilter').value;
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
         const errorContainer = document.getElementById('errorContainer');
@@ -147,64 +126,85 @@
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // Obtener los datos del reporte con AJAX
+        // Obtener los datos del reporte de insumos con AJAX
         $.ajax({
-            url: `/reportes/datausuario`,
+            url: `/reportes/insumos/data`, // Cambia la URL según tu ruta
             type: 'GET',
             data: {
-                userIds: userIds.length === 0 || userIds.includes('todos') ? [] : userIds,
                 startDate: startDate,
                 endDate: endDate,
-                reportType: reportType
-
+                insumoType: insumoType
             },
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
             },
             success: function(data) {
-                const reportTitle = document.getElementById('reportTitle');
-                const resultContent = document.getElementById('resultContent');
-                reportTitle.textContent = 'Reporte de Usuarios'  ;
+                console.log(data);
+                const reportTitle = document.getElementById('insumoReportTitle');
+                const resultContent = document.getElementById('insumoResultContent');
+                reportTitle.textContent = 'Reporte de Insumos'; 
 
-                // Construir el contenido del reporte en formato de tabla
+                // Construir el contenido del reporte de insumos en formato de tabla
                 let content = '<table class="table table-bordered"><thead><tr>';
 
-                if (reportType === 'usersByDepartment') {
+                // Ajustar columnas según el tipo de insumo
+                if (insumoType === 'byCategory') {
                     content += `
-                        <th>Departamento</th>
-                        <th>Usuarios</th>
+                        <th>Insumo</th>
+                        <th>Categoría</th>
+                        <th>Cantidad de Insumos</th>
                     `;
-                    data.data.forEach(department => {
+                    data.data.forEach(category => {
                         content += `
                             <tr>
-                                <td>${department.name}</td>
-                                <td>${department.users_count}</td>
+                                <td>${category.supply_name}</td>
+                                <td>${category.category_name}</td>
+                                <td>${category.total_quantity}</td>
                             </tr>
                         `;
                     });
-                } else if (reportType === 'ticketsByUser') {
+                } else if (insumoType === 'byManufacturer') {
                     content += `
-                        <th>Usuario</th>
-                        <th>Tickets Generados</th>
+                        <th>Insumo</th>
+                        <th>Fabricante</th>
+                        <th>Cantidad de Insumos</th>
                     `;
-                    data.data.forEach(user => {
+                    data.data.forEach(manufacturer => {
                         content += `
                             <tr>
-                                <td>${user.name}</td>
-                                <td>${user.tickets_count}</td>
+                                <td>${manufacturer.supply_name}</td>
+                                <td>${manufacturer.manufacturer_name}</td>
+                                <td>${manufacturer.total_quantity}</td>
                             </tr>
                         `;
                     });
-                } else if (reportType === 'hardwareByUser') {
+                } else if (insumoType === 'byModel') {
                     content += `
-                        <th>Usuario</th>
-                        <th>Equipos Asignados</th>
+                        <th>Insumo</th>
+                        <th>Modelo</th>
+                        <th>Cantidad de Insumos</th>
                     `;
-                    data.data.forEach(user => {
+                    data.data.forEach(model => {
                         content += `
                             <tr>
-                                <td>${user.name}</td>
-                                <td>${user.hardware_count}</td>
+                                <td>${model.supply_name}</td>
+                                <td>${model.model_name}</td>
+                                <td>${model.total_quantity}</td>
+                            </tr>
+                        `;
+                    });
+                } else if (insumoType === 'byStatus') {
+                    content += `
+                        <th>Insumo</th>
+                        <th>Estado</th>
+                        <th>Cantidad de Insumos</th>
+                    `;
+                    data.data.forEach(status => {
+                        content += `
+                            <tr>
+                                <td>${status.name}</td>
+                                <td>${status.status}</td>
+                                <td>${status.quantity}</td>
                             </tr>
                         `;
                     });
@@ -217,7 +217,7 @@
                 errorContainer.classList.add('d-none');
             },
             error: function(error) {
-                console.error('Error al generar el reporte:', error);
+                console.error('Error al generar el reporte de insumos:', error);
 
                 // Mostrar un mensaje de error
                 const errorContainer = document.getElementById('errorContainer');
@@ -225,28 +225,25 @@
                 errorContainer.classList.remove('d-none');
 
                 // Limpiar el contenido del reporte
-                const resultContent = document.getElementById('resultContent');
+                const resultContent = document.getElementById('insumoResultContent');
                 resultContent.innerHTML =
                     '<p class="text-muted">No se pudo generar el reporte. Inténtalo de nuevo.</p>';
             }
         });
     });
 
-    // Función para generar reportes en PDF y Excel
-    function generateReport(type) {
-        const reportType = document.getElementById('reportTypeFilter').value;
-        const userIds = Array.from(document.getElementById('userFilter').selectedOptions).map(option => option.value);
+    // Función para generar reportes de insumos en PDF y Excel
+    function generateInsumoReport(type) {
+        const insumoType = document.getElementById('insumoTypeFilter').value;
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         $.ajax({
-            url: `/api/generar-reporte`,
+            url: `/api/generar-reporte-insumos`, // Ruta para generar PDF o Excel
             type: 'POST',
             data: {
-
-                reportType: reportType,
-                userIds: userIds.length === 0 || userIds.includes('todos') ? [] : userIds,
+                insumoType: insumoType,
                 startDate: startDate,
                 endDate: endDate,
                 type: type

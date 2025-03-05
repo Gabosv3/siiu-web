@@ -300,6 +300,10 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::get('/reportes/ticket', [ReportsController::class, 'getTicketReports'])->name('reportes.ticket');
     Route::get('/reportes/tecnico', [ReportsController::class, 'getTechnicianReports'])->name('reportes.tecnico');
     Route::get('/reportes/usuario', [ReportsController::class, 'getUserReports'])->name('reportes.usuario');
+    Route::get('/reportes/insumos', [ReportsController::class, 'getInsumosReport'])->name('reportes.insumos');
+    Route::get('/reportes/insumos/data', [ReportsController::class, 'getSupplyData'])->name('reportes.insumos.data');
+    Route::get('/reportes/tickets', [ReportsController::class, 'getTicketReports'])->name('reportes.tickets');
+    Route::get('/reportes/tickets/data', [ReportsController::class, 'getTicketData'])->name('reportes.tickets.data');
     // Ruta para generar el reporte por usuario (AJAX)
 
     Route::post('/fetch-reports', [ReportsController::class, 'fetchReports']);

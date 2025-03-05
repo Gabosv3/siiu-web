@@ -3,20 +3,29 @@
 namespace App\Http\Controllers\Modulos;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\User;
 use App\Models\Technician; // Importar el modelo Technician
 use App\Models\Departament;
 use App\Models\Hardware;
+use App\Models\Manufacturer;
+use App\Models\Models;
+use App\Models\Supply;
+use App\Models\Ticket;
+use App\Models\Title;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf;
 
 class ReportsController extends Controller
 {
-    public function __construct()
+    /**public function __construct()
     {
         $this->middleware('can:reports.index')->only('index');
         $this->middleware('can:reports.user_reports')->only('getUserReports');
-    }
+    }**/
 
     /**
      * Muestra la vista principal del módulo de reportes.
@@ -123,5 +132,224 @@ class ReportsController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function getInsumosReport()
+    {
+        $categories = Category::all();  // Obtener todas las categorías
+        $manufacturers = Manufacturer::all();  // Obtener todos los fabricantes
+        $models = Models::all();  // Obtener todos los modelos
+
+        // Pasar los datos a la vista
+        return view('reports.insumos_report', compact('categories', 'manufacturers', 'models'));
+    }
+
+    // Obtener los datos filtrados del reporte de suministros
+    public function getSupplyData(Request $request)
+    {
+        try {
+            // Validar los parámetros de la solicitud
+            $request->validate([
+                'startDate' => 'nullable|date',
+                'endDate' => 'nullable|date|after_or_equal:startDate',
+                'insumoType' => 'nullable|in:byCategory,byManufacturer,byModel,byStatus',
+                'status' => 'nullable|in:active,inactive',  // Si necesitas validar el estado del insumo
+            ]);
+
+            // Obtener parámetros del request
+            $startDate = $request->input('startDate');
+            $endDate = $request->input('endDate');
+            $insumoType = $request->input('insumoType');  // Tipo de insumo
+            $status = $request->input('status'); // Estado de insumo
+
+            // Inicializar la variable $query
+            $query = Supply::query();
+
+
+
+            // Filtrar por tipo de insumo
+            if ($insumoType) {
+                if ($insumoType === 'byCategory') {
+                    $query->select(
+                        'supplies.category_id',
+                        'categories.name as category_name', // Unir la tabla `categories` y seleccionar el nombre
+                        'supplies.name as supply_name', // Agregar el nombre del supply
+                        DB::raw('SUM(supplies.quantity) as total_quantity'),
+                        DB::raw('MAX(supplies.unit) as unit'),
+                        DB::raw('MAX(supplies.description) as description'),
+                        DB::raw('MAX(supplies.status) as status')
+                    )
+                        ->join('categories', 'supplies.category_id', '=', 'categories.id') // Hacer el join con `categories`
+                        ->groupBy('supplies.category_id', 'categories.name', 'supplies.name'); // Incluir 'supplies.name' en el GROUP BY
+
+                } elseif ($insumoType === 'byManufacturer') {
+                    $query->select(
+                        'supplies.manufacturer_id',
+                        'manufacturers.name as manufacturer_name', // Unir la tabla `manufacturers` y seleccionar el nombre
+                        'supplies.name as supply_name',
+                        DB::raw('SUM(supplies.quantity) as total_quantity'),
+                        DB::raw('MAX(supplies.unit) as unit'),
+                        DB::raw('MAX(supplies.description) as description'),
+                        DB::raw('MAX(supplies.status) as status')
+                    )
+                        ->join('manufacturers', 'supplies.manufacturer_id', '=', 'manufacturers.id') // Hacer el join con `manufacturers`
+                        ->groupBy('supplies.manufacturer_id', 'manufacturers.name', 'supplies.name'); // Incluir 'supplies.name' en el GROUP BY
+
+                } elseif ($insumoType === 'byModel') {
+                    $query->select(
+                        'supplies.model_id',
+                        'models.name as model_name', // Unir la tabla `models` y seleccionar el nombre
+                        'supplies.name as supply_name',
+                        DB::raw('SUM(supplies.quantity) as total_quantity'),
+                        DB::raw('MAX(supplies.unit) as unit'),
+                        DB::raw('MAX(supplies.description) as description'),
+                        DB::raw('MAX(supplies.status) as status')
+                    )
+                        ->join('models', 'supplies.model_id', '=', 'models.id') // Hacer el join con `models`
+                        ->groupBy('supplies.model_id', 'models.name', 'supplies.name'); // Incluir 'supplies.name' en el GROUP BY
+
+                } elseif ($insumoType === 'byStatus' && $status) {
+                    $query->select(
+                        'supplies.status',
+                        'supplies.name as supply_name',
+                        DB::raw('SUM(supplies.quantity) as total_quantity'),
+                        DB::raw('MAX(supplies.unit) as unit'),
+                        DB::raw('MAX(supplies.description) as description')
+                    )
+                        ->where('supplies.status', $status)
+                        ->groupBy('supplies.status', 'supplies.name'); // Incluir 'supplies.name' en el GROUP BY
+                }
+            }
+
+
+            // Ejecutar la consulta
+            $insumos = $query->get();
+
+            // Devolver los datos en formato JSON
+            return response()->json([
+                'data' => $insumos,
+                'reportType' => $insumoType,  // Enviar el tipo de reporte para manejarlo en el frontend
+            ]);
+        } catch (\Exception $e) {
+            // Capturar cualquier excepción y devolver un mensaje de error en JSON
+            return response()->json([
+                'error' => 'Error al generar el reporte',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // Generar el reporte en PDF o Excel
+    public function generateReport(Request $request)
+    {
+        $categoryIds = $request->input('categoryIds', []);
+        $manufacturerIds = $request->input('manufacturerIds', []);
+        $modelIds = $request->input('modelIds', []);
+        $status = $request->input('status', null);
+        $type = $request->input('type');  // Puede ser 'pdf' o 'excel'
+
+        $query = Supply::query();
+
+        // Filtros de categoría
+        if (!empty($categoryIds)) {
+            $query->whereIn('category_id', $categoryIds);
+        }
+
+        // Filtros de fabricante
+        if (!empty($manufacturerIds)) {
+            $query->whereIn('manufacturer_id', $manufacturerIds);
+        }
+
+        // Filtros de modelo
+        if (!empty($modelIds)) {
+            $query->whereIn('model_id', $modelIds);
+        }
+
+        // Filtro de estado
+        if ($status !== null) {
+            $query->where('status', $status);
+        }
+
+        $supplies = $query->get();
+
+        if ($type === 'pdf') {
+            $pdf = Pdf::loadView('supplies.report', compact('supplies'));
+            return $pdf->download('reporte_insumos.pdf');
+        } elseif ($type === 'excel') {
+            return Excel::download(new SuppliesExport($supplies), 'reporte_insumos.xlsx');
+        }
+
+        return redirect()->back()->withErrors('Tipo de reporte no soportado');
+    }
+
+    public function getTicketReports()
+    {
+        $titles = Title::all(); // Obtener todos los títulos
+        $categories = Category::all();  // Obtener todas las categorías
+        $manufacturers = Manufacturer::all();  // Obtener todos los fabricantes
+        $models = Models::all();  // Obtener todos los modelos
+
+        // Pasar los datos a la vista
+        return view('reports.tickets_report', compact('titles', 'manufacturers', 'models'));
+    }
+
+    public function getTicketData(Request $request)
+    {
+
+        // Definir la consulta base
+        $tickets = Ticket::query();
+
+        // Filtrar por fecha si es necesario
+         $ticketType = $request->ticketType;
+
+        // Filtrar por tipo de ticket (como por ejemplo 'byTitle', 'byTechnician', etc.)
+        switch ($ticketType) {
+            case 'byTitle':
+                // Agrupar por título y obtener el nombre del título
+                $tickets = $tickets->join('titles', 'tickets.title_id', '=', 'titles.id')
+                    ->selectRaw('titles.name, count(*) as total_tickets')
+                    ->groupBy('titles.name')
+                    ->get();
+                break;
+        
+            case 'byTechnician':
+                // Agrupar por técnico
+                $tickets = $tickets->selectRaw('technician_id, count(*) as total_tickets')
+                    ->groupBy('technician_id')
+                    ->get();
+                break;
+        
+            case 'byUser':
+                // Agrupar por usuario
+                $tickets = $tickets->selectRaw('user_id, count(*) as total_tickets')
+                    ->groupBy('user_id')
+                    ->get();
+                break;
+        
+            case 'byAssignment':
+                // Agrupar por asignación (esto dependerá de las relaciones, ajusta según lo que desees)
+                $tickets = $tickets->selectRaw('assignments.ticket_id, count(*) as total_tickets')
+                    ->join('assignments', 'tickets.id', '=', 'assignments.ticket_id')
+                    ->groupBy('assignments.ticket_id')
+                    ->get();
+                break;
+        
+            case 'byStatus':
+                // Agrupar por estado
+                $tickets = $tickets->selectRaw('status, count(*) as total_tickets')
+                    ->groupBy('status')
+                    ->get();
+                break;
+        
+            default:
+                // Si no se especifica un tipo, devolver todos los tickets sin agrupar
+                $tickets = $tickets->get();
+                break;
+        }
+
+        return response()->json([
+            'data' => $tickets,
+            'reportType' => $ticketType,
+        ]);
     }
 }

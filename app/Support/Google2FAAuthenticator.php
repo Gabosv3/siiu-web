@@ -22,7 +22,7 @@ class Google2FAAuthenticator extends Authenticator
         $secret = $this->getUser()->loginSecurity->{$this->config('otp_secret_column')};
 
         if (is_null($secret) || empty($secret)) {
-            throw new InvalidSecretKey('Secret key cannot be empty.');
+            throw new InvalidSecretKey('llave de 2FA no encontrada');
         }
 
         return $secret;

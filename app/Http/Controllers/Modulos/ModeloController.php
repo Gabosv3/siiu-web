@@ -24,7 +24,7 @@ class ModeloController extends Controller
      * - destroy: can:modelos.destroy
      * - restore: can:modelos.restore
      *
-     * -*/
+     * 
      public function __construct()
     {
        $this->middleware('can:modelos.index')->only('index');
@@ -32,7 +32,7 @@ class ModeloController extends Controller
         $this->middleware('can:modelos.edit')->only('edit', 'update');
         $this->middleware('can:modelos.destroy')->only('destroy');
         $this->middleware('can:modelos.restore')->only('restore');
-    }
+    }-*/
     /**
      * Muestra una lista de todos los modelos con sus características.
      *

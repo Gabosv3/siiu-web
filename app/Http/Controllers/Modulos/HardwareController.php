@@ -136,6 +136,21 @@ class HardwareController extends Controller
             'model_id' => 'nullable|exists:models,id',
             'warranty_expiration_date' => 'nullable|date',
             'user_id.*' => 'nullable|exists:users,id', // Validación para user_id (si está asignado)
+        ], [
+            'name.*.required' => 'El nombre es requerido.',
+            'inventory_code.*.required' => 'El código de inventario es requerido.',
+            'inventory_code.*.unique' => 'El código de inventario ya estaba registrado en esta categoría.',
+            'serial_number.*.unique' => 'El número de serie ya estaba registrado.',
+            'user_id.*.exists' => 'El usuario no existe.',
+            'warranty_expiration_date.date' => 'La fecha de caducidad de garantía debe ser una fecha válida.',
+            'manufacturer_id.exists' => 'El fabricante no existe.',
+            'model_id.exists' => 'El modelo no existe.',
+            'category_id.exists' => 'La categoría no existe.',
+            'departament_id.*.exists' => 'El departamento no existe.',
+            'user_id.*.exists' => 'El usuario no existe.',
+            'name.*.max' => 'El nombre no debe superar los 255 caracteres.',
+            'inventory_code.*.max' => 'El código de inventario no debe superar los 255 caracteres.',
+            'serial_number.*.max' => 'El número de serie no debe superar los 255 caracteres.',
         ]);
 
         // Generador de códigos de barras

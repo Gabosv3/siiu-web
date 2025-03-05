@@ -24,7 +24,8 @@ class SupplyController extends Controller
      * - destroy: can:supplies.destroy
      * - restore: can:supplies.restore
      */
-    public function __construct()
+    /*
+     public function __construct()
     {
         $this->middleware('can:supplies.index')->only('index');
         $this->middleware('can:supplies.create')->only('create', 'store');
@@ -32,6 +33,7 @@ class SupplyController extends Controller
         $this->middleware('can:supplies.destroy')->only('destroy');
         $this->middleware('can:supplies.restore')->only('restore');
     }
+        */
     /**
      * Muestra la vista de listado de insumos.
      *

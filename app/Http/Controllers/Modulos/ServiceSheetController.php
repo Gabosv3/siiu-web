@@ -11,6 +11,7 @@ use App\Models\Supply;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ServiceSheetController extends Controller
 {
@@ -65,27 +66,34 @@ class ServiceSheetController extends Controller
             'sheets.*.supplies.*.exists' => 'El insumo seleccionado no existe.',
             'sheets.required' => 'Las hojas de servicio son obligatorias.',
             'sheets.*.required' => 'Las hojas de servicio son obligatorias.',
-
         ]);
 
-        foreach ($request->sheets as $sheetData) {
-            $serviceSheet = ServiceSheet::create([
-                'date' => Carbon::now(),
-                'department' => $sheetData['department'],
-                'ticket_id' => $sheetData['ticket_id'],
-                'task' => $sheetData['task'],
-                'hardware_id' => $sheetData['hardware_id'],
-                'status' => $sheetData['status'],
-                'description' => $sheetData['description'],
-                'observations' => $sheetData['observations'] ?? null,
-            ]);
+        DB::beginTransaction();
 
-            if (!empty($sheetData['supplies'])) {
-                $serviceSheet->supplies()->attach($sheetData['supplies']);
+        try {
+            foreach ($request->sheets as $sheetData) {
+                $serviceSheet = ServiceSheet::create([
+                    'date' => Carbon::now(),
+                    'department' => $sheetData['department'],
+                    'ticket_id' => $sheetData['ticket_id'],
+                    'task' => $sheetData['task'],
+                    'hardware_id' => $sheetData['hardware_id'],
+                    'status' => $sheetData['status'],
+                    'description' => $sheetData['description'],
+                    'observations' => $sheetData['observations'] ?? null,
+                ]);
+
+                if (!empty($sheetData['supplies'])) {
+                    $serviceSheet->supplies()->attach($sheetData['supplies']);
+                }
             }
-        }
 
-        return redirect()->route('service_sheets.index')->with('success', 'Hojas de servicio creadas exitosamente.');
+            DB::commit();
+            return redirect()->route('service_sheets.index')->with('success', 'Hojas de servicio creadas exitosamente.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Error al crear las hojas de servicio: ' . $e->getMessage()]);
+        }
     }
 
     /**
