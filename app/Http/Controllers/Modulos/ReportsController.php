@@ -299,48 +299,61 @@ class ReportsController extends Controller
         // Definir la consulta base
         $tickets = Ticket::query();
 
-        // Filtrar por fecha si es necesario
-         $ticketType = $request->ticketType;
+        // Filtrar por tipo de ticket
+        $ticketType = $request->ticketType;
 
         // Filtrar por tipo de ticket (como por ejemplo 'byTitle', 'byTechnician', etc.)
         switch ($ticketType) {
             case 'byTitle':
                 // Agrupar por título y obtener el nombre del título
                 $tickets = $tickets->join('titles', 'tickets.title_id', '=', 'titles.id')
-                    ->selectRaw('titles.name, count(*) as total_tickets')
+                    ->selectRaw('titles.name as ticket_name, count(*) as total_tickets')
                     ->groupBy('titles.name')
                     ->get();
                 break;
-        
+
             case 'byTechnician':
-                // Agrupar por técnico
-                $tickets = $tickets->selectRaw('technician_id, count(*) as total_tickets')
-                    ->groupBy('technician_id')
+                // Agrupar por técnico y obtener el nombre del técnico desde la tabla users
+                $tickets = $tickets->join('technicians', 'tickets.technician_id', '=', 'technicians.id')
+                    ->join('users', 'technicians.user_id', '=', 'users.id')  // Unimos la tabla users para obtener el nombre
+                    ->select('users.name as technician_name', DB::raw('count(*) as total_tickets'))  // Seleccionamos el nombre del técnico y el total de tickets
+                    ->groupBy('users.name')  // Agrupamos por nombre del técnico
                     ->get();
                 break;
-        
+
             case 'byUser':
                 // Agrupar por usuario
-                $tickets = $tickets->selectRaw('user_id, count(*) as total_tickets')
-                    ->groupBy('user_id')
+                $tickets = $tickets->join('users', 'tickets.user_id', '=', 'users.id')
+                    ->selectRaw('users.name as user_name, count(*) as total_tickets')
+                    ->groupBy('users.name')
                     ->get();
                 break;
-        
+
             case 'byAssignment':
-                // Agrupar por asignación (esto dependerá de las relaciones, ajusta según lo que desees)
-                $tickets = $tickets->selectRaw('assignments.ticket_id, count(*) as total_tickets')
-                    ->join('assignments', 'tickets.id', '=', 'assignments.ticket_id')
-                    ->groupBy('assignments.ticket_id')
+                // Agrupar por asignación y obtener el nombre del técnico asignado
+                $tickets = $tickets->join('assignments', 'tickets.id', '=', 'assignments.ticket_id')
+                    ->join('technicians', 'assignments.technician_id', '=', 'technicians.id')  // Unimos con la tabla technicians para obtener el técnico
+                    ->join('users', 'technicians.user_id', '=', 'users.id')  // Unimos con la tabla users para obtener el nombre del técnico
+                    ->select('users.name as technician_name', DB::raw('count(*) as total_tickets'))  // Seleccionamos el nombre del técnico y la cantidad de tickets
+                    ->groupBy('users.name')  // Agrupamos por el nombre del técnico
                     ->get();
                 break;
-        
+
+
+            case 'byPriority':
+                // Agrupar por prioridad
+                $tickets = $tickets->selectRaw('priority, count(*) as total_tickets') // Usando 'priority' del modelo Ticket
+                    ->groupBy('priority')
+                    ->get();
+                break;
+
             case 'byStatus':
                 // Agrupar por estado
                 $tickets = $tickets->selectRaw('status, count(*) as total_tickets')
                     ->groupBy('status')
                     ->get();
                 break;
-        
+
             default:
                 // Si no se especifica un tipo, devolver todos los tickets sin agrupar
                 $tickets = $tickets->get();

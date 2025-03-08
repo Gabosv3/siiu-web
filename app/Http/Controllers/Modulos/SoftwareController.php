@@ -23,16 +23,42 @@ class SoftwareController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $softwaresdeleted = Software::onlyTrashed()->get();
-        // Obtiene todas las licencias
-        $softwares = Software::with(['manufacturer', 'licencias'])->paginate(10);
-        return view('inventories.softwares.index', compact('softwares', 'softwaresdeleted'));
+        // Obtener filtros de la solicitud
+        $status = $request->get('status', 'active');
+        $search = $request->get('search');
+        $perPage = $request->get('perPage', 10);
+
+        // Construcción de la consulta
+        $softwaresQuery = Software::with('manufacturer')
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('software_name', 'like', '%' . $search . '%')
+                        ->orWhere('version', 'like', '%' . $search . '%');
+                });
+            })
+            ->when($status === 'inactive', function ($query) {
+                return $query->onlyTrashed();
+            })
+            ->when($status === 'active', function ($query) {
+                return $query->whereNull('deleted_at');
+            });
+
+        // Si el valor de perPage es 'all', obtener todos sin paginar
+        $softwares = ($perPage == 'all') ? $softwaresQuery->get() : $softwaresQuery->paginate($perPage);
+
+        return view('inventories.softwares.index', [
+            'softwares' => $softwares,
+            'status' => $status,
+            'perPage' => $perPage,
+            'search' => $search,
+        ]);
     }
 
 
-   
+
+
     /**
      * Muestra la vista para crear un nuevo software.
      * Recibe un objeto Manufacturer como parámetro y utiliza el método compact para
@@ -49,7 +75,7 @@ class SoftwareController extends Controller
     }
 
 
-    
+
     /**
      * Crea un nuevo software en la base de datos.
      *
@@ -98,7 +124,7 @@ class SoftwareController extends Controller
         return view('inventories.softwares.edit', compact('software', 'fabricantes'));
     }
 
-    
+
 
     /**
      * Actualiza un software existente.
@@ -138,7 +164,7 @@ class SoftwareController extends Controller
         return redirect()->route('softwares.index')->with('success', 'Software actualizado exitosamente');
     }
 
-    
+
     /**
      * Muestra los detalles de un software.
      *
@@ -163,7 +189,7 @@ class SoftwareController extends Controller
         return view('inventories.softwares.show', compact('software', 'licencias', 'totalLicencias'));
     }
 
-    
+
     /**
      * Elimina un software.
      *
@@ -184,7 +210,7 @@ class SoftwareController extends Controller
         return redirect()->route('softwares.index')->with('error', 'Software no encontrado');
     }
 
-    
+
 
     /**
      * Restaura un software eliminado.

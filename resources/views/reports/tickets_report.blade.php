@@ -11,8 +11,10 @@
                 <select id="ticketTypeFilter" class="form-select">
                     <option value="byPriority">Tickets por Prioridad</option>
                     <option value="byStatus">Tickets por Estado</option>
-                    <option value="byAssigned">Tickets Asignados</option>
+                    <option value="byAssignment">Tickets Asignados</option>
                     <option value="byTitle">Tickets por Título</option> <!-- Opción por título -->
+                    <option value="byUser">Tickets por Usuario</option> <!-- Nueva opción por Usuario -->
+                    <option value="byTechnician">Tickets por Técnico</option>
                 </select>
             </div>
 
@@ -160,76 +162,93 @@
                 console.log(data);
                 const reportTitle = document.getElementById('ticketReportTitle');
                 const resultContent = document.getElementById('ticketResultContent');
-                reportTitle.textContent = 'Reporte de Tickets' + ticketType;
+                reportTitle.textContent = 'Reporte de Tickets';
 
                 // Construir el contenido del reporte de tickets en formato de tabla
                 let content = '<table class="table table-bordered"><thead><tr>';
 
                 // Ajustar columnas según el tipo de ticket
                 if (ticketType === 'byPriority') {
-
                     content += `
-                        <th>Ticket</th>
                         <th>Prioridad</th>
                         <th>Cantidad de Tickets</th>
                     `;
                     data.data.forEach(priority => {
-
                         content += `
                             <tr>
-                                <td>${priority.ticket_name}</td>
-                                <td>${priority.priority_level}</td>
+                                <td>${priority.priority || 'No disponible'}</td>
                                 <td>${priority.total_tickets}</td>
                             </tr>
                         `;
                     });
                 } else if (ticketType === 'byStatus') {
-                    console.log('entrando')
                     content += `
-                        
                         <th>Estado</th>
                         <th>Cantidad de Tickets</th>
                     `;
                     data.data.forEach(status => {
-                        console.log('no entro')
                         content += `
                             <tr>
-                                
-                                <td>${status.status}</td>
+                                <td>${status.status || 'Estado desconocido'}</td>
                                 <td>${status.total_tickets}</td>
                             </tr>
                         `;
                     });
-                } else if (ticketType === 'byAssigned') {
+                } else if (ticketType === 'byAssignment') {
                     content += `
-                        <th>Ticket</th>
                         <th>Asignado a</th>
                         <th>Cantidad de Tickets</th>
                     `;
                     data.data.forEach(assigned => {
                         content += `
                             <tr>
-                                <td>${assigned.ticket_name}</td>
-                                <td>${assigned.assigned_to}</td>
+                                <td>${assigned.technician_name || 'Sin asignar'}</td>
                                 <td>${assigned.total_tickets}</td>
                             </tr>
                         `;
                     });
                 } else if (ticketType === 'byTitle') {
                     content += `
-                        
                         <th>Título</th>
                         <th>Total</th>
                     `;
                     data.data.forEach(ticket => {
                         content += `
                             <tr>
-                                <td>${ticket.name}</td>
+                                <td>${ticket.ticket_name || 'Sin título'}</td>
                                 <td>${ticket.total_tickets}</td>
                             </tr>
                         `;
                     });
+                } else if (ticketType === 'byUser') {
+                    content += `
+                        <th>Usuario</th>
+                        <th>Cantidad de Tickets</th>
+                    `;
+                    data.data.forEach(user => {
+                        content += `
+                            <tr>
+                                <td>${user.user_name || 'Usuario desconocido'}</td>
+                                <td>${user.total_tickets}</td>
+                            </tr>
+                        `;
+                    });
+                } else if (ticketType === 'byTechnician') {
+                    content += `
+                        <th>Usuario</th>
+                        <th>Cantidad de Tickets</th>
+                    `;
+                    data.data.forEach(technician => {
+                        content += `
+                            <tr>
+                                <td>${technician.technician_name || 'Usuario desconocido'}</td>
+                                <td>${technician.total_tickets}</td>
+                            </tr>
+                        `;
+                    });
                 }
+
+                
 
                 content += '</tr></thead><tbody></tbody></table>';
 

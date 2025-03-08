@@ -80,10 +80,42 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function Mytickets()
+    public function Mytickets(Request $request)
     {
-        $tickets = auth()->user()->tickets;
-        return view('tickets.users.mytickets', compact('tickets'));
+        // Obtener los filtros de la solicitud
+        $status = $request->get('status', 'abierto'); // Filtro de estado: 'abierto' por defecto
+        $search = $request->get('search'); // Filtro de búsqueda
+        $perPage = $request->get('perPage', 10); // Número de registros por página (10 por defecto)
+
+        // Construcción de la consulta
+        $ticketsQuery = Ticket::where('user_id', auth()->id()) // Filtro por el ID del usuario autenticado
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('description', 'like', '%' . $search . '%');
+                });
+            })
+            ->when($status === 'cerrado', function ($query) {
+                return $query->where('status', 'cerrado'); // Filtro por tickets cerrados
+            })
+            ->when($status === 'resuelto', function ($query) {
+                return $query->where('status', 'resuelto'); // Filtro por tickets resueltos
+            })
+            ->when($status === 'en proceso', function ($query) {
+                return $query->where('status', 'en proceso'); // Filtro por tickets en proceso
+            })
+            ->when($status === 'abierto', function ($query) {
+                return $query->where('status', 'abierto'); // Filtro por tickets abiertos
+            });
+
+        // Si el valor de perPage es 'all', obtener todos los tickets sin paginación
+        $tickets = ($perPage == 'all') ? $ticketsQuery->get() : $ticketsQuery->paginate($perPage);
+
+        return view('tickets.users.mytickets', [
+            'tickets' => $tickets,
+            'status' => $status,
+            'perPage' => $perPage,
+            'search' => $search,
+        ]);
     }
 
     /**
@@ -157,7 +189,7 @@ class TicketController extends Controller
 
         return redirect()->route('tickets.show', $ticketId)->with('success', 'Ticket asignado exitosamente.');
     }
-    
+
     /**
      * Crea un nuevo título para los tickets
      *

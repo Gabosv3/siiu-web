@@ -38,12 +38,47 @@ class DepartamentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $deletedDepartments = Departament::onlyTrashed()->get();
-        $departments = Departament::all(); // Obtener todos los departamentos de la base de datos
-        return view('departments.index', compact('departments', 'deletedDepartments')); // Pasar los departamentos a la vista de índice
+
+    // Definir el número de elementos por página
+    public function index(Request $request)
+{
+    // Obtener el valor de estado, búsqueda y registros por página
+    $status = $request->get('status', 'active');
+    $search = $request->get('search');
+    $perPage = $request->get('perPage', 10);
+
+    // Filtrar departamentos
+    $departmentsQuery = Departament::query()
+    ->when($search, function ($query, $search) {
+        return $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', '%' . $search . '%')
+              ->orWhere('code', 'like', '%' . $search . '%');
+        });
+    })
+    ->when($status == 'inactive', function ($query) {
+        return $query->onlyTrashed();
+    })
+    ->when($status == 'active', function ($query) {
+        return $query->whereNull('deleted_at');
+    });
+
+    // Si el valor de perPage es 'all', obtener todos los registros sin paginación
+    if ($perPage == 'all') {
+        $departments = $departmentsQuery->get(); // Sin paginación
+    } else {
+        $departments = $departmentsQuery->paginate($perPage); // Con paginación
     }
+
+    return view('departments.index', [
+        'departments' => $departments,
+        'status' => $status,
+        'perPage' => $perPage,
+    ]);
+}
+
+
+
+
 
 
     /**

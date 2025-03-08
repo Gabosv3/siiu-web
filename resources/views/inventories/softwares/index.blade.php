@@ -2,95 +2,124 @@
 
 @section('content')
 
-    <h1>Listado de Softwares</h1>
+<h1>Listado de Softwares</h1>
 
-    <a href="{{ route('softwares.create') }}" class="btn btn-primary mb-3">Agregar Software</a>
-
-    <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <!-- Botones de navegación para las pestañas -->
-            <button class="nav-link active" id="nav-categories-tab" data-bs-toggle="tab" data-bs-target="#nav-categories" type="button" role="tab" aria-controls="nav-categories" aria-selected="true">SOFTWARE</button>
-            <button class="nav-link" id="nav-deactivated-tab" data-bs-toggle="tab" data-bs-target="#nav-deactivateds" type="button" role="tab" aria-controls="nav-deactivateds" aria-selected="false">DESACTIVADOS</button>
-        </div>
-    </nav>
+<a href="{{ route('softwares.create') }}" class="btn btn-primary mb-3">Agregar Software</a>
 
 
-    <div class="tab-content" id="nav-tabContent">
-        <!-- Contenido de la pestaña de categorías -->
-        <div class="tab-pane fade show active" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
-            <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
-                <table id="Principal" class="table align-items-center mb-0 text-center" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Versión</th>
-                            <th>Fabricante</th>
-                            <th>Licencia</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($softwares as $software)
-                        <tr>
-                            <td>{{ $software->id }}</td>
-                            <td>{{ $software->software_name }}</td>
-                            <td>{{ $software->version }}</td>
-                            <td>{{ $software->manufacturer->name }}</td>
-                            @if($software->type == 'free')
-                            <td>No usa licencia</td>
-                            @else
-                            <td><a title="Ver Licencias" href="{{ route('licenses.index', ['software_id' => $software->id]) }}" class="btn btn-cyan-800"><i class="fa fa-key"></i></a></td>
-                            @endif
-                            <td>
-                                <a href="{{ route('softwares.show', $software->id) }}" title="Ver Software" class="btn btn-cyan-800"><i class="bx bxs-show"></i></a>
-                                <a title="Editar Software" href="{{ route('softwares.edit', $software->id) }}" class="btn btn-green-600"><i class='bx bxs-edit-alt'></i></a>
-                                <form action="{{ route('softwares.destroy', $software->id) }}" method="POST" style="display:inline-block;" class="formulario-eliminar">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button title="Eliminar Software" type="submit" class="btn btn-red-800"><i class="bx bxs-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-
-                </table>
-            </div>
+<form method="GET" action="{{ route('softwares.index') }}" class="mb-4">
+    <div class="row align-items-center">
+        <!-- Filtro de estado (Activo/Inactivo) -->
+        <div class="col-md-3 mb-3">
+            <label for="status" class="form-label d-flex align-items-center">
+                <i class="fas fa-toggle-on me-2"></i> Estado
+            </label>
+            <select name="status" class="form-select" id="status" onchange="this.form.submit()">
+                <option value="active" {{ request()->get('status') == 'active' ? 'selected' : '' }}>Activos</option>
+                <option value="inactive" {{ request()->get('status') == 'inactive' ? 'selected' : '' }}>Desactivados</option>
+            </select>
         </div>
 
-        <!-- Contenido de la pestaña de desactivados -->
-        <div class="tab-pane fade" id="nav-deactivateds" role="tabpanel" aria-labelledby="nav-deactivated-tab">
-            <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
-                <table id="restaurar" class="table align-items-center mb-0 text-center" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>NOMBRE</th>
-                            <th>FECHA ELIMINACION</th>
-                            <th class="w-15">RESTORE</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($softwaresdeleted as $software)
-                        <tr>
-                            <td>{{ $software->id }}</td>
-                            <td>{{ $software->software_name }}</td>
-                            <td>{{ $software->deleted_at }}</td>
-                            <td>
-                                <form action="{{ route('softwares.restore', $software->id) }}" class="formulario-restaurar" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <button id="btn-restore-software" class="btn btn-cyan-800 mb-3" type="submit">Restore</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+        <!-- Buscador -->
+        <div class="col-md-6 mb-3">
+            <label for="search" class="form-label d-flex align-items-center">
+                <i class="fas fa-search me-2"></i> Buscar software
+            </label>
+            <input type="text" name="search" class="form-control" id="search" placeholder="Buscar..." value="{{ request()->get('search') }}">
+        </div>
+
+        <!-- Selector de cantidad de registros por página -->
+        <div class="col-md-3 mb-3">
+            <label for="perPage" class="form-label d-flex align-items-center">
+                <i class="fas fa-list me-2"></i> Registros por página
+            </label>
+            <select name="perPage" class="form-select" id="perPage" onchange="this.form.submit()">
+                <option value="10" {{ request()->get('perPage') == '10' ? 'selected' : '' }}>10 registros</option>
+                <option value="20" {{ request()->get('perPage') == '20' ? 'selected' : '' }}>20 registros</option>
+                <option value="50" {{ request()->get('perPage') == '50' ? 'selected' : '' }}>50 registros</option>
+                <option value="all" {{ request()->get('perPage') == 'all' ? 'selected' : '' }}>Todos</option>
+            </select>
         </div>
     </div>
+</form>
+
+<div class="table-responsive shadow-lg p-3 mb-5 bg-body rounded rounded-3">
+    <table id="Principal" class="table align-items-center mb-0 text-center" style="width:100%">
+        <thead class="align-middle bg-gradient-2">
+            <tr>
+                @if (request()->get('status') == 'inactive')
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Fecha de Eliminación</th>
+                <th>Acciones</th>
+                @else
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Versión</th>
+                <th>Fabricante</th>
+                <th>Licencia</th>
+                <th>Acciones</th>
+                @endif
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($softwares as $software)
+            <tr>
+                @if (request()->get('status') == 'inactive')
+                <td>{{ $software->id }}</td>
+                <td>{{ $software->software_name }}</td>
+                <td>{{ $software->deleted_at }}</td>
+                <td>
+                    <form action="{{ route('softwares.restore', $software->id) }}" class="formulario-restaurar" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <button id="btn-restore-software" class="btn btn-cyan-800 mb-3" type="submit">Restaurar</button>
+                    </form>
+                </td>
+                @else
+                <td>{{ $software->id }}</td>
+                <td>{{ $software->software_name }}</td>
+                <td>{{ $software->version }}</td>
+                <td>{{ $software->manufacturer->name }}</td>
+                <td>
+                    @if ($software->type == 'free')
+                    No usa licencia
+                    @else
+                    <a title="Ver Licencias" href="{{ route('licenses.index', ['software_id' => $software->id]) }}" class="btn btn-cyan-800">
+                        <i class="fa fa-key"></i>
+                    </a>
+                    @endif
+                </td>
+                <td>
+                    <a href="{{ route('softwares.show', $software->id) }}" title="Ver Software" class="btn btn-cyan-800">
+                        <i class="bx bxs-show"></i>
+                    </a>
+                    <a href="{{ route('softwares.edit', $software->id) }}" title="Editar Software" class="btn btn-green-600">
+                        <i class='bx bxs-edit-alt'></i>
+                    </a>
+                    <form action="{{ route('softwares.destroy', $software->id) }}" method="POST" style="display:inline;" class="formulario-eliminar">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-red-800">
+                            <i class="bx bxs-trash"></i>
+                        </button>
+                    </form>
+                </td>
+                @endif
+            </tr>
+            @endforeach
+        </tbody>
+
+    </table>
+</div>
+
+<!-- Paginación solo si es una instancia de paginación -->
+<div class="pagination-container">
+    @if($softwares instanceof \Illuminate\Pagination\LengthAwarePaginator)
+    {{ $softwares->appends(request()->query())->links('pagination::bootstrap-4') }}
+    @endif
+</div>
+
 
 
 @include('components.script-btn') <!-- Incluir scripts necesarios -->

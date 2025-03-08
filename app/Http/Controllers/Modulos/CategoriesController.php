@@ -39,16 +39,45 @@ class CategoriesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        // Obtener todas las categorías de la base de datos con paginación
-        $categories = Category::paginate();
-        // Obtener categorías eliminadas
-        $categoriesDeleted = Category::onlyTrashed()->get();
-        // Retornar la vista 'categories.index' con las categorías y las eliminadas
-        return view('categories.index', compact('categories', 'categoriesDeleted'))
-            ->with('i', (request()->input('page', 1) - 1) * $categories->perPage());
-    }
+    public function index(Request $request)
+{
+    // Obtener filtros de la solicitud
+    $status = $request->get('status', 'active'); // Filtro de estado: activo por defecto
+    $search = $request->get('search'); // Filtro de búsqueda
+    $perPage = $request->get('perPage', 10); // Número de registros por página (10 por defecto)
+    $type = $request->get('type'); // Filtro de tipo
+
+    // Construcción de la consulta
+    $categoriesQuery = Category::when($search, function ($query, $search) {
+        return $query->where('name', 'like', '%' . $search . '%');
+    })
+    ->when($status === 'inactive', function ($query) {
+        return $query->onlyTrashed(); // Si el estado es 'inactive', solo los eliminados
+    })
+    ->when($status === 'active', function ($query) {
+        return $query->whereNull('deleted_at'); // Si es 'active', solo los no eliminados
+    })
+    ->when($type, function ($query, $type) {
+        return $query->where('type', $type); // Filtrar por tipo si se pasa
+    });
+
+    // Si el valor de perPage es 'all', obtener todas las categorías sin paginación
+    $categories = ($perPage == 'all') ? $categoriesQuery->get() : $categoriesQuery->paginate($perPage);
+
+    // Obtener categorías eliminadas
+    $categoriesDeleted = Category::onlyTrashed()->get();
+
+    return view('categories.index', [
+        'categories' => $categories,
+        'categoriesDeleted' => $categoriesDeleted,
+        'status' => $status,
+        'perPage' => $perPage,
+        'search' => $search,
+        'type' => $type,
+    ])
+    ->with('i', (request()->input('page', 1) - 1) * $categories->perPage());
+}
+
 
     /**
      * Muestra el formulario para crear una categoría.

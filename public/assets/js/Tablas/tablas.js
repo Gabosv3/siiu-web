@@ -50,7 +50,8 @@ function configureDataTable(selector, permissions) {
             }
         },
         dom: '<"top"Bf>rt<"bottom"lip><"clear">',
-        buttons: buttonsConfig
+        buttons: buttonsConfig,
+        paging: false  // Deshabilitar la paginación
     });
 }
 

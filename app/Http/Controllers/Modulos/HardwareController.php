@@ -13,6 +13,7 @@ use App\Models\Models;
 use App\Models\Software;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
@@ -94,53 +95,26 @@ class HardwareController extends Controller
     }
 
 
-    /**
-     * Crea un nuevo hardware en la base de datos.
-     *
-     * Verifica que los datos sean válidos y crea un nuevo hardware
-     * individualmente por cada conjunto de datos en el array.
-     *
-     * Adicionalmente, genera un código de barras para cada hardware
-     * basado en su código de inventario y lo guarda como imagen
-     * en el servidor.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function store(Request $request)
     {
+        // Validación
         $request->validate([
             'name.*' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'status' => 'required|string',
             'departament_id.*' => 'nullable|exists:departaments,id',
-            'inventory_code.*' => [
-                'required',
-                'string',
-                'max:255',
-                function ($attribute, $value, $fail) use ($request) {
-                    foreach ($request->name as $index => $name) {
-                        // Verifica si el inventory_code ya existe para esa categoría en la tabla 'hardware'
-                        $exists = Hardware::where('category_id', $request->category_id)
-                            ->where('inventory_code', $request->inventory_code[$index])
-                            ->exists();
-
-                        if ($exists) {
-                            $fail('El código de inventario ' . $request->inventory_code[$index] . ' ya está registrado en esta categoría.');
-                        }
-                    }
-                }
-            ],
+            'inventory_code.*' => 'required|string|max:255',
             'serial_number.*' => 'nullable|string|max:255|unique:hardware,serial_number',
             'manufacturer_id' => 'nullable|exists:manufacturers,id',
             'model_id' => 'nullable|exists:models,id',
             'warranty_expiration_date' => 'nullable|date',
-            'user_id.*' => 'nullable|exists:users,id', // Validación para user_id (si está asignado)
+            'user_id.*' => 'nullable|exists:users,id',
         ], [
             'name.*.required' => 'El nombre es requerido.',
             'inventory_code.*.required' => 'El código de inventario es requerido.',
             'inventory_code.*.unique' => 'El código de inventario ya estaba registrado en esta categoría.',
             'serial_number.*.unique' => 'El número de serie ya estaba registrado.',
+            'serial_number.*.max' => 'El número de serie no debe superar los 255 caracteres.',
             'user_id.*.exists' => 'El usuario no existe.',
             'warranty_expiration_date.date' => 'La fecha de caducidad de garantía debe ser una fecha válida.',
             'manufacturer_id.exists' => 'El fabricante no existe.',
@@ -153,38 +127,83 @@ class HardwareController extends Controller
             'serial_number.*.max' => 'El número de serie no debe superar los 255 caracteres.',
         ]);
 
-        // Generador de códigos de barras
-        $barcodeGenerator = new BarcodeGeneratorPNG();
+        // Iniciar transacción
+        DB::beginTransaction();
 
-        // Recorremos cada conjunto de datos del array
-        foreach ($request->name as $index => $name) {
-            // Crear el código de barras basado en el código de inventario
-            $inventoryCode = $request->inventory_code[$index];
-            $barcode = $barcodeGenerator->getBarcode($inventoryCode, $barcodeGenerator::TYPE_CODE_128);
+        try {
+            // Generador de códigos de barras
+            
 
-            // Guardar el código de barras como imagen en el servidor (por ejemplo, en la carpeta public/barcodes)
-            $barcodePath = 'barcodes/' . $inventoryCode . '.png';
-            Storage::disk('public')->put($barcodePath, $barcode);
+            // Recorremos cada conjunto de datos del array
+            foreach ($request->name as $index => $name) {
+                // Verificar si el código de inventario ya existe en esa categoría
+                $existsInventoryCode = Hardware::where('category_id', $request->category_id)
+                    ->where('inventory_code', $request->inventory_code[$index])
+                    ->exists();
 
-            // Crear cada hardware individualmente usando los arrays
-            Hardware::create([
-                'name' => $name,
-                'category_id' => $request->category_id,
-                'status' => $request->status,
-                'user_id' => $request->user_id[$index] ?? null,
-                'location_id' => $request->location_id[$index] ?? null,
-                'inventory_code' => $inventoryCode,
-                'serial_number' => $request->serial_number[$index] ?? null,
-                'manufacturer_id' => $request->manufacturer_id ?? null,
-                'model_id' => $request->model_id ?? null,
-                'warranty_expiration_date' => $request->warranty_expiration_date ?? null,
-                'barcode_path' => $barcodePath, // Guardamos la ruta de la imagen del código de barras
-            ]);
+                if ($existsInventoryCode) {
+                    // Si ya existe, revertir la transacción y retornar con un mensaje de error
+                    
+                    return back()->withErrors([
+                        'inventory_code' => 'El código de inventario ' . $request->inventory_code[$index] . ' ya está registrado en esta categoría. o intentaste registrar dos equipos con el mismo código de inventario.'
+                    ]);
+                }
+
+                // Verificar si el serial_number ya existe
+                if (!empty($request->serial_number[$index])) {
+                    $existsSerialNumber = Hardware::where('serial_number', $request->serial_number[$index])->exists();
+
+                    if ($existsSerialNumber) {
+                        // Si ya existe, revertir la transacción y retornar con un mensaje de error
+                        
+                        return back()->withErrors([
+                            'serial_number' => 'El número de serie ' . $request->serial_number[$index] . ' intenta registrar dos equipos con el mismo número de serie.'
+                        ]);
+                    }
+                }
+                
+                $barcodeGenerator = new BarcodeGeneratorPNG();
+
+                // Crear el código de barras basado en el código de inventario
+                $inventoryCode = $request->inventory_code[$index];
+                $barcode = $barcodeGenerator->getBarcode($inventoryCode, $barcodeGenerator::TYPE_CODE_128);
+
+                // Guardar el código de barras como imagen en el servidor (por ejemplo, en la carpeta public/barcodes)
+                $barcodePath = 'barcodes/' . $inventoryCode . '.png';
+                Storage::disk('public')->put($barcodePath, $barcode);
+
+                // Crear cada hardware individualmente usando los arrays
+                Hardware::create([
+                    'name' => $name,
+                    'category_id' => $request->category_id,
+                    'status' => $request->status,
+                    'user_id' => $request->user_id[$index] ?? null,
+                    'location_id' => $request->location_id[$index] ?? null,
+                    'inventory_code' => $inventoryCode,
+                    'serial_number' => $request->serial_number[$index] ?? null,
+                    'manufacturer_id' => $request->manufacturer_id ?? null,
+                    'model_id' => $request->model_id ?? null,
+                    'warranty_expiration_date' => $request->warranty_expiration_date ?? null,
+                    'barcode_path' => $barcodePath, // Guardamos la ruta de la imagen del código de barras
+                ]);
+            }
+
+            // Si todo está bien, confirmar la transacción
+            DB::commit();
+
+            // Redirigir con un mensaje de éxito
+            return redirect()->route('hardwares.index')->with('success', 'Hardware(s) creado(s) exitosamente con código de barras.');
+        } catch (\Exception $e) {
+            // En caso de error, revertir la transacción
+            DB::rollBack();
+
+            // Devolver con el mensaje de error
+            return back()->withErrors(['error' => 'Ocurrió un error al guardar los registros. Intenta nuevamente.']);
         }
-
-        // Redirigir con un mensaje de éxito
-        return redirect()->route('hardwares.index')->with('success', 'Hardware(s) creado(s) exitosamente con código de barras.');
     }
+
+
+
 
     /**
      * Muestra la vista para ver un hardware en particular.

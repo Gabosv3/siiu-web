@@ -26,7 +26,7 @@
 
 @if($viewType == 'card')
 
-<div  id="hardware-results" style=" min-height: 75vh;display: flex; flex-direction: column;">
+<div id="hardware-results" style=" min-height: 75vh;display: flex; flex-direction: column;">
     <div class="row d-flex justify-content-center">
         <div class="col-sm-6 mb-3">
             <input type="text" id="search" onkeyup="filterItems()" class="form-control" placeholder="Buscar por número de inventario">
@@ -35,45 +35,44 @@
     <div class="row d-flex justify-content-start">
         @foreach($hardwares as $hardware)
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-3 hardware-item">
-            <div class="card shadow-sm boxx">
-                <div class="card-header text-center d-flex flex-column justify-content-center align-items-center">
-                    <div class="card-icon mb-3">
-                        <img src="{{ asset($hardware->category->image) }}" alt="{{ $hardware->category->name }}"
-                             style="width: 100px; height: 100px; object-fit: cover;">
-                    </div>
-                    <div class="card-title text-truncate" style="max-width: 100%;">
-                        <strong>{{ $hardware->name }}</strong>
-                        <h4 class="text-truncate">
-                            <a href="{{ route('hardwares.show', $hardware) }}" class="text-decoration-none">
+            <a href="{{ route('hardwares.show', $hardware) }}" class="text-decoration-none">
+                <div class="card shadow-sm boxx">
+                    <div class="card-header text-center d-flex flex-column justify-content-center align-items-center">
+                        <div class="card-icon mb-3">
+                            <img src="{{ asset($hardware->category->image) }}" alt="{{ $hardware->category->name }}"
+                                style="width: 100px; height: 100px; object-fit: cover;">
+                        </div>
+                        <div class="card-title text-truncate" style="max-width: 100%;">
+                            <h6>{{ $hardware->name }}</h6>
+                            <h4 class="text-truncate">
                                 {{ $hardware->inventory_code }}
-                            </a>
-                        </h4>
+                            </h4>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body row text-center">
-                    <div class="col-6">
-                        <p class="mb-1">Fabricante/Modelo</p>
-                        <a href="#" class="text-decoration-none d-inline-block text-truncate" style="max-width: 100%;">
-                            {{ optional($hardware->manufacturer)->name ?? 'N/A' }}/{{ optional($hardware->model)->name ?? 'N/A' }}
-                        </a>
-                    </div>
-                    <div class="col-6">
-                        <p class="mb-1">Estatus</p>
-                        <a href="#" class="text-decoration-none d-inline-block text-truncate" style="max-width: 100%;">
-                            {{ $hardware->status }}
-                        </a>
-                    </div>
-                    <div class="col-12 mt-3">
-                        @if($hardware->barcode_path)
+                    <div class="card-body row text-center">
+                        <div class="col-6">
+                            <h6 class="mb-1">Fabricante/Modelo</h6>
+                            <h6 class="text-decoration-none d-inline-block text-truncate" style="max-width: 100%;">
+                                {{ optional($hardware->manufacturer)->name ?? 'N/A' }}/{{ optional($hardware->model)->name ?? 'N/A' }}
+                            </h6>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="mb-1">Estatus</h6>
+                            <h6 class="text-decoration-none d-inline-block text-truncate" style="max-width: 100%;">
+                                {{ $hardware->status }}
+                            </h6>
+                        </div>
+                        <div class="col-12 mt-3">
+                            @if($hardware->barcode_path)
                             <img src="{{ asset('storage/' . $hardware->barcode_path) }}" class="img-fluid" alt="Código de Barras">
-                        @else
-                            <p class="text-muted">No disponible</p>
-                        @endif
+                            @else
+                            <h6 class="text-muted">No disponible</h6>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
-
         @endforeach
     </div>
     <div class="mt-auto">

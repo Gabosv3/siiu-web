@@ -4,97 +4,117 @@
 <h1>CATEGORIAS</h1> <!-- Título de la página -->
 <a href="{{ route('categories.create') }}" class="btn btn-primary mb-3">CREAR CATEGORIA</a> <!-- Botón para crear una nueva categoría -->
 
-<nav>
-    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <!-- Botones de navegación para las pestañas -->
-        <button class="nav-link active" id="nav-categories-tab" data-bs-toggle="tab" data-bs-target="#nav-categories" type="button" role="tab" aria-controls="nav-categories" aria-selected="true">CATEGORIAS</button>
-        <button class="nav-link" id="nav-deactivated-tab" data-bs-toggle="tab" data-bs-target="#nav-deactivateds" type="button" role="tab" aria-controls="nav-deactivateds" aria-selected="false">DESACTIVADOS</button>
-    </div>
-</nav>
-
-<div class="tab-content" id="nav-tabContent">
-    <!-- Contenido de la pestaña de categorías -->
-    <div class="tab-pane fade show active" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
-        <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
-            <table id="Principal" class="table align-items-center mb-0 text-center" style="width: 100%;">
-                <thead class="table-primary text-center">
-                    <tr>
-                        <th>ID</th>
-                        <th>IMAGEN</th>
-                        <th>NOMBRE</th>
-                        <th>CODIGO</th>
-                        <th>ACCIONES</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Iterar sobre cada categoría y mostrar en la tabla -->
-                    @foreach($categories as $key => $category)
-                    <tr>
-                        <td>{{ $key + 1 }}</td> <!-- Mostrar el índice -->
-                        <td>
-                            @if($category->image) <!-- Verificar si hay imagen -->
-                                <img src="{{ asset($category->image) }}" alt="Category {{ $category->name }}" class="img-thumbnail" style="height: 72px;">
-                                 @else
-                                <span>Not available</span> <!-- Mensaje si no hay imagen -->
-                            @endif
-                        </td>
-                        <td>{{ $category->name }}</td> <!-- Nombre de la categoría -->
-                        <td>{{ $category->code }}</td> <!-- Código de la categoría -->
-                        <td>
-                            <!-- Botones de acción para mostrar, editar y eliminar -->
-                            <a href="{{ route('categories.show', $category->id) }}" title="Ver Categoria" class="btn btn-cyan-800"><i class='bx bxs-show'></i></a>
-                            <a href="{{ route('categories.edit', $category->id) }}" title="Editar Categoria" class="btn btn-green-600"><i class='bx bxs-edit-alt'></i></a>
-                            <form action="{{ route('categories.destroy', $category->id) }}" method="POST" style="display:inline-block;" class="formulario-eliminar">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" title="Eliminar Categoria" class="btn btn-red-800"><i class='bx bxs-trash'></i></button>
-                            </form>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+<form method="GET" action="{{ route('categories.index') }}" class="mb-4">
+    <div class="row align-items-center">
+        <!-- Filtro de estado (Activo/Inactivo) -->
+        <div class="col-md-3 mb-3">
+            <label for="status" class="form-label d-flex align-items-center">
+                <i class="fas fa-toggle-on me-2"></i> Estado
+            </label>
+            <select name="status" class="form-select" id="status" onchange="this.form.submit()">
+                <option value="active" {{ request()->get('status') == 'active' ? 'selected' : '' }}>Activos</option>
+                <option value="inactive" {{ request()->get('status') == 'inactive' ? 'selected' : '' }}>Desactivados</option>
+            </select>
         </div>
-    </div>
 
-    <!-- Contenido de la pestaña de desactivados -->
-    <div class="tab-pane fade" id="nav-deactivateds" role="tabpanel" aria-labelledby="nav-deactivated-tab">
-        <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
-            <table id="restaurar" class="table align-items-center mb-0 text-center" style="width:100%">
-                <thead class="table-primary text-center">
-                    <tr>
-                        <th>ID</th>
-                        <th>NOMBRE</th>
-                        <th>CODIGO</th>
-                        <th>FECHA ELIMINACION</th>
-                        <th class="w-15">RESTORE</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Iterar sobre cada categoría eliminada y mostrar en la tabla -->
-                    @foreach($categoriesDeleted as $key => $category)
-                    <tr>
-                        <td>{{ $key + 1 }}</td>
-                        <td>{{ $category->name }}</td>
-                        <td>{{ $category->code }}</td>
-                        <td>{{ $category->deleted_at }}</td> <!-- Fecha de eliminación -->
-                        <td>
-                            @can('user.restore') <!-- Verificar permiso para restaurar -->
-                            <!-- Formulario para restaurar la categoría -->
-                            <form action="{{ route('categories.restore', $category->id) }}" class="formulario-restaurar" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <button class="btn btn-cyan-800 mb-3" type="submit">Restore</button>
-                            </form>
-                            @endcan
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <!-- Buscador -->
+        <div class="col-md-5 mb-3">
+            <label for="search" class="form-label d-flex align-items-center">
+                <i class="fas fa-search me-2"></i> Buscar categoría
+            </label>
+            <input type="text" name="search" class="form-control" id="search" placeholder="Buscar..." value="{{ request()->get('search') }}">
         </div>
+        <!-- Selector de cantidad de registros por página -->
+        <div class="col-md-2 mb-3">
+            <label for="perPage" class="form-label d-flex align-items-center">
+                <i class="fas fa-list me-2"></i> Registros por página
+            </label>
+            <select name="perPage" class="form-select" id="perPage" onchange="this.form.submit()">
+                <option value="10" {{ request()->get('perPage') == '10' ? 'selected' : '' }}>10 registros</option>
+                <option value="20" {{ request()->get('perPage') == '20' ? 'selected' : '' }}>20 registros</option>
+                <option value="50" {{ request()->get('perPage') == '50' ? 'selected' : '' }}>50 registros</option>
+                <option value="all" {{ request()->get('perPage') == 'all' ? 'selected' : '' }}>Todos</option>
+            </select>
+        </div>
+        <!-- Filtro de tipo (Insumo/Equipo) -->
+        <div class="col-md-2 mb-3">
+            <label for="type" class="form-label d-flex align-items-center">
+                <i class="fas fa-filter me-2"></i> Tipo
+            </label>
+            <select name="type" class="form-select" id="type" onchange="this.form.submit()">
+                <option value="">Todos</option>
+                <option value="insumo" {{ request()->get('type') == 'insumo' ? 'selected' : '' }}>Insumo</option>
+                <option value="equipo" {{ request()->get('type') == 'equipo' ? 'selected' : '' }}>Equipo</option>
+            </select>
+        </div>
+
     </div>
+</form>
+
+<div class="table-responsive shadow-lg p-3 mb-5 bg-body rounded rounded-3">
+    <table id="Principal" class="table align-items-center mb-0 text-center" style="width:100%">
+        <thead class="align-middle bg-gradient-2">
+            <tr>
+                @if (request()->get('status') == 'inactive')
+                <th>#</th>
+                <th>Categoría</th>
+                <th>Fecha de Eliminación</th>
+                <th>Acciones</th>
+                @else
+                <th>#</th>
+                <th>Categoría</th>
+                <th>Fecha de creación</th>
+                <th>Acciones</th>
+                @endif
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($categories as $category)
+            <tr>
+                @if (request()->get('status') == 'inactive')
+                <td>{{ $category->id }}</td>
+                <td>{{ $category->name }}</td>
+                <td>{{ $category->deleted_at }}</td>
+                <td>
+                    <form action="{{ route('categories.restore', $category->id) }}" method="POST" class="formulario-restaurar">
+                        @csrf
+                        @method('PUT')
+                        <button class="btn btn-success">Restaurar</button>
+                    </form>
+                </td>
+                @else
+                <td>{{ $category->id }}</td>
+                <td>{{ $category->name }}</td>
+                <td>{{ $category->created_at }}</td>
+                <td>
+                    <a href="{{ route('categories.show', $category->id) }}" title="Ver Categoría" class="btn btn-cyan-800">
+                        <i class="bx bxs-show"></i>
+                    </a>
+                    <a href="{{ route('categories.edit', $category->id) }}" title="Editar Categoría" class="btn btn-green-600">
+                        <i class="bx bxs-edit"></i>
+                    </a>
+                    <form action="{{ route('categories.destroy', $category->id) }}" method="POST" style="display:inline;" class="formulario-eliminar">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-red-800">
+                            <i class="bx bxs-trash"></i>
+                        </button>
+                    </form>
+                </td>
+                @endif
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 </div>
+
+<!-- Paginación solo si es una instancia de paginación -->
+<div class="pagination-container">
+    @if($categories instanceof \Illuminate\Pagination\LengthAwarePaginator)
+    {{ $categories->appends(request()->query())->links('pagination::bootstrap-4') }}
+    @endif
+</div>
+
 
 @include('components.script-btn') <!-- Incluir scripts necesarios -->
 

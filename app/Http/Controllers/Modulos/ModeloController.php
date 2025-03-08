@@ -38,15 +38,38 @@ class ModeloController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Obtener todos los modelos
-        $models = Models::all();
-        $deletedModels = Models::onlyTrashed()->get();
+        // Obtener filtros de la solicitud
+        $status = $request->get('status', 'active'); // Filtro de estado: activo por defecto
+        $search = $request->get('search'); // Filtro de búsqueda
+        $perPage = $request->get('perPage', 10); // Número de registros por página (10 por defecto)
 
-        // Devolver respuesta en formato JSON
-        return view('inventories.models.index', compact('models', 'deletedModels'));
+        // Construcción de la consulta
+        $modelsQuery = Models::when($search, function ($query, $search) {
+            return $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('version', 'like', '%' . $search . '%');
+            });
+        })
+            ->when($status === 'inactive', function ($query) {
+                return $query->onlyTrashed(); // Si el estado es 'inactive', solo los eliminados
+            })
+            ->when($status === 'active', function ($query) {
+                return $query->whereNull('deleted_at'); // Si es 'active', solo los no eliminados
+            });
+
+        // Si el valor de perPage es 'all', obtener todos los modelos sin paginación
+        $models = ($perPage == 'all') ? $modelsQuery->get() : $modelsQuery->paginate($perPage);
+
+        return view('inventories.models.index', [
+            'models' => $models,
+            'status' => $status,
+            'perPage' => $perPage,
+            'search' => $search,
+        ]);
     }
+
 
 
     /**
@@ -212,7 +235,7 @@ class ModeloController extends Controller
                 }
             }
             //Si todo es exitoso, retornar la respuesta
-            return redirect()->route('models.edit', $id)->with('success', 'Modelo actualizado exitosamente'); 
+            return redirect()->route('models.edit', $id)->with('success', 'Modelo actualizado exitosamente');
         } catch (\Exception $e) {
             // Si ocurre un error, retornar con el mensaje de error
             return redirect()->route('models.edit', $id)
