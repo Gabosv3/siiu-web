@@ -1,7 +1,7 @@
 function configureDataTable(selector, permissions) {
     var buttonsConfig = [];
 
-   
+
 
     if (permissions.copy) {
         buttonsConfig.push({ extend: 'copy', text: 'Copiar' });
@@ -19,7 +19,7 @@ function configureDataTable(selector, permissions) {
         buttonsConfig.push({ extend: 'print', text: 'Imprimir' });
     }
 
-    
+
 
     $(selector).DataTable({
         responsive: true,
@@ -72,12 +72,12 @@ $(".formulario-eliminar").submit(function (e) {
 
     Swal.fire({
         title: "¿Estas seguro?",
-        text: "Este se eliminara definitivamente",
+        text: "Este se desactivara de forma temporal",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Eliminar!",
+        confirmButtonText: "Si, Desactivar!",
     }).then((result) => {
         if (result.isConfirmed) {
             this.submit();

@@ -83,7 +83,7 @@ class TicketController extends Controller
     public function Mytickets(Request $request)
     {
         // Obtener los filtros de la solicitud
-        $status = $request->get('status', 'abierto'); // Filtro de estado: 'abierto' por defecto
+        $status = $request->get('status', ''); // Filtro de estado: 'abierto' por defecto
         $search = $request->get('search'); // Filtro de búsqueda
         $perPage = $request->get('perPage', 10); // Número de registros por página (10 por defecto)
 

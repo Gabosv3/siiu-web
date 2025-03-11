@@ -39,7 +39,7 @@
                 <option value="all" {{ request()->get('perPage') == 'all' ? 'selected' : '' }}>Todos</option>
             </select>
         </div>
-        
+
     </div>
 </form>
 
@@ -65,8 +65,6 @@
                     <a href="{{ route('Mytickets.show', $ticket->id) }}" class="btn btn-cyan-800 mb-3" title="Ver ticket">
                         <i class="bx bxs-show"></i>
                     </a>
-                    
-                    
                 </td>
             </tr>
             @endforeach

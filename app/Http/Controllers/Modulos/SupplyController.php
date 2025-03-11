@@ -24,16 +24,16 @@ class SupplyController extends Controller
      * - destroy: can:supplies.destroy
      * - restore: can:supplies.restore
      */
-    /*
+
      public function __construct()
     {
-        $this->middleware('can:supplies.index')->only('index');
-        $this->middleware('can:supplies.create')->only('create', 'store');
-        $this->middleware('can:supplies.edit')->only('edit', 'update');
-        $this->middleware('can:supplies.destroy')->only('destroy');
-        $this->middleware('can:supplies.restore')->only('restore');
+        $this->middleware('can:supply.index')->only('index');
+        $this->middleware('can:supply.create')->only('create', 'store');
+        $this->middleware('can:supply.edit')->only('edit', 'update');
+        $this->middleware('can:supply.destroy')->only('destroy');
+        $this->middleware('can:supply.restore')->only('restore');
     }
-        */
+
     /**
      * Muestra la vista de listado de insumos.
      *
@@ -42,14 +42,43 @@ class SupplyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $supplies = Supply::with('category')->get();
-        $deletedSupplies = Supply::onlyTrashed()->with('category')->get();
-        return view('inventories.supplies.index', compact('supplies', 'deletedSupplies'));
-    }
 
-    
+     public function index(Request $request)
+     {
+         // Obtener filtros de la solicitud
+         $status = $request->get('status', 'active'); // Activo por defecto
+         $search = $request->get('search'); // Filtro de búsqueda
+         $perPage = $request->get('perPage', 10); // Registros por página
+         $categoryId = $request->get('category_id'); // Filtrar por categoría
+
+         // Construcción de la consulta
+         $suppliesQuery = Supply::with('category')
+             ->when($search, function ($query, $search) {
+                 return $query->where('name', 'like', '%' . $search . '%');
+             })
+             ->when($categoryId, function ($query, $categoryId) {
+                 return $query->where('category_id', $categoryId);
+             })
+             ->when($status === 'inactive', function ($query) {
+                 return $query->onlyTrashed(); // Solo eliminados
+             })
+             ->when($status === 'active', function ($query) {
+                 return $query->whereNull('deleted_at'); // Solo activos
+             });
+
+         // Aplicar paginación o traer todos los registros
+         $supplies = ($perPage == 'all') ? $suppliesQuery->get() : $suppliesQuery->paginate($perPage);
+
+         return view('inventories.supplies.index', [
+             'supplies' => $supplies,
+             'status' => $status,
+             'perPage' => $perPage,
+             'search' => $search,
+             'category_id' => $categoryId, // Para mantener el filtro en la vista
+         ]);
+     }
+
+
     /**
      * Muestra el formulario para crear un nuevo insumo.
      *
@@ -61,8 +90,8 @@ class SupplyController extends Controller
         $categoria = Category::find($request->input('category_id'));
         $fabricantes = Manufacturer::where('type', 'Insumo')->get();
         $modelos = Models::all();
-        
-        
+
+
         return view('inventories.supplies.create', [
             'categoria' => $categoria,
             'fabricantes' => $fabricantes,
@@ -71,7 +100,7 @@ class SupplyController extends Controller
         ]);
     }
 
-    
+
     /**
      * Crea un nuevo insumo en la base de datos.
      *
@@ -191,7 +220,7 @@ class SupplyController extends Controller
         return view('inventories.supplies.show', compact('supply'));
     }
 
-    
+
     /**
      * Elimina un insumo existente de la base de datos.
      *

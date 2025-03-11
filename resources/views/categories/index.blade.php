@@ -62,8 +62,9 @@
                 <th>Acciones</th>
                 @else
                 <th>#</th>
+                <th>Imagen</th>
                 <th>Categoría</th>
-                <th>Fecha de creación</th>
+                <th>Codigo</th>
                 <th>Acciones</th>
                 @endif
             </tr>
@@ -84,8 +85,16 @@
                 </td>
                 @else
                 <td>{{ $category->id }}</td>
+                <td>
+                    @if($category->image) <!-- Verificar si hay imagen -->
+                        <img src="{{ asset($category->image) }}" alt="Category {{ $category->name }}" class="img-thumbnail" style="height: 72px;">
+                         @else
+                        <span>Not available</span> <!-- Mensaje si no hay imagen -->
+                    @endif
+                </td>
                 <td>{{ $category->name }}</td>
-                <td>{{ $category->created_at }}</td>
+                <td>{{ $category->code }}</td>
+
                 <td>
                     <a href="{{ route('categories.show', $category->id) }}" title="Ver Categoría" class="btn btn-cyan-800">
                         <i class="bx bxs-show"></i>

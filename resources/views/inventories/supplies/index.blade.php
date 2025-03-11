@@ -1,126 +1,154 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-
     <h1>Listado de Insumos</h1>
 
 
-    @if(request()->has('category_id') && request()->input('category_id') !== 'all')
-        <a href="{{ route('supplies.create', ['category_id' => request()->input('category_id')]) }}" class="btn btn-primary">Agregar Insumo</a>
-        @endif
-    <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <!-- Botones de navegación para las pestañas -->
-            <button class="nav-link active" id="nav-categories-tab" data-bs-toggle="tab" data-bs-target="#nav-categories" type="button" role="tab" aria-controls="nav-categories" aria-selected="true">INSUMOS</button>
-            <button class="nav-link" id="nav-deactivated-tab" data-bs-toggle="tab" data-bs-target="#nav-deactivateds" type="button" role="tab" aria-controls="nav-deactivateds" aria-selected="false">DESACTIVADOS</button>
+    @if (request()->has('category_id') && request()->input('category_id') !== 'all')
+        <a href="{{ route('supplies.create', ['category_id' => request()->input('category_id')]) }}"
+            class="btn btn-primary">Agregar Insumo</a>
+    @endif
+    <form method="GET" action="{{ route('supplies.index') }}" class="mb-4">
+        <div class="row align-items-center">
+            <input type="hidden" name="category_id" value="{{ request()->get('category_id') }}">
+            <!-- Filtro de estado (Activo/Inactivo) -->
+            <div class="col-md-3 mb-3">
+                <label for="status" class="form-label d-flex align-items-center">
+                    <i class="fas fa-toggle-on me-2"></i> Estado
+                </label>
+                <select name="status" class="form-select" id="status" onchange="this.form.submit()">
+                    <option value="active" {{ request()->get('status') == 'active' ? 'selected' : '' }}>Activos</option>
+                    <option value="inactive" {{ request()->get('status') == 'inactive' ? 'selected' : '' }}>Desactivados
+                    </option>
+                </select>
+            </div>
+
+            <!-- Buscador -->
+            <div class="col-md-6 mb-3">
+                <label for="search" class="form-label d-flex align-items-center">
+                    <i class="fas fa-search me-2"></i> Buscar suministro
+                </label>
+                <input type="text" name="search" class="form-control" id="search" placeholder="Buscar..."
+                    value="{{ request()->get('search') }}">
+            </div>
+
+            <!-- Selector de cantidad de registros por página -->
+            <div class="col-md-3 mb-3">
+                <label for="perPage" class="form-label d-flex align-items-center">
+                    <i class="fas fa-list me-2"></i> Registros por página
+                </label>
+                <select name="perPage" class="form-select" id="perPage" onchange="this.form.submit()">
+                    <option value="10" {{ request()->get('perPage') == '10' ? 'selected' : '' }}>10 registros</option>
+                    <option value="20" {{ request()->get('perPage') == '20' ? 'selected' : '' }}>20 registros</option>
+                    <option value="50" {{ request()->get('perPage') == '50' ? 'selected' : '' }}>50 registros</option>
+                    <option value="all" {{ request()->get('perPage') == 'all' ? 'selected' : '' }}>Todos</option>
+                </select>
+            </div>
+
         </div>
-    </nav>
+    </form>
 
-
-    <div class="tab-content" id="nav-tabContent">
-        <!-- Contenido de la pestaña de categorías -->
-        <div class="tab-pane fade show active" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
-            <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
-                <table id="Principal" class="table align-items-center mb-0 text-center" style="width: 100%;">
-                    <thead  class="table-primary text-center">
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Categoría</th>
-                            <th>Cantidad</th>
-                            <th>Unidad</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($supplies as $supply)
-                        <tr>
+    <div class="table-responsive shadow-lg p-3 mb-5 bg-body rounded rounded-3">
+        <table id="Principal" class="table align-items-center mb-0 text-center" style="width:100%">
+            <thead class="align-middle bg-gradient-2">
+                <tr>
+                    @if (request()->get('status') == 'inactive')
+                        <th>#</th>
+                        <th>Suministro</th>
+                        <th>Fecha de Eliminación</th>
+                        <th>Acciones</th>
+                    @else
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Cantidad</th>
+                        <th>Unidad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    @endif
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($supplies as $supply)
+                    <tr>
+                        @if (request()->get('status') == 'inactive')
+                            <td>{{ $supply->id }}</td>
+                            <td>{{ $supply->name }}</td>
+                            <td>{{ $supply->deleted_at }}</td>
+                            <td>
+                                <form action="{{ route('supplies.restore', $supply->id) }}" method="POST"
+                                    class="formulario-restaurar">
+                                    @csrf
+                                    @method('PUT')
+                                    <button class="btn btn-success">Restaurar</button>
+                                </form>
+                            </td>
+                        @else
                             <td>{{ $supply->name }}</td>
                             <td>{{ $supply->category->name }}</td>
                             <td>{{ $supply->quantity }}</td>
                             <td>{{ $supply->unit }}</td>
                             <td>{{ ucfirst($supply->status) }}</td>
                             <td>
-                                <a href="{{ route('supplies.show', $supply->id) }}" title="Ver Insumo" class="btn btn-cyan-800"><i class="bx bxs-show"></i></a>
-                                <a title="Editar Insumo" href="{{ route('supplies.edit', $supply->id) }}" class="btn btn-green-600 "><i class='bx bxs-edit-alt'></i></a>
-                                <form action="{{ route('supplies.destroy', $supply->id) }}" method="POST" style="display:inline-block;" class="formulario-eliminar">
+                                <a href="{{ route('supplies.show', $supply->id) }}" title="Ver Suministro"
+                                    class="btn btn-cyan-800">
+                                    <i class="bx bxs-show"></i>
+                                </a>
+                                <a href="{{ route('supplies.edit', $supply->id) }}" title="Editar Suministro"
+                                    class="btn btn-green-600">
+                                    <i class="bx bxs-edit"></i>
+                                </a>
+                                <form action="{{ route('supplies.destroy', $supply->id) }}" method="POST"
+                                    style="display:inline;" class="formulario-eliminar">
                                     @csrf
                                     @method('DELETE')
-                                    <button title="Eliminar Insumo" type="submit" class="btn btn-red-800"><i class="bx bxs-trash"></i></button>
+                                    <button type="submit" class="btn btn-red-800">
+                                        <i class="bx bxs-trash"></i>
+                                    </button>
                                 </form>
                             </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Contenido de la pestaña de desactivados -->
-        <div class="tab-pane fade" id="nav-deactivateds" role="tabpanel" aria-labelledby="nav-deactivated-tab">
-            <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
-                <table id="restaurar" class="table align-items-center mb-0 text-center " style="width:100%">
-                    <thead class="table-primary text-center">
-                        <tr>
-                            <th>ID</th>
-                            <th>NOMBRE</th>
-                            <th>FECHA ELIMINACION</th>
-                            <th class="w-15">RESTORE</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($deletedSupplies as $supply)
-                        <tr>
-                            <td>{{ $supply->id }}</td>
-                            <td>{{ $supply->name }}</td>
-                            <td>{{ $supply->deleted_at }}</td>
-                            <td>
-                                @can('user.restore')
-                                <!-- Form to restore department -->
-                                <form action="{{ route('supplies.restore', $supply->id) }}" class="formulario-restaurar" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <button id="btn-restore-department" class="btn btn-cyan-800 mb-3" type="submit">Restore</button>
-                                </form>
-                                @endcan
-                            </td>
-                        </tr>
-                        @endforeach
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                        @endif
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 
-@include('components.script-btn') <!-- Incluir scripts necesarios -->
+    <!-- Paginación solo si es una instancia de paginación -->
+    <div class="pagination-container">
+        @if ($supplies instanceof \Illuminate\Pagination\LengthAwarePaginator)
+            {{ $supplies->appends(request()->query())->links('pagination::bootstrap-4') }}
+        @endif
+    </div>
 
-<script src="{{ asset('assets/js/Tablas/tablas.js') }}"></script> <!-- Cargar scripts de tablas -->
+    @include('components.script-btn') <!-- Incluir scripts necesarios -->
 
-@if (session('success')) <!-- Mostrar mensaje de opción si hay un estado en la sesión -->
-<script>
-    $(document).ready(function() {
-        Swal.fire({
-            icon: 'success',
-            title: 'Éxito',
-            text: "{{ session('success') }}", // Muestra el mensaje de sesión
-            timer: 3000,
-            showConfirmButton: false
-        });
-    });
-</script>
-@elseif (session('error'))
-<script>
-    $(document).ready(function() {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: "{{ session('warning') }}", // Muestra el mensaje de sesión
-            timer: 3000,
-            showConfirmButton: false
-        });
-    });
-</script>
-@endif
-</div>
+    <script src="{{ asset('assets/js/Tablas/tablas.js') }}"></script> <!-- Cargar scripts de tablas -->
+
+    @if (session('success'))
+        <!-- Mostrar mensaje de opción si hay un estado en la sesión -->
+        <script>
+            $(document).ready(function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: "{{ session('success') }}", // Muestra el mensaje de sesión
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            });
+        </script>
+    @elseif (session('error'))
+        <script>
+            $(document).ready(function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: "{{ session('warning') }}", // Muestra el mensaje de sesión
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            });
+        </script>
+    @endif
+    </div>
 @endsection
