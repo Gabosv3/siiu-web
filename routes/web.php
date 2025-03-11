@@ -81,7 +81,7 @@ Route::middleware('auth')->group(function () {
     // Reenvía el enlace de verificación de correo al usuario.
     Route::post('/email/verification-notification', function (Request $request) {
         $request->user()->sendEmailVerificationNotification();
-        return back()->with('message', 'Verification link sent!');
+        return back()->with('message', 'El enlace de verificación ha sido reenviado!');
     })->name('verification.send');
 });
 

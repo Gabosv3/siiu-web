@@ -137,6 +137,9 @@ class UserController extends Controller
         // Asignar roles seleccionados
         $user->roles()->sync($roles);
 
+        // Enviar notificación de verificación de correo
+        $user->sendEmailVerificationNotification();
+
         // Redireccionamiento con mensaje de éxito
         return redirect()->route('user.index')->with('agregado', 'SI');
     }
@@ -337,7 +340,7 @@ class UserController extends Controller
         return redirect()->back()->with('status', 'Usuario actualizado');
     }
 
-    
+
     /**
      * Elimina un usuario de la base de datos.
      *
@@ -359,7 +362,7 @@ class UserController extends Controller
         }
     }
 
-    
+
     /**
      * Restaura un usuario eliminado de la base de datos.
      *
