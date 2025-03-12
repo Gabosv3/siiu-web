@@ -50,6 +50,10 @@
                 @endforeach
             </tbody>
         </table>
+
+        <div class="d-flex justify-content-center">
+            {{ $tickets->links() }}
+        </div>
     </div>
 
     <!-- Modal para crear título -->
@@ -108,42 +112,40 @@
     });
 
     function printSingleTicket(id, title, status, created_at) {
-    let printWindow = window.open('', '', 'width=1200,height=900');
-    printWindow.document.write('<html><head>');
-    printWindow.document.write('<style>');
-    
-    // Definir el tamaño de la página para impresión
-    printWindow.document.write('@page { size: 50mm 45mm; margin: 0; }');
-    
-    // Estilos para el cuerpo del ticket
-    printWindow.document.write('body { font-family: Arial, sans-serif; margin: 0; padding: 0; width: 50mm; font-size: 12px; }');
-    
-    // Estilo del título
-    printWindow.document.write('h2 { color: #004085; border-bottom: 2px solid #004085; padding-bottom: 5px; font-size: 14px; text-align: center; }');
-    
-    // Estilo de los párrafos
-    printWindow.document.write('p { font-size: 12px; line-height: 1.5; text-align: left; margin: 5px 0; }');
-    
-    // Estilos específicos para la impresión
-    printWindow.document.write('@media print { body { margin: 0; padding: 0; } }');
-    
-    printWindow.document.write('</style>');
-    printWindow.document.write('</head><body>');
-    
-    // Contenido del ticket
-    printWindow.document.write('<h2>Detalles del Ticket</h2>');
-    printWindow.document.write('<p><strong>Ticket Numero:</strong> ' + id + '</p>');
-    printWindow.document.write('<p><strong>Título:</strong> ' + title + '</p>');
-    printWindow.document.write('<p><strong>Estado:</strong> ' + status + '</p>');
-    printWindow.document.write('<p><strong>Fecha de creación:</strong> ' + created_at + '</p>');
-    
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    
-    // Ejecutar la impresión
-    printWindow.print();
-}
+        let printWindow = window.open('', '', 'width=1200,height=900');
+        printWindow.document.write('<html><head>');
+        printWindow.document.write('<style>');
 
+        // Definir el tamaño de la página para impresión
+        printWindow.document.write('@page { size: 50mm 45mm; margin: 0; }');
 
+        // Estilos para el cuerpo del ticket
+        printWindow.document.write('body { font-family: Arial, sans-serif; margin: 0; padding: 0; width: 50mm; font-size: 12px; }');
+
+        // Estilo del título
+        printWindow.document.write('h2 { color: #004085; border-bottom: 2px solid #004085; padding-bottom: 5px; font-size: 14px; text-align: center; }');
+
+        // Estilo de los párrafos
+        printWindow.document.write('p { font-size: 12px; line-height: 1.5; text-align: left; margin: 5px 0; }');
+
+        // Estilos específicos para la impresión
+        printWindow.document.write('@media print { body { margin: 0; padding: 0; } }');
+
+        printWindow.document.write('</style>');
+        printWindow.document.write('</head><body>');
+
+        // Contenido del ticket
+        printWindow.document.write('<h2>Detalles del Ticket</h2>');
+        printWindow.document.write('<p><strong>Ticket Numero:</strong> ' + id + '</p>');
+        printWindow.document.write('<p><strong>Título:</strong> ' + title + '</p>');
+        printWindow.document.write('<p><strong>Estado:</strong> ' + status + '</p>');
+        printWindow.document.write('<p><strong>Fecha de creación:</strong> ' + created_at + '</p>');
+
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+
+        // Ejecutar la impresión
+        printWindow.print();
+    }
 </script>
 @endsection

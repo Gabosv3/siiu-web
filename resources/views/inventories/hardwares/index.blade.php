@@ -92,12 +92,14 @@
 @else
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link active" id="nav-software-tab" data-bs-toggle="tab" data-bs-target="#nav-software" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Software</button>
+        <button class="nav-link active" id="nav-software-tab" data-bs-toggle="tab" data-bs-target="#nav-software" type="button" role="tab" aria-controls="nav-software" aria-selected="true">Software</button>
         <button class="nav-link" id="nav-desactivados-tab" data-bs-toggle="tab" data-bs-target="#nav-desactivados" type="button" role="tab" aria-controls="nav-desactivados" aria-selected="false">Desactivados</button>
     </div>
 </nav>
+
 <div class="tab-content" id="nav-tabContent">
-    <div class="tab-pane fade show active" id="nav-departamentos" role="tabpanel" aria-labelledby="nav-departamentos-tab">
+    <!-- Pestaña de Software -->
+    <div class="tab-pane fade show active" id="nav-software" role="tabpanel" aria-labelledby="nav-software-tab">
         <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
             <table id="Principal" class="table align-items-center mb-0 text-center">
                 <thead>
@@ -118,7 +120,7 @@
                     @foreach($hardwares as $hardware)
                     <tr>
                         <td>{{ $hardware->name }}</td>
-                        <td>{{ $hardware->category->name }}</td>
+                        <td>{{ $hardware->category->name ?? 'N/A' }}</td>
                         <td>{{ $hardware->status }}</td>
                         <td>{{ $hardware->inventory_code }}</td>
                         <td>{{ $hardware->serial_number ?? 'N/A' }}</td>
@@ -146,7 +148,38 @@
             </table>
         </div>
     </div>
+
+    <!-- Pestaña de Desactivados -->
+    <div class="tab-pane fade" id="nav-desactivados" role="tabpanel" aria-labelledby="nav-desactivados-tab">
+        <div class="shadow-lg p-3 mb-5 bg-body rounded rounded-3">
+            <table id="restaurar" class="table align-items-center mb-0 text-center" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Fecha de Eliminación</th>
+                        <th class="w-15">Restaurar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($hardwaresdeleted as $hardware)
+                    <tr>
+                        <td>{{ $hardware->name }}</td>
+                        <td>{{ $hardware->deleted_at }}</td>
+                        <td>
+                            <form action="{{ route('hardwares.restore', $hardware->id) }}" class="formulario-restaurar" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <button id="btn-restore-hardware" class="btn btn-cyan-800 mb-3" type="submit">Restaurar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
 @endif
 
 @include('components.script-btn')

@@ -62,6 +62,10 @@ class Ticket extends Model
         return $this->belongsTo(User::class)->withTrashed();
     }
 
+    public function userticket()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 
     /**
      * Relación con el modelo Assignment.

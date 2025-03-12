@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Modulos;
 
 use App\Http\Controllers\Controller;
+use App\Models\EquipmentSoftware;
 use App\Models\Hardware;
 use App\Models\License;
 use App\Models\Software;
@@ -33,7 +34,7 @@ class LicenseController extends Controller
         $this->middleware('can:licencias.destroy')->only('destroy');
         $this->middleware('can:licencias.restore')->only('restore');
     }
-    
+
     /**
      * Muestra la lista de licencias, con opción de filtrar por software.
      *
@@ -89,7 +90,7 @@ class LicenseController extends Controller
         return view('inventories.licenses.create', compact('software'));
     }
 
-    
+
     /**
      * Crea una nueva licencia para un software.
      *
@@ -161,7 +162,6 @@ class LicenseController extends Controller
         $softwares = Software::all();
         $equipos = Hardware::all();
         return view('inventories.licenses.edit', compact('license', 'softwares', 'equipos'));
-
     }
     /**
      * Actualiza una licencia.
@@ -231,5 +231,41 @@ class LicenseController extends Controller
         }
         $license->restore();
         return redirect()->route('licenses.index')->with('success', 'Licencia restaurada exitosamente.');
+    }
+
+    public function linkLicense(Request $request)
+    {
+        // Validar los datos
+        $request->validate([
+            'software_id' => 'required|exists:softwares,id',
+            'license_id' => 'nullable|exists:licenses,id', // La licencia puede ser opcional para software gratuito
+            'equipment_id' => 'required|exists:hardware,id', // Asegurarse que el equipo existe
+        ]);
+
+        // Obtener el equipo, software y licencia
+        $equipment = Hardware::findOrFail($request->equipment_id);
+        $software = Software::findOrFail($request->software_id);
+        $license = $request->license_id ? License::findOrFail($request->license_id) : null;
+
+        // Si el software tiene una licencia de pago, verificar disponibilidad
+        if ($license) {
+            // Verificar si hay dispositivos disponibles
+            if ($license->used_devices >= $license->max_devices) {
+                return back()->withErrors(['license' => 'No hay dispositivos disponibles para esta licencia.']);
+            }
+
+            // Incrementar el contador de dispositivos en uso
+            $license->increment('used_devices');
+        }
+
+        // Guardar la vinculación en la tabla equipment_softwares
+        EquipmentSoftware::create([
+            'hardware_id' => $equipment->id,
+            'software_id' => $software->id,
+            'license_id' => $license ? $license->id : null, // Si hay licencia, se guarda
+        ]);
+
+        return redirect()->route('hardwares.show', $equipment->id)
+            ->with('success', 'Licencia vinculada exitosamente.');
     }
 }

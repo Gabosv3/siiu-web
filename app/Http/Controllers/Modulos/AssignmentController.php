@@ -10,6 +10,7 @@ use App\Models\HardwareAssignment;
 use App\Models\Specialty;
 use App\Models\Technician;
 use App\Models\Ticket;
+use App\Notifications\TicketAssignedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -109,42 +110,49 @@ class AssignmentController extends Controller
 
      */
     public function assign(Request $request, $id)
-    {
-        $request->validate(
-            [
-                'priority' => 'required|string|in:alta,media,baja',
-                'specialty_id' => 'required|exists:specialties,id',
-                'technician_id' => 'required|exists:technicians,id',
-                'task' => 'required|string',
-                'initial_date' => 'required|date|after_or_equal:today',
-            ],
-            [
-                'priority.required' => 'El campo prioridad es obligatorio.',
-                'specialty_id.required' => 'El campo especialidad es obligatorio.',
-                'technician_id.required' => 'El campo técnico es obligatorio.',
-                'task.required' => 'El campo tarea es obligatorio.',
-                'initial_date.required' => 'El campo fecha inicial es obligatorio.',
-                'initial_date.after_or_equal' => 'La fecha inicial debe ser posterior o igual a la fecha actual.',
-            ]
-        );
+{
+    $request->validate(
+        [
+            'priority' => 'required|string|in:alta,media,baja',
+            'specialty_id' => 'required|exists:specialties,id',
+            'technician_id' => 'required|exists:technicians,id',
+            'task' => 'required|string',
+            'initial_date' => 'required|date|after_or_equal:today',
+        ],
+        [
+            'priority.required' => 'El campo prioridad es obligatorio.',
+            'specialty_id.required' => 'El campo especialidad es obligatorio.',
+            'technician_id.required' => 'El campo técnico es obligatorio.',
+            'task.required' => 'El campo tarea es obligatorio.',
+            'initial_date.required' => 'El campo fecha inicial es obligatorio.',
+            'initial_date.after_or_equal' => 'La fecha inicial debe ser posterior o igual a la fecha actual.',
+        ]
+    );
 
-        $ticket = Ticket::findOrFail($id);
-        $ticket->update([
-            'priority' => $request->input('priority'),
-            'technician_id' => $request->input('technician_id'),
-            'status' => 'en proceso', // Asegúrate de usar el valor correcto
-        ]);
+    $ticket = Ticket::findOrFail($id);
+    $technician = Technician::findOrFail($request->input('technician_id')); // Obtener el técnico asignado
 
-        Assignment::create([
-            'technician_id' => $request->input('technician_id'),
-            'ticket_id' => $ticket->id,
-            'task' => $request->input('task'),
-            'status' => 'pendiente',
-            'initial_date' => $request->input('initial_date'),
-        ]);
+    $ticket->update([
+        'priority' => $request->input('priority'),
+        'technician_id' => $technician->id,
+        'status' => 'en proceso',
+    ]);
 
-        return redirect()->route('tickets.assignForm', $id)->with('success', 'Ticket asignado exitosamente.');
+    Assignment::create([
+        'technician_id' => $technician->id,
+        'ticket_id' => $ticket->id,
+        'task' => $request->input('task'),
+        'status' => 'pendiente',
+        'initial_date' => $request->input('initial_date'),
+    ]);
+
+    // 📌 Notificar al usuario que creó el ticket
+    if ($ticket->userticket) { // Verifica que el ticket tenga un usuario asignado
+        $ticket->userticket->notify(new TicketAssignedNotification($ticket, $technician));
     }
+
+    return redirect()->route('tickets.assignForm', $id)->with('success', 'Ticket asignado exitosamente.');
+}
 
     /**
      * Asigna un equipo a uno o varios usuarios y a un departamento.

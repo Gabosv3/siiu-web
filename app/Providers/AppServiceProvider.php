@@ -40,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
                  ->greeting('¡Hola ' . $name . '!')
                 ->line('Bienvenido a SIIU! Antes de comenzar, necesitamos verificar tu correo electrónica.')
                 ->line('Por favor, haz clic en el botón siguiente para verificar tu dirección de correo electrónico.')
+                ->line('NOTA: Deberas iniciar sesión primero, para que la verificacion de tu correo funcione.')
                 ->action('Verificar correo', $url)
                 ->line('Si no has solicitado esta verificación, por favor ignora este mensaje.');
         });

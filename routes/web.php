@@ -264,6 +264,7 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::get('/service-sheets/get-supplies/{categoryId}', [ServiceSheetController::class, 'getSupplies']);
     Route::get('/service-sheets/get-hardware-details/{id}', [ServiceSheetController::class, 'getHardwareDetails']);
     Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');
+    Route::post('/link-license', [LicenseController::class, 'linkLicense'])->name('license.link');
 
     Route::match(['get', 'post'], '/botman', function () {
         $config = [];

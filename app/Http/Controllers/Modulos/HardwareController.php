@@ -50,7 +50,9 @@ class HardwareController extends Controller
             return $query->where('category_id', $categoriaId);
         })->paginate(16); // Obtiene 10 registros por categoria
 
-        return view('inventories.hardwares.index', compact('hardwares', 'viewType'));
+        $hardwaresdeleted = Hardware::onlyTrashed()->get();
+
+        return view('inventories.hardwares.index', compact('hardwares', 'viewType',  'hardwaresdeleted'));
     }
 
     /**
@@ -242,10 +244,13 @@ class HardwareController extends Controller
         $paidSoftwares = Software::where('type', 'paid')->get();
 
         // Obtener licencias disponibles que pueden ser usadas en al menos un dispositivo
-        $availableLicenses = License::where('max_devices', '>=', 1)->get();
+        $availableLicenses = License::whereRaw('(max_devices - used_devices) > 0')->get();
+
+
 
         // Obtener las licencias vinculadas al hardware
         $linkedLicenses = $hardware->softwares->flatMap(function ($software) {
+           
             return $software->licencias;
         });
 
@@ -293,6 +298,15 @@ class HardwareController extends Controller
      */
     public function update(Request $request, Hardware $hardware)
     {
+        $request->validate([
+            'name' => 'required',
+            'serial_number' => 'required',
+            'manufacturer_id' => 'required',
+            'model_id' => 'required',
+            'warranty_expiration_date' => 'required',
+        ]);
+
+        $hardware->update($request->all());
 
         return redirect()->route('hardwares.index')->with('success', 'Hardware actualizado exitosamente.');
     }
@@ -309,8 +323,7 @@ class HardwareController extends Controller
 
     public function destroy(Hardware $hardware)
     {
-        $hardware->tags()->detach();
-        $hardware->sistemas()->detach();
+        
         $hardware->delete();
 
         return redirect()->route('hardwares.index')->with('success', 'Hardware eliminado exitosamente.');
@@ -325,10 +338,15 @@ class HardwareController extends Controller
      * @param  \App\Models\Hardware  $hardware
      * @return \Illuminate\Http\Response
      */
-    public function restore(Hardware $hardware)
+    public function restore($id)
     {
-        $hardware->restore();
+        $hardware = Hardware::withTrashed()->find($id);
+        if ($hardware) {
+            $hardware->restore();
+            return redirect()->route('hardwares.index')->with('success', 'Hardware restaurado exitosamente.');
+        }
+        return redirect()->route('hardwares.index')->with('error', 'Hardware no encontrado.');
 
-        return redirect()->route('hardwares.index')->with('success', 'Hardware restaurado exitosamente.');
+        
     }
 }
