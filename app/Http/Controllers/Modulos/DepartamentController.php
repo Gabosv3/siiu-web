@@ -25,7 +25,7 @@ class DepartamentController extends Controller
     public function __construct()
     {
         // Middleware para verificar permisos antes de ejecutar los métodos específicos
-        $this->middleware('can:departamentos.index')->only('index');
+        $this->middleware('can:departamentos.index')->only('index', 'show');
         $this->middleware('can:departamentos.create')->only('create', 'store');
         $this->middleware('can:departamentos.edit')->only('edit', 'update');
         $this->middleware('can:departamentos.destroy')->only('destroy');

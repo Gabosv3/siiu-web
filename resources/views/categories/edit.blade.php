@@ -45,7 +45,7 @@
 
             <div class="mb-3">
                 <label for="image" class="form-label">IMAGEN:</label>
-                <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage()" required>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage()" >
                 <div class="invalid-feedback">
                     Por favor, seleccione una imagen.
                 </div>

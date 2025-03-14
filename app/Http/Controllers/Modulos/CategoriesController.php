@@ -26,14 +26,15 @@ class CategoriesController extends Controller
     public function __construct()
     {
         // Middleware para verificar permisos antes de ejecutar métodos específicos
-        $this->middleware('can:categorias.index')->only('index');
+        $this->middleware('can:categorias.index')->only('index', 'show');
         $this->middleware('can:categorias.create')->only('create', 'store');
         $this->middleware('can:categorias.edit')->only('edit', 'update');
         $this->middleware('can:categorias.destroy')->only('destroy');
         $this->middleware('can:categorias.restore')->only('restore');
+
     }
 
-   
+
     /**
      * Muestra una lista de las categorías.
      *

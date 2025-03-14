@@ -67,7 +67,7 @@
                 <!-- Inputs de claves de licencia se agregarán aquí -->
             </div>
 
-            <button type="button" id="add-license-key" class="btn btn-secondary">Agregar Otra Clave de Licencia</button>
+            <button type="button" id="add-license-key" class="btn btn-secondary">Agregar Clave de Licencia</button>
         </fieldset>
 
         <button type="submit" class="btn btn-primary">Crear Licencias</button>

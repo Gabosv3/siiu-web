@@ -125,6 +125,10 @@ class LicenseController extends Controller
             'status.string' => 'El estado debe ser una cadena de texto.',
         ]);
 
+        if (!is_array($request->license_key) || empty($request->license_key)) {
+            return back()->withErrors(['license_key' => 'Debes ingresar al menos una clave licencia.']);
+        }
+
         foreach ($request->license_key as $index => $license_key) {
             License::create([
                 'software_id' => $request->software_id,
