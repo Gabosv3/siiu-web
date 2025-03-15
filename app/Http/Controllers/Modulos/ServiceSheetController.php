@@ -52,12 +52,11 @@ class ServiceSheetController extends Controller
             'user_id' => 'required|exists:users,id',
             'technician_id' => 'required|exists:users,id',
             'ticket_id' => 'required|exists:tickets,id',
-            'hardware_id' => 'required|exists:hardware,id',
-            'supplies_data' => 'required|json',  // Asegura que supplies_data sea un JSON válido
+            'hardware_id' => 'nullable|exists:hardware,id',
+            'supplies_data' => 'nullable|json',  // Asegura que supplies_data sea un JSON válido
             'description' => 'required|string',
             'observations' => 'nullable|string',
         ], [
-            'supplies_data.required' => 'Los insumos son obligatorios.',
             'supplies_data.json' => 'Los insumos deben ser un formato JSON válido.',
             'department_id.exists' => 'El departamento seleccionado no existe.',
             'user_id.exists' => 'El usuario seleccionado no existe.',
