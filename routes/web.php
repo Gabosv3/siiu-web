@@ -255,6 +255,8 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
     Route::post('/assign-software', [EquipmentSoftwareController::class, 'assignSoftware']);
     //file
     Route::post('/upload-file', [HardwareFileController::class, 'store'])->name('upload-file');
+    Route::patch('/hardware/file/{id}/restore', [HardwareFileController::class, 'restore'])->name('hardware.file.restore');
+
     Route::get('/download-file/{id}', [HardwareFileController::class, 'downloadFile'])->name('download.file');
     Route::delete('/hardware/file/{id}', [HardwareFileController::class, 'destroy'])->name('hardware.file.destroy');
     //hoja de servicios
@@ -294,8 +296,9 @@ Route::middleware(['auth', 'prevent-back-history', 'two_fa', 'verified'])->group
         $botman->listen();
     });
 
+    Route::post('/service-sheets', [ServiceSheetController::class, 'store'])->name('service-sheets.store');
     Route::get('/escaneo', [BarcodeController::class, 'index'])->name('procesar.index');
-    Route::post('inventarios/hardware/barcode', [BarcodeController::class, 'procesarCodigo'])->name('procesar.codigo');
+    Route::get('inventarios/hardware/barcode', [BarcodeController::class, 'procesarCodigo'])->name('procesar.codigo');
     Route::get('/reportes', [ReportsController::class, 'index'])->name('reportes');
     Route::get('/reportes/inventario', [ReportsController::class, 'getHardwareReports'])->name('reportes.inventario');
     Route::get('/reportes/ticket', [ReportsController::class, 'getTicketReports'])->name('reportes.ticket');

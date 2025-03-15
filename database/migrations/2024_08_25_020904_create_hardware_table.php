@@ -28,6 +28,7 @@ class CreateHardwareTable extends Migration
             $table->string('warranty_expiration_date')->nullable(); // Fecha de expiración de la garantiía (opcional)
             $table->string('barcode_path')->nullable(); // Notas (opcional)
 
+            $table->timestamp('last_maintenance_at')->nullable();
             $table->timestamps(); // Timestamps para created_at y updated_at
             $table->softDeletes(); // Agrega la columna 'deleted_at'
 

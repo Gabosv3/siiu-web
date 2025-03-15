@@ -202,16 +202,27 @@ class TicketController extends Controller
      */
     public function titlestore(Request $request)
     {
-        $request->validate([
+        // Validación de datos
+        $validatedData = $request->validate([
             'name' => 'required|string|unique:titles,name|max:255',
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.unique' => 'El nombre ya existe.',
+            'name.max' => 'El nombre no debe superar los 255 caracteres.',
         ]);
 
-        $title = new Title();
-        $title->name = $request->name;
-        $title->save();
+        try {
+            // Guardar el título
+            $title = new Title();
+            $title->name = $validatedData['name'];
+            $title->save();
 
-        return response()->json(['success' => true]);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al guardar el título.'], 500);
+        }
     }
+
 
     /**
      * Muestra la información de un ticket en particular.

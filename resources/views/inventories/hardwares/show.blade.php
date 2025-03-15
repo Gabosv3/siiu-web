@@ -16,6 +16,18 @@
                     <h3 class="card-title text-uppercase">{{ $hardware->name }}</h3>
                     <p class="text-muted">{{ $hardware->inventory_code }}</p>
                     <small class="text-muted">Actualizado {{ $hardware->updated_at->format('M d Y, H:i') }}</small>
+                    <p class="text-muted pt-2">
+                        <strong>Último Mantenimiento:</strong> <br>
+                        @if($hardware->last_maintenance_at)
+                        @if($hardware->last_maintenance_at->lt(now()->subMonths(3)))
+                        Necesita mantenimiento
+                        @else
+                        {{ $hardware->last_maintenance_at->format('M d Y, H:i') }}
+                        @endif
+                        @else
+                        No se ha realizado mantenimiento nunca
+                        @endif
+                    </p>
                 </div>
             </div>
             <!-- Asignación -->
@@ -40,7 +52,7 @@
                     <i class="fa fa-map fa-2x text-secondary mb-2"></i>
                     <p class="m-0 text-uppercase text-secondary fw-bold">Ubicación en</p>
                     <p class="m-0 text-secondary">
-                        {{ $hardware->hardwareAssigned->user->departament->name ?? 'No Ubicado' }}
+                        {{ $hardware->hardwareAssigned->departament->name ?? 'No Ubicado' }}
                     </p>
                 </div>
             </div>
@@ -157,7 +169,7 @@
             </div>
         </div>
 
-        <!-- Values Tab Content -->
+        <!-- Tab de licencias -->
         <div class="tab-pane fade card p-5 " id="values-tab-pane" role="tabpanel" aria-labelledby="values-tab"
             tabindex="0">
             <h1>Licencias Vinculadas</h1>
@@ -197,13 +209,9 @@
 
                 </tbody>
             </table>
-
-
-
-
         </div>
 
-        <!-- Culture Tab Content -->
+        <!-- Tab de Documentos -->
         <div class="tab-pane fade card p-5" id="culture-tab-pane" role="tabpanel" aria-labelledby="culture-tab"
             tabindex="0">
 
@@ -219,8 +227,9 @@
                     <tr>
                         <th>Nombre</th>
                         <th>Descripción</th>
-                        <th>Ubicación</th>
                         <th>Acciones</th>
+                        <th>Ubicación</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -228,24 +237,34 @@
                     <tr>
                         <td>{{ $file->name }}</td>
                         <td>{{ $file->description }}</td>
+                        @if ($file->trashed())
+                        <!-- Si está eliminado (SoftDelete activado), mostrar solo Restaurar -->
                         <td>
-                            <button type="button" class="btn btn-cyan-800 btn-sm" data-toggle="modal"
-                                data-target="#pdfModal{{ $file->id }}">
-                                Previsualizar PDF
-                            </button>
-                            <a href="{{ route('download.file', $file->id) }}"
-                                class="btn btn-green-600 btn-sm">Descargar</a>
+                            <form action="{{ route('hardware.file.restore', $file->id) }}" method="POST" class="formulario-restaurar">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-cyan-800 btn-sm">Restaurar</button>
+                            </form>
                         </td>
+                        @else
                         <td>
-
-                            <form action="{{ route('hardware.file.destroy', $file->id) }}" method="POST"
-                                class=" formulario-eliminar">
+                            <!-- Si NO está eliminado, mostrar las acciones normales -->
+                            <form action="{{ route('hardware.file.destroy', $file->id) }}" method="POST" class="formulario-eliminar">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-red-800 btn-sm">Eliminar</button>
                             </form>
 
                         </td>
+                        <td>
+                            <button type="button" class="btn btn-cyan-800 btn-sm" data-toggle="modal"
+                                data-target="#pdfModal{{ $file->id }}">
+                                Previsualizar PDF
+                            </button>
+                            <a href="{{ route('download.file', $file->id) }}" class="btn btn-green-600 btn-sm">Descargar</a>
+                        </td>
+
+                        @endif
                     </tr>
 
                     <!-- Modal para previsualizar PDF -->
@@ -255,25 +274,22 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="pdfModalLabel{{ $file->id }}">
-                                        Previsualización de PDF</h5>
-                                    <button type="button" class="close" data-dismiss="modal"
-                                        aria-label="Cerrar">
+                                        Previsualización de PDF
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <!-- Visor de PDF en el modal -->
-                                    <iframe src="{{ Storage::url($file->location) }}" width="100%"
-                                        height="500px"></iframe>
+                                    <iframe src="{{ Storage::url($file->location) }}" width="100%" height="500px"></iframe>
                                 </div>
                             </div>
                         </div>
                     </div>
                     @endforeach
                 </tbody>
+
             </table>
-
-
         </div>
 
         <!-- Philosophy Tab Content -->
@@ -509,6 +525,8 @@
                             text: response.message,
                             icon: 'success',
                             confirmButtonText: 'Aceptar'
+                        }).then(() => {
+                            location.reload(); // Recargar después de la alerta
                         });
 
                         // Cierra el modal
@@ -602,54 +620,48 @@
             $('#createFileForm').on('submit', function(e) {
                 e.preventDefault();
 
-                // Crear FormData para enviar los datos y archivo al backend
                 var formData = new FormData(this);
-
-                // Agregar el CSRF token al FormData
                 formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
 
-                // Verificar los datos que se envían en la consola
-                console.log(...formData);
-
-                // Llamada AJAX para subir el archivo
                 $.ajax({
-                    url: "{{ route('upload-file') }}", // URL de la ruta que maneja la carga de archivos
+                    url: "{{ route('upload-file') }}",
                     type: 'POST',
                     data: formData,
-                    processData: false, // No procesar los datos (esto es importante para FormData)
-                    contentType: false, // No establecer el tipo de contenido
+                    processData: false,
+                    contentType: false,
                     success: function(response) {
-                        // Mensaje de éxito
+                        // Guardar la pestaña activa antes de recargar la página
+                        localStorage.setItem('activeTab', '#culture-tab-pane');
+
+                        // Mostrar alerta de éxito antes de recargar
                         Swal.fire({
                             title: '¡Éxito!',
                             text: response.message,
                             icon: 'success',
                             confirmButtonText: 'Aceptar'
+                        }).then(() => {
+                            location.reload(); // Recargar después de la alerta
                         });
 
-                        // Cierra el modal
+                        // Cerrar modal y limpiar formulario
                         $('#createFileModal').modal('hide');
-
-                        // Limpia los campos del formulario
                         $('#createFileForm')[0].reset();
                     },
                     error: function(xhr) {
-                        console.error(xhr); // Log para depuración
+                        console.error(xhr);
 
                         let errorMessage = 'Hubo un error al subir el archivo.';
-
-                        // Manejo de errores de validación
                         if (xhr.responseJSON && xhr.responseJSON.errors) {
                             let errors = '';
                             $.each(xhr.responseJSON.errors, function(key, value) {
-                                errors += value +
-                                    "\n"; // Concatenar los mensajes de error
+                                errors += value + "\n";
                             });
                             errorMessage = errors;
                         } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message; // Error genérico
+                            errorMessage = xhr.responseJSON.message;
                         }
 
+                        // Mostrar alerta de error
                         Swal.fire({
                             title: 'Error',
                             text: errorMessage,
@@ -660,7 +672,14 @@
                 });
             });
 
+            // Mantener la pestaña activa después de la recarga
+            var activeTab = localStorage.getItem('activeTab');
+            if (activeTab) {
+                $('button[data-bs-target="' + activeTab + '"]').tab('show');
+                localStorage.removeItem('activeTab'); // Limpiar después de aplicarlo
+            }
         });
+
 
         $(document).ready(function() {
             // Verifica que los elementos están siendo seleccionados

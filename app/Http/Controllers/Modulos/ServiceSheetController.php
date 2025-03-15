@@ -45,55 +45,41 @@ class ServiceSheetController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
-            'sheets' => 'required|array',
-            'sheets.*.hardware_id' => 'required|exists:hardware,id',
-            'sheets.*.ticket_id' => 'required|exists:tickets,id',
-            'sheets.*.task' => 'required|string',
-            'sheets.*.initial_date' => 'required|date',
-            'sheets.*.status' => 'required|string',
-            'sheets.*.description' => 'required|string',
-            'sheets.*.observations' => 'nullable|string',
-            'sheets.*.supplies' => 'array',
-            'sheets.*.supplies.*' => 'exists:supplies,id',
+            'date' => 'nullable|date',
+            'department_id' => 'required|exists:departamentos,id',
+            'user_id' => 'required|exists:users,id',
+            'technician_id' => 'required|exists:users,id',
+            'ticket_id' => 'required|exists:tickets,id',
+            'hardware_id' => 'required|exists:hardware,id',
+            'supplies_data' => 'required|json',  // Asegura que supplies_data sea un JSON válido
+            'description' => 'required|string',
+            'observations' => 'nullable|string',
         ], [
-            'sheets.*.hardware_id.exists' => 'El equipo seleccionado no existe.',
-            'sheets.*.ticket_id.exists' => 'El ticket seleccionado no existe.',
-            'sheets.*.task.required' => 'La tarea es obligatoria.',
-            'sheets.*.initial_date.required' => 'La fecha inicial es obligatoria.',
-            'sheets.*.status.required' => 'El estado es obligatorio.',
-            'sheets.*.description.required' => 'La descripción es obligatoria.',
-            'sheets.*.supplies.*.exists' => 'El insumo seleccionado no existe.',
-            'sheets.required' => 'Las hojas de servicio son obligatorias.',
-            'sheets.*.required' => 'Las hojas de servicio son obligatorias.',
+            'supplies_data.required' => 'Los insumos son obligatorios.',
+            'supplies_data.json' => 'Los insumos deben ser un formato JSON válido.',
+            'department_id.exists' => 'El departamento seleccionado no existe.',
+            'user_id.exists' => 'El usuario seleccionado no existe.',
+            'technician_id.exists' => 'El técnico seleccionado no existe.',
+            'ticket_id.exists' => 'El ticket seleccionado no existe.',
+            'hardware_id.exists' => 'El equipo seleccionado no existe.',
+            'description.required' => 'La descripción es obligatoria.',
         ]);
 
-        DB::beginTransaction();
+        $serviceSheet = new ServiceSheet();
+        $serviceSheet->date = $request->date;
+        $serviceSheet->departament_id = $request->department_id;
+        $serviceSheet->user_id = $request->user_id;
+        $serviceSheet->technician_id = $request->technician_id;
+        $serviceSheet->ticket_id = $request->ticket_id;
+        $serviceSheet->hardware_id = $request->hardware_id;
+        $serviceSheet->supplies_data = json_decode($request->supplies_data, true); // Decodificar JSON a array
+        $serviceSheet->description = $request->description;
+        $serviceSheet->observations = $request->observations;
+        $serviceSheet->save();
 
-        try {
-            foreach ($request->sheets as $sheetData) {
-                $serviceSheet = ServiceSheet::create([
-                    'date' => Carbon::now(),
-                    'department' => $sheetData['department'],
-                    'ticket_id' => $sheetData['ticket_id'],
-                    'task' => $sheetData['task'],
-                    'hardware_id' => $sheetData['hardware_id'],
-                    'status' => $sheetData['status'],
-                    'description' => $sheetData['description'],
-                    'observations' => $sheetData['observations'] ?? null,
-                ]);
-
-                if (!empty($sheetData['supplies'])) {
-                    $serviceSheet->supplies()->attach($sheetData['supplies']);
-                }
-            }
-
-            DB::commit();
-            return redirect()->route('service_sheets.index')->with('success', 'Hojas de servicio creadas exitosamente.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al crear las hojas de servicio: ' . $e->getMessage()]);
-        }
+        return redirect()->route('service_sheets.index')->with('success', 'Hoja de servicio creada exitosamente.');
     }
 
     /**

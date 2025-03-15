@@ -78,6 +78,7 @@
     </div>
 </div>
 
+
 <script src="{{ asset('assets/js/departments/create.js') }}"></script>
 
 @endsection

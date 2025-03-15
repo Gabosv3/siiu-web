@@ -15,19 +15,15 @@ class CreateServiceSheetsTable extends Migration
     {
         Schema::create('service_sheets', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->string('department');
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('technician_id')->constrained('users');
-            $table->foreignId('hardware_id')->constrained('hardware');
-            $table->string('inventory_number');
-            $table->string('serial_number');
-            $table->string('model');
-            $table->string('status');
+            $table->date('date')->nullable(); // Permitir fechas nulas
+            $table->foreignId('department_id')->constrained('departaments')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('technician_id')->constrained('technicians')->onDelete('cascade');
+            $table->foreignId('ticket_id')->constrained('tickets')->onDelete('cascade');
+            $table->foreignId('hardware_id')->nullable()->constrained('hardware')->onDelete('cascade');
+            $table->json('supplies_data')->nullable(); // Almacenar insumos como JSON
             $table->text('description');
             $table->text('observations')->nullable();
-            $table->boolean('use_supply')->default(false);
-            $table->softDeletes();
             $table->timestamps();
         });
     }

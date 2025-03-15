@@ -14,56 +14,62 @@ class ServiceSheet extends Model
 
     protected $table = 'service_sheets';
 
-
     protected $fillable = [
-        'date', 'department', 'user_id', 'technician_id', 'hardware_id', 'inventory_number',
-        'serial_number', 'model', 'status', 'description', 'observations', 'use_supply'
+        'date',
+        'department_id',
+        'user_id',
+        'technician_id',
+        'ticket_id',
+        'hardware_id',
+        'supplies_data',
+        'description',
+        'observations',
+    ];
+
+    protected $casts = [
+        'supplies_data' => 'array',
+        'date' => 'date',
     ];
 
     protected static $logAttributes = [
-        'date', 'department', 'user_id', 'technician_id', 'hardware_id', 'inventory_number',
-        'serial_number', 'model', 'status', 'description', 'observations', 'use_supply'
+        'date',
+        'department_id',
+        'user_id',
+        'technician_id',
+        'ticket_id',
+        'hardware_id',
+        'supplies_data',
+        'description',
+        'observations',
     ];
 
     protected static $logName = 'Hoja de servicio';
 
 
-    /**
-     * Relación con el modelo User.
-     *
-     * Esta función devuelve una relación 'belongsTo' con el modelo User,
-     * indicando que cada hoja de servicio pertenece a un usuario.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+    // Relaciones
+
+    public function department()
+    {
+        return $this->belongsTo(departament::class)->withDefault()->onDelete('cascade');
+    }
+
     public function user()
     {
-        return $this->belongsTo(User::class)->withTrashed();
+        return $this->belongsTo(User::class)->withDefault()->onDelete('cascade');
     }
 
-    /**
-     * Relación con el modelo User.
-     *
-     * Esta función devuelve una relación 'belongsTo' con el modelo User,
-     * indicando que cada hoja de servicio pertenece a un técnico.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function technician()
     {
-        return $this->belongsTo(User::class, 'technician_id')->withTrashed();
+        return $this->belongsTo(User::class, 'technician_id')->withDefault()->onDelete('cascade');
     }
 
-    /**
-     * Relación con el modelo Hardware.
-     *
-     * Esta función devuelve una relación 'belongsTo' con el modelo Hardware,
-     * indicando que cada hoja de servicio pertenece a un hardware.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class)->withDefault()->onDelete('cascade');
+    }
+
     public function hardware()
     {
-        return $this->belongsTo(Hardware::class)->withTrashed();
+        return $this->belongsTo(Hardware::class)->withDefault()->onDelete('cascade');
     }
 }

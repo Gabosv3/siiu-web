@@ -4,8 +4,8 @@
 <!-- resources/views/barcode_scanner.blade.php -->
 <div class="container card d-flex justify-content-center align-items-center " style="min-height: 75vh;">
     <h2>Escanea el Código de Barras</h2>
-    <form action="{{ route('procesar.codigo') }}" method="POST" id="barcodeForm">
-        @csrf
+    <form action="{{ route('procesar.codigo') }}" method="GET" id="barcodeForm">
+        
         <input type="text" name="barcode" id="barcodeInput" class="form-control" placeholder="Escanee el código aquí" autofocus>
         <button type="submit" class="btn btn-primary mt-3">Procesar Código</button>
     </form>

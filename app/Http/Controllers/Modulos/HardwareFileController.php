@@ -137,15 +137,18 @@ class HardwareFileController extends Controller
         // Encuentra el archivo por su ID
         $file = HardwareFile::findOrFail($id);
 
-        // Elimina el archivo físicamente
-        if (Storage::exists($file->location)) {
-            Storage::delete($file->location);
-        }
-
         // Elimina el archivo de la base de datos
         $file->delete();
 
         // Redirige con mensaje de éxito
         return redirect()->route('hardwares.show', $file->hardware_id)->with('success')->with('success', 'Archivo eliminado correctamente');
+    }
+
+    public function restore($id)
+    {
+        $file = HardwareFile::withTrashed()->findOrFail($id);
+        $file->restore();
+
+        return back()->with('success', 'Archivo restaurado correctamente.');
     }
 }
