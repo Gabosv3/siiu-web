@@ -11,7 +11,9 @@ use App\Models\ServiceSheet;
 use App\Models\Supply;
 use App\Models\Ticket;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -45,61 +47,81 @@ class ServiceSheetController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
 
-    public function store(Request $request)
-    {
+     public function store(Request $request)
+     {
+         $validated = $request->validate([
+             'date' => 'nullable|date',
+             'department_id' => 'required|exists:departaments,id',
+             'user_id' => 'required|exists:users,id',
+             'technician_id' => 'required|exists:users,id',
+             'ticket_id' => 'required|exists:tickets,id',
+             'hardware_id' => 'nullable|exists:hardware,id',
+             'supplies_data' => 'nullable|json',
+             'description' => 'required|string',
+             'observations' => 'nullable|string',
+         ], [
+             'supplies_data.json' => 'Los insumos deben ser un formato JSON válido.',
+             'department_id.exists' => 'El departamento seleccionado no existe.',
+             'user_id.exists' => 'El usuario seleccionado no existe.',
+             'technician_id.exists' => 'El técnico seleccionado no existe.',
+             'ticket_id.exists' => 'El ticket seleccionado no existe.',
+             'hardware_id.exists' => 'El equipo seleccionado no existe.',
+             'description.required' => 'La descripción es obligatoria.',
+         ]);
 
-        $request->validate([
-            'date' => 'nullable|date',
-            'department_id' => 'required|exists:departaments,id',
-            'user_id' => 'required|exists:users,id',
-            'technician_id' => 'required|exists:users,id',
-            'ticket_id' => 'required|exists:tickets,id',
-            'hardware_id' => 'nullable|exists:hardware,id',
-            'supplies_data' => 'nullable|json',  // Asegura que supplies_data sea un JSON válido
-            'description' => 'required|string',
-            'observations' => 'nullable|string',
-        ], [
-            'supplies_data.json' => 'Los insumos deben ser un formato JSON válido.',
-            'department_id.exists' => 'El departamento seleccionado no existe.',
-            'user_id.exists' => 'El usuario seleccionado no existe.',
-            'technician_id.exists' => 'El técnico seleccionado no existe.',
-            'ticket_id.exists' => 'El ticket seleccionado no existe.',
-            'hardware_id.exists' => 'El equipo seleccionado no existe.',
-            'description.required' => 'La descripción es obligatoria.',
-        ]);
+         DB::beginTransaction();
+         try {
+             $serviceSheet = ServiceSheet::create([
+                 'date' => now(),
+                 'department_id' => $validated['department_id'],
+                 'user_id' => $validated['user_id'],
+                 'technician_id' => $validated['technician_id'],
+                 'ticket_id' => $validated['ticket_id'],
+                 'hardware_id' => $validated['hardware_id'] ?? null,
+                 'supplies_data' => json_decode($validated['supplies_data'], true),
+                 'description' => $validated['description'],
+                 'observations' => $validated['observations'] ?? null,
+             ]);
 
-        $serviceSheet = new ServiceSheet();
-        $serviceSheet->date = $request->date;
-        $serviceSheet->department_id = $request->department_id;
-        $serviceSheet->user_id = $request->user_id;
-        $serviceSheet->technician_id = $request->technician_id;
-        $serviceSheet->ticket_id = $request->ticket_id;
-        $serviceSheet->hardware_id = $request->hardware_id;
-        $serviceSheet->supplies_data = json_decode($request->supplies_data, true); // Decodificar JSON a array
-        $serviceSheet->description = $request->description;
-        $serviceSheet->observations = $request->observations;
-        
-        if ($serviceSheet->save()) {
-            // Obtener el nombre del usuario si existe
-            $userName = optional($serviceSheet->user)->name ?? 'Desconocido';
-        
-            EquipmentHistory::create([
-                'hardware_id' => $serviceSheet->hardware_id,
-                'user_id' => $serviceSheet->user_id,
-                'action' => 'Asociación a hoja de servicio',
-                'description' => "Equipo asociado a la hoja de servicio ID: {$serviceSheet->id} para el usuario: {$userName}.",
-                'performed_at' => now(),
-            ]);
-            $ticket = Ticket::findOrFail($serviceSheet->ticket_id);
-            $ticket->update([
-                'status' => 'resuelto', // Cambiar el estado a "resuelto"
-            ]);
+             // Reducir los insumos
+             if (!empty($serviceSheet->supplies_data)) {
+                 foreach ($serviceSheet->supplies_data as $supply) {
+                     $item = Supply::findOrFail($supply['supply_id']);
+                     $quantity = (int) $supply['quantity'];
 
-        }
+                     if ($item->quantity < $quantity) {
+                         throw new Exception("No hay suficientes insumos para el ID {$supply['supply_id']}.");
+                     }
 
-        $id = $serviceSheet->ticket_id;
-        return redirect()->route('service-sheet.create', ['id' => $id])->with('success', 'Hoja de servicio creada exitosamente.');
-    }
+                     $item->decrement('quantity', $quantity);
+                 }
+             }
+
+             // Crear historial de equipo si existe un hardware asociado
+             if ($serviceSheet->hardware_id) {
+                 EquipmentHistory::create([
+                     'hardware_id' => $serviceSheet->hardware_id,
+                     'user_id' => $serviceSheet->user_id,
+                     'action' => 'Asociación a hoja de servicio',
+                     'description' => "Equipo asociado a la hoja de servicio ID: {$serviceSheet->id}.",
+                     'performed_at' => now(),
+                 ]);
+             }
+
+             // Actualizar el estado del ticket
+             Ticket::where('id', $serviceSheet->ticket_id)->update(['status' => 'resuelto']);
+
+             DB::commit();
+
+             // Generar PDF
+             $pdf = PDF::loadView('service_sheets.pdf', compact('serviceSheet'));
+             return $pdf->download("hoja_de_servicio_{$serviceSheet->id}.pdf");
+         } catch (Exception $e) {
+             DB::rollBack();
+             return back()->withErrors(['error' => $e->getMessage()]);
+         }
+     }
+
 
     /**
      * Muestra una hoja de servicio en detalle.

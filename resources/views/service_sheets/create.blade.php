@@ -387,6 +387,7 @@
                 selectedSupplies[sheetId].forEach(supply => {
                     suppliesData.push({
                         supply_id: supply.id,
+                        name : supply.name,
                         quantity: supply.quantity
                     });
                 });

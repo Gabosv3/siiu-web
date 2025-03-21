@@ -97,13 +97,13 @@
                                     class="btn btn-cyan-800">
                                     <i class="bx bxs-show"></i>
                                 </a>
-                                @endcand
+                                @endcan
                                 @can('supply.edit')
                                 <a href="{{ route('supplies.edit', $supply->id) }}" title="Editar Suministro"
                                     class="btn btn-green-600">
                                     <i class="bx bxs-edit"></i>
                                 </a>
-                                @endcand
+                                @endcan
                                 @can('supply.destroy')
                                 <form action="{{ route('supplies.destroy', $supply->id) }}" method="POST"
                                     style="display:inline;" class="formulario-eliminar">
@@ -113,7 +113,7 @@
                                         <i class="bx bxs-trash"></i>
                                     </button>
                                 </form>
-                                @endcand
+                                @endcan
                             </td>
                         @endif
                     </tr>
