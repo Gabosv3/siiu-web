@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Modulos;
 
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
+use App\Models\Departament;
+use App\Models\Technician;
 use App\Models\Ticket;
 use App\Models\Title;
 use App\Models\User;
@@ -27,12 +29,33 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tickets = $tickets = Ticket::paginate(10);
+        $query = Ticket::query();
 
-        return view('tickets.index', compact('tickets'));
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('departamento')) {
+            $query->whereHas('user.departament', function ($q) use ($request) {
+                $q->where('id', $request->departamento);
+            });
+        }
+
+        if ($request->filled('tecnico')) {
+            $query->whereHas('technician', function ($q) use ($request) {
+                $q->where('id', $request->tecnico);
+            });
+        }
+
+        $tickets = $query->paginate(10);
+        $departamentos = Departament::all();
+        $tecnicos = Technician::with('user')->get();
+
+        return view('tickets.index', compact('tickets', 'departamentos', 'tecnicos'));
     }
+
 
     /**
      * Muestra el formulario para crear un nuevo ticket.

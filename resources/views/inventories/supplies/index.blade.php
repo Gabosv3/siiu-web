@@ -3,11 +3,12 @@
 @section('content')
     <h1>Listado de Insumos</h1>
 
-
+    @can('supply.create')
     @if (request()->has('category_id') && request()->input('category_id') !== 'all')
         <a href="{{ route('supplies.create', ['category_id' => request()->input('category_id')]) }}"
             class="btn btn-primary">Agregar Insumo</a>
     @endif
+    @endcan
     <form method="GET" action="{{ route('supplies.index') }}" class="mb-4">
         <div class="row align-items-center">
             <input type="hidden" name="category_id" value="{{ request()->get('category_id') }}">
@@ -75,12 +76,14 @@
                             <td>{{ $supply->name }}</td>
                             <td>{{ $supply->deleted_at }}</td>
                             <td>
+                                @can('supply.restore')
                                 <form action="{{ route('supplies.restore', $supply->id) }}" method="POST"
                                     class="formulario-restaurar">
                                     @csrf
                                     @method('PUT')
                                     <button class="btn btn-success">Restaurar</button>
                                 </form>
+                                @endcan
                             </td>
                         @else
                             <td>{{ $supply->name }}</td>
@@ -89,14 +92,19 @@
                             <td>{{ $supply->unit }}</td>
                             <td>{{ ucfirst($supply->status) }}</td>
                             <td>
+                                @can('supply.index')
                                 <a href="{{ route('supplies.show', $supply->id) }}" title="Ver Suministro"
                                     class="btn btn-cyan-800">
                                     <i class="bx bxs-show"></i>
                                 </a>
+                                @endcand
+                                @can('supply.edit')
                                 <a href="{{ route('supplies.edit', $supply->id) }}" title="Editar Suministro"
                                     class="btn btn-green-600">
                                     <i class="bx bxs-edit"></i>
                                 </a>
+                                @endcand
+                                @can('supply.destroy')
                                 <form action="{{ route('supplies.destroy', $supply->id) }}" method="POST"
                                     style="display:inline;" class="formulario-eliminar">
                                     @csrf
@@ -105,6 +113,7 @@
                                         <i class="bx bxs-trash"></i>
                                     </button>
                                 </form>
+                                @endcand
                             </td>
                         @endif
                     </tr>

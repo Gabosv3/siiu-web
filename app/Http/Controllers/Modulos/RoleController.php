@@ -42,17 +42,37 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Obtener roles con paginación
-        $roles = Role::paginate();
-        // Obtener roles eliminados
-        $rolesDelets = Role::onlyTrashed()->get();
-        // Obtener todos los permisos
-        $permissions = Permission::all();
+        // Obtener filtros de la solicitud
+        $status = $request->get('status', 'active'); // Filtro de estado: activo por defecto
+        $search = $request->get('search'); // Filtro de búsqueda
+        $perPage = $request->get('perPage', 10); // Número de registros por página (10 por defecto)
 
+        // Construcción de la consulta para roles activos
+        $rolesQuery = Role::when($search, function ($query, $search) {
+            return $query->where('name', 'like', '%' . $search . '%');
+        })
+            ->when($status === 'inactive', function ($query) {
+                return $query->onlyTrashed(); // Si el estado es 'inactive', solo los eliminados
+            })
+            ->when($status === 'active', function ($query) {
+                return $query->whereNull('deleted_at'); // Si es 'active', solo los no eliminados
+            })
+            // Excluir al SuperAdmin
+            ->where('name', '!=', 'SuperAdmin');
+
+        // Si el valor de perPage es 'all', obtener todos los roles sin paginación
+        $roles = ($perPage == 'all') ? $rolesQuery->get() : $rolesQuery->paginate($perPage);
+
+        
         // Retornar la vista 'role.index' con las variables necesarias
-        return view('role.index', compact('roles', 'permissions', 'rolesDelets'))
+        return view('role.index', [
+            'roles' => $roles,
+            'status' => $status,
+            'perPage' => $perPage,
+            'search' => $search,
+        ])
             ->with('i', (request()->input('page', 1) - 1) * $roles->perPage());
     }
 
@@ -199,7 +219,7 @@ class RoleController extends Controller
         return response()->json(['success' => true]);
     }
 
-    
+
     /**
      * Actualiza un permiso asociado a un rol existente en la base de datos.
      *

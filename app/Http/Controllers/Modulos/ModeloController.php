@@ -24,7 +24,7 @@ class ModeloController extends Controller
      * - destroy: can:modelos.destroy
      * - restore: can:modelos.restore
      *
-     * 
+     * */
      public function __construct()
     {
        $this->middleware('can:modelos.index')->only('index');
@@ -32,7 +32,7 @@ class ModeloController extends Controller
         $this->middleware('can:modelos.edit')->only('edit', 'update');
         $this->middleware('can:modelos.destroy')->only('destroy');
         $this->middleware('can:modelos.restore')->only('restore');
-    }-*/
+    }
     /**
      * Muestra una lista de todos los modelos con sus características.
      *
@@ -101,7 +101,7 @@ class ModeloController extends Controller
     public function store(Request $request)
     {
         // Método para crear un nuevo modelo
-
+        
         // Validación de los datos recibidos
         $request->validate([
             'nombre' => 'required|string|max:255',
@@ -119,6 +119,8 @@ class ModeloController extends Controller
             'name' => $request->nombre, // Aquí usamos 'nombre' del request
             'manufacturer_id' => $request->fabricante_id, // Aquí usamos 'fabricante_id' del request
         ]);
+
+        
 
         // Devolver respuesta en formato JSON
         return response()->json([

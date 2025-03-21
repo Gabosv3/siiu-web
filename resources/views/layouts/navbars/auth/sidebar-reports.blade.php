@@ -32,7 +32,7 @@
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Reportes</h6>
       </li>
-
+      @can('reportes.usuarios')
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('reportes/usuario*')  || Request::is('inventarios') ? 'active' : '') }}" href="{{ url('reportes/usuario') }}" id="btn-module-mantenimiento">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -41,6 +41,7 @@
           <span class="nav-link-text ms-1"> Usuarios</span>
         </a>
       </li>
+      @endcan
       <!--<li class="nav-item">
         <a class="nav-link {{ (Request::is('reportes/equipo*')  || Request::is('inventarios') ? 'active' : '') }}" href="{{ url('reportes/equipo') }}" id="btn-module-mantenimiento">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -49,6 +50,7 @@
           <span class="nav-link-text ms-1"> Equipos</span>
         </a>
       </li>-->
+      @can('reportes.insumo')
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('reportes/insumos*')  || Request::is('inventarios') ? 'active' : '') }}" href="{{ url('reportes/insumos') }}" id="btn-module-mantenimiento">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -57,6 +59,8 @@
           <span class="nav-link-text ms-1"> insumos</span>
         </a>
       </li>
+      @endcan
+      @can('reportes.tickets')
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('reportes/tickets*')  || Request::is('inventarios') ? 'active' : '') }}" href="{{ url('reportes/tickets') }}" id="btn-module-mantenimiento">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -65,6 +69,7 @@
           <span class="nav-link-text ms-1"> Tickets</span>
         </a>
       </li>
+      @endcan
     </ul>
 
   </div>

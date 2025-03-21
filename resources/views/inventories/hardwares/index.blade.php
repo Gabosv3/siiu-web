@@ -5,9 +5,11 @@
 
     <div class="col-sm-4">
         {{-- Solo muestra el botón si existe una categoría válida --}}
+        @can('hardware.create')
         @if(request()->has('category_id') && request()->input('category_id') !== 'all')
         <a href="{{ route('hardwares.create', ['category_id' => request()->input('category_id')]) }}" class="btn btn-primary">Agregar Hardware</a>
         @endif
+        @endcan
     </div>
     <div class="col-sm-6">
     </div>
@@ -92,7 +94,7 @@
 @else
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link active" id="nav-software-tab" data-bs-toggle="tab" data-bs-target="#nav-software" type="button" role="tab" aria-controls="nav-software" aria-selected="true">Software</button>
+        <button class="nav-link active" id="nav-software-tab" data-bs-toggle="tab" data-bs-target="#nav-software" type="button" role="tab" aria-controls="nav-software" aria-selected="true">Equipo</button>
         <button class="nav-link" id="nav-desactivados-tab" data-bs-toggle="tab" data-bs-target="#nav-desactivados" type="button" role="tab" aria-controls="nav-desactivados" aria-selected="false">Desactivados</button>
     </div>
 </nav>
@@ -135,12 +137,14 @@
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('hardwares.edit', $hardware->id) }}" class="btn btn-warning btn-sm">Editar</a>
+
+                            @can('hardware.destroy')
                             <form action="{{ route('hardwares.destroy', $hardware->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este hardware?')">Eliminar</button>
                             </form>
+                            @endcan
                         </td>
                     </tr>
                     @endforeach
@@ -166,11 +170,13 @@
                         <td>{{ $hardware->name }}</td>
                         <td>{{ $hardware->deleted_at }}</td>
                         <td>
+                            @can('hardware.restore')
                             <form action="{{ route('hardwares.restore', $hardware->id) }}" class="formulario-restaurar" method="POST">
                                 @csrf
                                 @method('PUT')
                                 <button id="btn-restore-hardware" class="btn btn-cyan-800 mb-3" type="submit">Restaurar</button>
                             </form>
+                            @endcan
                         </td>
                     </tr>
                     @endforeach

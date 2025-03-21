@@ -2,7 +2,9 @@
 
 @section('content')
     <h1>CATEGORIAS</h1> <!-- Título de la página -->
+    @can('categorias.create')
     <a href="{{ route('categories.create') }}" class="btn btn-primary mb-3">CREAR CATEGORIA</a>
+    @endcan
     <!-- Botón para crear una nueva categoría -->
 
     <form method="GET" action="{{ route('categories.index') }}" class="mb-4">
@@ -85,7 +87,7 @@
                                         class="formulario-restaurar">
                                         @csrf
                                         @method('PUT')
-                                        <button class="btn btn-success">Restaurar</button>
+                                        <button class="btn btn-green-600">Restaurar</button>
                                     </form>
                                 @endcan
 

@@ -146,18 +146,19 @@
               li.classList.add('mb-2'); // Clase para el margen inferior
               li.innerHTML = `
                             <a class="dropdown-item border-radius-md notification-link" href="javascript:;" data-id="${notification.id}">
-                                <div class="d-flex py-1">
-                                    <div class="d-flex flex-column justify-content-center">
-                                        <h6 class="text-sm font-weight-normal mb-1">
-                                            <span class="font-weight-bold">${notification.data.message}</span>
-                                        </h6>
-                                        <p class="text-xs text-secondary mb-0">
-                                            <i class="fa fa-clock me-1"></i>
-                                            ${new Date(notification.created_at).toLocaleString()}
-                                        </p>
-                                    </div>
-                                </div>
+                              <div class="d-flex py-1">
+                                  <div class="d-flex flex-column justify-content-center">
+                                      <h6 class="text-sm font-weight-normal mb-1 text-wrap">
+                                          <span class="font-weight-bold">${notification.data.message}</span>
+                                      </h6>
+                                      <p class="text-xs text-secondary mb-0">
+                                          <i class="fa fa-clock me-1"></i>
+                                          ${new Date(notification.created_at).toLocaleString()}
+                                      </p>
+                                  </div>
+                              </div>
                             </a>
+
                         `;
               notificationDropdown.appendChild(li);
             }

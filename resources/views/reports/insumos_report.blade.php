@@ -34,8 +34,7 @@
             <!-- Botones de acción -->
             <div class="d-grid gap-2">
                 <button class="btn" style="background-color: #A52A2A; color: white;" id="generateInsumoReportBtn">Consultar</button>
-                <button class="btn" style="background-color: #8B0000; color: white;" onclick="generateInsumoReport('pdf')">Generar PDF</button>
-                <button class="btn" style="background-color: #B5651D; color: white;" onclick="generateInsumoReport('excel')">Exportar a Excel</button>
+
             </div>
         </div>
     </div>
@@ -68,7 +67,7 @@
         document.getElementById('startDate').value = formatDate(threeDaysAgo);
         document.getElementById('endDate').value = formatDate(today);
 
-        
+
     };
 
     // Mostrar u ocultar el filtro de usuarios dependiendo del tipo de insumo
@@ -142,78 +141,68 @@
                 console.log(data);
                 const reportTitle = document.getElementById('insumoReportTitle');
                 const resultContent = document.getElementById('insumoResultContent');
-                reportTitle.textContent = 'Reporte de Insumos'; 
+                reportTitle.textContent = 'Reporte de Insumos';
 
                 // Construir el contenido del reporte de insumos en formato de tabla
-                let content = '<table class="table table-bordered"><thead><tr>';
+                let content = `
+                    <table id="insumoTable" class="table table-bordered display nowrap">
+                        <thead>
+                            <tr>
+                                <th>Insumo</th>
+                                <th>${insumoType === 'byCategory' ? 'Categoría' :
+                                    insumoType === 'byManufacturer' ? 'Fabricante' :
+                                    insumoType === 'byModel' ? 'Modelo' : 'Estado'}</th>
+                                <th>Cantidad de Insumos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
 
-                // Ajustar columnas según el tipo de insumo
-                if (insumoType === 'byCategory') {
+                data.data.forEach(item => {
                     content += `
-                        <th>Insumo</th>
-                        <th>Categoría</th>
-                        <th>Cantidad de Insumos</th>
+                        <tr>
+                            <td>${item.supply_name || item.name}</td>
+                            <td>${item.category_name || item.manufacturer_name || item.model_name || item.status}</td>
+                            <td>${item.total_quantity || item.quantity}</td>
+                        </tr>
                     `;
-                    data.data.forEach(category => {
-                        content += `
-                            <tr>
-                                <td>${category.supply_name}</td>
-                                <td>${category.category_name}</td>
-                                <td>${category.total_quantity}</td>
-                            </tr>
-                        `;
-                    });
-                } else if (insumoType === 'byManufacturer') {
-                    content += `
-                        <th>Insumo</th>
-                        <th>Fabricante</th>
-                        <th>Cantidad de Insumos</th>
-                    `;
-                    data.data.forEach(manufacturer => {
-                        content += `
-                            <tr>
-                                <td>${manufacturer.supply_name}</td>
-                                <td>${manufacturer.manufacturer_name}</td>
-                                <td>${manufacturer.total_quantity}</td>
-                            </tr>
-                        `;
-                    });
-                } else if (insumoType === 'byModel') {
-                    content += `
-                        <th>Insumo</th>
-                        <th>Modelo</th>
-                        <th>Cantidad de Insumos</th>
-                    `;
-                    data.data.forEach(model => {
-                        content += `
-                            <tr>
-                                <td>${model.supply_name}</td>
-                                <td>${model.model_name}</td>
-                                <td>${model.total_quantity}</td>
-                            </tr>
-                        `;
-                    });
-                } else if (insumoType === 'byStatus') {
-                    content += `
-                        <th>Insumo</th>
-                        <th>Estado</th>
-                        <th>Cantidad de Insumos</th>
-                    `;
-                    data.data.forEach(status => {
-                        content += `
-                            <tr>
-                                <td>${status.name}</td>
-                                <td>${status.status}</td>
-                                <td>${status.quantity}</td>
-                            </tr>
-                        `;
-                    });
-                }
+                });
 
-                content += '</tr></thead><tbody></tbody></table>';
+                content += `</tbody></table>`;
 
                 // Mostrar el contenido en la vista
                 resultContent.innerHTML = content;
+                // Inicializar DataTables con exportación
+                $('#insumoTable').DataTable({
+                    dom: 'Bfrtip',
+                    paging: false, // Deshabilita la paginación
+                    searching: false, // Deshabilita el buscador
+                    info: false, // Oculta la información de registros ("Mostrando X de Y")
+                    ordering: false, // Deshabilita la ordenación de columnas
+                    buttons: [{
+                            extend: 'excelHtml5',
+                            text: 'Exportar a Excel',
+                            messageTop: 'Reporte de Insumos',
+                            className: 'btn btn-green-600'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            text: 'Exportar a PDF',
+                            messageTop: 'Reporte de Insumos',
+                            className: 'btn btn-cyan-800'
+                        },
+                        {
+                            extend: 'print',
+                            text: 'Imprimir',
+                            messageTop: 'Reporte de Insumos',
+                            className: 'btn btn-red-800'
+                        }
+                    ],
+                    language: {
+                        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/Spanish.json"
+                    }
+                });
+
                 errorContainer.classList.add('d-none');
             },
             error: function(error) {

@@ -114,7 +114,6 @@ class DepartamentController extends Controller
                 'name' => 'required|string|max:255', // El nombre del departamento es obligatorio y debe ser una cadena
                 'code' => 'required|unique:departaments,code|numeric', // El código es único, obligatorio y debe ser numérico
                 'description' => 'required|string|max:500', // La descripción es obligatoria y debe ser una cadena con una longitud máxima
-                'manager' => 'required|exists:users,id', // El encargado es obligatorio y debe existir en la tabla 'users'
                 'latitude' => 'nullable|numeric', // La latitud es opcional y debe ser numérica
                 'longitude' => 'nullable|numeric', // La longitud es opcional y debe ser numérica
             ],
@@ -124,28 +123,17 @@ class DepartamentController extends Controller
                 'code.unique' => 'El código del departamento ya existe.',
                 'code.numeric' => 'El código del departamento debe ser numérico.',
                 'description.required' => 'La descripción del departamento es requerida.',
-                'manager.required' => 'El encargado del departamento es requerido.',
-                'manager.exists' => 'El encargado seleccionado no es valido.',
                 'latitude.numeric' => 'La latitud debe ser numérica.',
                 'longitude.numeric' => 'La longitud debe ser numérica.',
             ]
         );
 
-        // Obtener el nombre del encargado si se proporciona un ID
-        $inChargeName = null;
-        if ($request->manager) {
-            $manager = User::find($request->in_charge);
-            if ($manager && $manager->informacionPersonal) {
-                $inChargeName = $manager->informacionPersonal->nombres . ' ' . $manager->informacionPersonal->apellidos;
-            }
-        }
-
-        // Crear un nuevo departamento en la base de datos
+            // Crear un nuevo departamento en la base de datos
         Departament::create([
             'name' => $request->name,
             'code' => $request->code,
             'description' => $request->description,
-            'manager' => $inChargeName,
+            'manager' => 'Sin encargado',
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
         ]);
@@ -265,7 +253,7 @@ class DepartamentController extends Controller
         $departamento->delete(); // Eliminar el departamento de la base de datos
         // Redirigir a la lista de departamentos con un mensaje de éxito
         return redirect()->route('departaments.index')
-            ->with('status', 'Departamento Eliminada con éxito.');
+            ->with('status', 'Departamento desabilitado con éxito.');
     }
 
     /**
@@ -287,7 +275,7 @@ class DepartamentController extends Controller
         if ($departamento) {
             // Restaurar el departamento eliminado
             $departamento->restore();
-            return redirect()->back()->with('status', 'Departamento restaurado exitosamente.');
+            return redirect()->back()->with('status', 'Departamento desactivado exitosamente.');
         } else {
             return redirect()->back()->with('status', 'Departamento no encontrado.');
         }

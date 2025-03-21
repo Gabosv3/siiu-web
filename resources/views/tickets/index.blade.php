@@ -1,29 +1,76 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-<div class="container mt-4">
+<div class="mt-4">
     <h1 class="mb-4 text-center">Tickets</h1>
 
     <div class="d-flex flex-wrap justify-content-between mb-4">
-        <a href="{{ route('vista.tickets') }}" class="btn btn-primary btn-lg mb-2 mb-md-0 w-100 w-md-auto">Crear
-            Ticket</a>
+        <a href="{{ route('vista.tickets') }}" class="btn btn-primary btn-lg mb-2 mb-md-0 w-100 w-md-auto">Crear Ticket</a>
+
         <div class="d-flex flex-wrap justify-content-between w-100 w-md-auto">
-            <!-- Botón para abrir el modal -->
-            <button type="button" class="btn btn-success btn-lg mb-2 mb-md-0 w-100 w-md-auto" data-bs-toggle="modal"
+            <button type="button" class="btn btn-green-600 btn-lg mb-2 mb-md-0 w-100 w-md-auto" data-bs-toggle="modal"
                 data-bs-target="#createTitleModal">
                 Crear Título
             </button>
-
         </div>
     </div>
 
+    <!-- Filtros -->
+<div class="card shadow-lg p-4 mb-4 bg-body rounded">
+    <form method="GET" action="{{ route('tickets.index') }}">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <label for="status" class="form-label fw-bold">Estado</label>
+                <select name="status" id="status" class="form-select form-select-lg">
+                    <option value="">Todos</option>
+                    <option value="pendiente" {{ request('status') == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+                    <option value="en proceso" {{ request('status') == 'en proceso' ? 'selected' : '' }}>En Proceso</option>
+                    <option value="resuelto" {{ request('status') == 'resuelto' ? 'selected' : '' }}>Resuelto</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label for="departamento" class="form-label fw-bold">Departamento</label>
+                <select name="departamento" id="departamento" class="form-select form-select-lg">
+                    <option value="">Todos</option>
+                    @foreach ($departamentos as $departamento)
+                    <option value="{{ $departamento->id }}" {{ request('departamento') == $departamento->id ? 'selected' : '' }}>
+                        {{ $departamento->name }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label for="tecnico" class="form-label fw-bold">Técnico</label>
+                <select name="tecnico" id="tecnico" class="form-select form-select-lg">
+                    <option value="">Todos</option>
+                    @foreach ($tecnicos as $tecnico)
+                    <option value="{{ $tecnico->id }}" {{ request('tecnico') == $tecnico->id ? 'selected' : '' }}>
+                        {{ $tecnico->user->name }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-end gap-3">
+            <button type="submit" class="btn btn-primary btn-lg px-4">Filtrar <i class="fas fa-filter"></i></button>
+            <a href="{{ route('tickets.index') }}" class="btn btn-secondary btn-lg px-4">Restablecer <i class="fas fa-sync-alt"></i></a>
+        </div>
+    </form>
+</div>
+
+
     <div class="card shadow-lg p-3 mb-5 bg-body rounded">
         <table id="Principal" class="table table-striped table-bordered table-hover align-items-center mb-0">
-            <thead class="table-dark">
+            <thead class="table-dark ">
                 <tr>
                     <th>ID</th>
                     <th>Título</th>
                     <th>Estado</th>
+                    <th>Departamento</th>
+                    <th>Técnico asignado</th>
                     <th>Fecha de Creación</th>
                     <th>Acciones</th>
                 </tr>
@@ -34,17 +81,15 @@
                     <td>{{ $ticket->id }}</td>
                     <td>{{ $ticket->title->name }}</td>
                     <td>{{ $ticket->status }}</td>
+                    <td>{{ $ticket->user->departament->name }}</td>
+                    <td>{{ $ticket->technician ? $ticket->technician->user->name : 'Técnico no asignado' }}</td>
                     <td>{{ $ticket->created_at }}</td>
                     <td>
                         <div class="d-flex justify-content-start">
-                            <a href="{{ route('tickets.assignForm', $ticket) }}" class="btn btn-info mb-2 me-2"
-                                title="Asignar Ticket">
-                                <i class="fa fa-tasks"></i>
+                            <a href="{{ route('tickets.assignForm', $ticket) }}" class="btn btn-cyan-800  mb-2 me-2" title="Asignar Ticket">
+                                <i class="fa fa-tasks"> </i> Asignar
                             </a>
-
-                            <button
-                                onclick="printSingleTicket({{ $ticket->id }}, '{{ $ticket->title->name }}', '{{ $ticket->status }}', '{{ $ticket->created_at }}')"
-                                class="btn btn-danger mb-2">
+                            <button onclick="printSingleTicket({{ $ticket->id }}, '{{ $ticket->title->name }}', '{{ $ticket->status }}', '{{ $ticket->created_at }}')" class="btn btn-red-800 mb-2">
                                 <i class="fa fa-print"></i> Imprimir
                             </button>
                         </div>
@@ -58,6 +103,7 @@
             {{ $tickets->links() }}
         </div>
     </div>
+
 
     <!-- Modal para crear título -->
     <div class="modal fade" id="createTitleModal" tabindex="-1" aria-labelledby="createTitleModalLabel"
@@ -90,7 +136,7 @@
         e.preventDefault();
 
         const name = document.getElementById('titleName').value;
-    
+
 
         fetch("{{ route('titles.store') }}", {
                 method: 'POST',
@@ -190,5 +236,22 @@
         // Ejecutar la impresión
         printWindow.print();
     }
+</script>
+<script>
+    $(document).ready(function() {
+        // Inicializar Select2 en los campos Departamento y Técnico
+        $('#departamento').select2({
+
+            placeholder: "Seleccione un departamento",
+            theme: "bootstrap-5",
+            allowClear: true
+        });
+
+        $('#tecnico').select2({
+            placeholder: "Seleccione un técnico",
+            theme: "bootstrap-5",
+            allowClear: true
+        });
+    });
 </script>
 @endsection

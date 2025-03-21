@@ -39,56 +39,61 @@
 
         <!-- Sección para la selección de permisos -->
         <div class="accordion" id="permissionsAccordion">
-            @foreach ($permissionsGrouped as $group => $permissions)
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-{{ $group }}">
-                    <button class="accordion-button bg-white border border-1 rounded mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $group }}" aria-expanded="false" aria-controls="collapse-{{ $group }}">
-                        <div class="d-flex align-items-center w-100 justify-content-between">
-                            <!-- Nombre del grupo (a la izquierda) -->
-                            <label class="form-check-label fw-semibold" style="flex-shrink: 0; margin-right: 10px;">
-                                {{ ucfirst($group) }}
+    @foreach ($permissionsGrouped as $group => $permissions)
+    @php
+        // Reemplazar espacios con guiones bajos para usar como ID en HTML
+        $groupId = str_replace(' ', '_', $group);
+    @endphp
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="heading-{{ $groupId }}">
+            <button class="accordion-button bg-white border border-1 rounded mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $groupId }}" aria-expanded="false" aria-controls="collapse-{{ $groupId }}">
+                <div class="d-flex align-items-center w-100 justify-content-between">
+                    <!-- Nombre del grupo (a la izquierda) -->
+                    <label class="form-check-label fw-semibold" style="flex-shrink: 0; margin-right: 10px;">
+                        {{ ucfirst($group) }}
+                    </label>
+
+                    <!-- Contenedor del interruptor (checkbox) y "Seleccionar todos" -->
+                    <div class="d-flex align-items-center">
+                        <div class="form-check form-switch me-3">
+                            <input class="form-check-input select-group" type="checkbox" id="select-group-{{ $groupId }}" data-group="{{ $groupId }}">
+                            <label class="form-check-label fw-semibold ms-2">
+                                Seleccionar todos
                             </label>
-
-                            <!-- Contenedor del interruptor (checkbox) y "Seleccionar todos" -->
-                            <div class="d-flex align-items-center">
-                                <div class="form-check form-switch me-3">
-                                    <input class="form-check-input select-group" type="checkbox" id="select-group-{{ $group }}" data-group="{{ $group }}">
-                                    <label class="form-check-label fw-semibold ms-2">
-                                        Seleccionar todos
-                                    </label>
-                                </div>
-
-                                <!-- Contador de elementos (a la derecha) -->
-                                <span class="ms-3" id="group-{{ $group }}-count">
-                                    0 / {{ count($permissions) }}
-                                </span>
-                            </div>
                         </div>
-                    </button>
-                </h2>
-                <div id="collapse-{{ $group }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ $group }}" data-bs-parent="#permissionsAccordion">
-                    <div class="accordion-body bg-white">
-                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
-                            @foreach ($permissions as $permission)
-                            <div class="col">
-                                <div class="card border-light shadow-sm">
-                                    <div class="card-body">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input permission-checkbox" type="checkbox" data-group="{{ $group }}" data-permission-id="{{ $permission->id }}" {{ in_array($permission->id, old('permissions', $rolePermissions)) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="permission-{{ $permission->id }}">
-                                                {{ $permission->description }}
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
+
+                        <!-- Contador de elementos (a la derecha) -->
+                        <span class="ms-3" id="group-{{ $groupId }}-count">
+                            0 / {{ count($permissions) }}
+                        </span>
                     </div>
                 </div>
+            </button>
+        </h2>
+        <div id="collapse-{{ $groupId }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ $groupId }}" data-bs-parent="#permissionsAccordion">
+            <div class="accordion-body bg-white">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
+                    @foreach ($permissions as $permission)
+                    <div class="col">
+                        <div class="card border-light shadow-sm">
+                            <div class="card-body">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input permission-checkbox" type="checkbox" data-group="{{ $groupId }}" data-permission-id="{{ $permission->id }}" {{ in_array($permission->id, old('permissions', $rolePermissions)) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="permission-{{ $permission->id }}">
+                                        {{ $permission->description }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
             </div>
-            @endforeach
         </div>
+    </div>
+    @endforeach
+</div>
+
 
     </form>
     @endif
@@ -115,7 +120,7 @@
             alert.role = 'alert';
             alert.innerHTML = `
             ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            
         `;
 
             const container = document.querySelector('#alerts-container');
@@ -151,8 +156,8 @@
         // Función para contar los permisos seleccionados por grupo
         function updateGroupPermissionCount(group) {
             const selectedPermissions = document.querySelectorAll(`#permissionsAccordion input[data-group="${group}"]:checked`);
-            const totalPermissions = document.querySelectorAll(`#permissionsAccordion input[data-group="${group}"]`).length;
-            document.getElementById(`group-${group}-count`).textContent = `${selectedPermissions.length} / ${totalPermissions}`;
+            const totalPermissions = document.querySelectorAll(`#permissionsAccordion input[data-group="${group}"]`).length ;
+            document.getElementById(`group-${group}-count`).textContent = `${selectedPermissions.length } / ${totalPermissions}`;
         }
 
         // Actualizar todos los permisos de un grupo

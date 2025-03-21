@@ -24,7 +24,7 @@
                     <p><strong>FECHA DE CREACION:</strong> {{ $departament->created_at->format('d/m/Y H:i') }}</p>
                     <p><strong>FECHA DE ACTUALIZACION:</strong> {{ $departament->updated_at->format('d/m/Y H:i') }}</p>
                     <div class="col-md-12 text-end">
-                        <a href="{{ route('departaments.index') }}" class="btn btn-primary">Back</a>
+                        <a href="{{ route('departaments.index') }}" class="btn btn-primary">Volver</a>
                     </div>
                 </div>
             </div>

@@ -50,26 +50,26 @@ class ServiceSheet extends Model
 
     public function department()
     {
-        return $this->belongsTo(departament::class)->withDefault()->onDelete('cascade');
+        return $this->belongsTo(departament::class)->withTrashed();
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class)->withDefault()->onDelete('cascade');
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function technician()
     {
-        return $this->belongsTo(User::class, 'technician_id')->withDefault()->onDelete('cascade');
+        return $this->belongsTo(User::class, 'technician_id')->withTrashed();
     }
 
     public function ticket()
     {
-        return $this->belongsTo(Ticket::class)->withDefault()->onDelete('cascade');
+        return $this->belongsTo(Ticket::class)->withTrashed();
     }
 
     public function hardware()
     {
-        return $this->belongsTo(Hardware::class)->withDefault()->onDelete('cascade');
+        return $this->belongsTo(Hardware::class)->withTrashed();
     }
 }

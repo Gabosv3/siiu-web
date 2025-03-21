@@ -50,7 +50,7 @@ $breadcrumbHtml = implode(' / ', $breadcrumbItems);
 
 @endphp
 
-<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 border-radius-xl">
+<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 border-radius-xl ">
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
@@ -75,11 +75,11 @@ $breadcrumbHtml = implode(' / ', $breadcrumbItems);
                     <li>
                         <a href="#" class="dropdown-item">
                             <form method="POST" action="{{ route('signOut') }}" style="display: inline;">
-                            @csrf
-                            <button title="Cerrar sesión" id="btn-sign-out-module" type="submit" class="dropdown-item" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit; cursor: pointer;">
-                                <i class="fa fa-sign-out" aria-hidden="true"></i> Cerrar sesión
-                            </button>
-                        </form>
+                                @csrf
+                                <button title="Cerrar sesión" id="btn-sign-out-module" type="submit" class="dropdown-item" style="background: none; border: none; padding: 0; text-decoration: none; color: inherit; cursor: pointer;">
+                                    <i class="fa fa-sign-out" aria-hidden="true"></i> Cerrar sesión
+                                </button>
+                            </form>
                         </a>
 
                     </li>
@@ -95,9 +95,11 @@ $breadcrumbHtml = implode(' / ', $breadcrumbItems);
                     </div>
                 </a>
             </li>
-            <li class="nav-item dropdown pe-2 d-flex align-items-center mx-4">
+            <li class="nav-item dropdown pe-2 d-flex align-items-center mx-4 ">
                 <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa fa-bell cursor-pointer" id="notificationIcon"></i>
+                    <i class="fa fa-bell cursor-pointer " id="notificationIcon"></i>
+                    <!-- Añadir un indicador de nuevas notificaciones -->
+                    <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">3</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton" id="notificationDropdown">
                     <!-- Aquí se añadirán las notificaciones dinámicamente -->

@@ -4,8 +4,12 @@
 <div class="container mb-3">
     <h2>Modelos</h2>
     <div class="d-flex justify-content-end align-items-center mb-3">
+        @can('modelos.create')
         <a href="{{ route('models.create') }}" class="btn bg-gradient-2 me-2">Crear Modelo</a>
+        @endcan
+        @can('characteristic.create')
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCharacteristicModal"> Agregar Característica</button>
+        @endcan
     </div>
 
     <form method="GET" action="{{ route('models.index') }}" class="mb-4">
@@ -70,23 +74,30 @@
                 <td>{{ $model->name }}</td>
                 <td>{{ $model->deleted_at }}</td>
                 <td>
+                    @can('modelos.restore')
                     <form action="{{ route('models.restore', $model->id) }}" method="POST" class="formulario-restaurar">
                         @csrf
                         @method('PUT')
                         <button class="btn btn-success">Restaurar</button>
                     </form>
+                    @endcan
                 </td>
                 @else
                 <td>{{ $model->id }}</td>
                 <td>{{ $model->name }}</td>
                 <td>{{ $model->created_at }}</td>
                 <td>
+                    @can('modelos.index')
                     <a href="{{ route('models.show', $model->id) }}" title="Ver Modelo" class="btn btn-cyan-800">
                         <i class="bx bxs-show"></i>
                     </a>
+                    @endcan
+                    @can('modelos.edit')
                     <a href="{{ route('models.edit', $model->id) }}" title="Editar Modelo" class="btn btn-green-600">
                         <i class="bx bxs-edit"></i>
                     </a>
+                    @endcan
+                    @can('modelos.destroy')
                     <form action="{{ route('models.destroy', $model->id) }}" method="POST" style="display:inline;" class="formulario-eliminar">
                         @csrf
                         @method('DELETE')
@@ -94,6 +105,7 @@
                             <i class="bx bxs-trash"></i>
                         </button>
                     </form>
+                    @endcan
                 </td>
                 @endif
             </tr>

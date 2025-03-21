@@ -65,12 +65,10 @@ class CategoriesController extends Controller
     // Si el valor de perPage es 'all', obtener todas las categorías sin paginación
     $categories = ($perPage == 'all') ? $categoriesQuery->get() : $categoriesQuery->paginate($perPage);
 
-    // Obtener categorías eliminadas
-    $categoriesDeleted = Category::onlyTrashed()->get();
+   
 
     return view('categories.index', [
         'categories' => $categories,
-        'categoriesDeleted' => $categoriesDeleted,
         'status' => $status,
         'perPage' => $perPage,
         'search' => $search,
@@ -239,7 +237,7 @@ class CategoriesController extends Controller
 
         if ($category) {
             $category->delete();
-            return redirect()->route('categories.index')->with('status', 'Categoría Eliminada con éxito.');
+            return redirect()->route('categories.index')->with('status', 'Categoría desactivada con éxito.');
         } else {
             return redirect()->back()->with('error', 'Categoría no encontrada.');
         }

@@ -48,8 +48,7 @@
             <!-- Botones de acción -->
             <div class="d-grid gap-2">
                 <button class="btn" style="background-color: #A52A2A; color: white;" id="generateTicketReportBtn">Consultar</button>
-                <button class="btn" style="background-color: #8B0000; color: white;" onclick="generateTicketReport('pdf')">Generar PDF</button>
-                <button class="btn" style="background-color: #B5651D; color: white;" onclick="generateTicketReport('excel')">Exportar a Excel</button>
+                
             </div>
         </div>
     </div>
@@ -159,102 +158,74 @@
                 'X-CSRF-TOKEN': csrfToken,
             },
             success: function(data) {
-                console.log(data);
                 const reportTitle = document.getElementById('ticketReportTitle');
                 const resultContent = document.getElementById('ticketResultContent');
                 reportTitle.textContent = 'Reporte de Tickets';
 
-                // Construir el contenido del reporte de tickets en formato de tabla
-                let content = '<table class="table table-bordered"><thead><tr>';
+                let content = `
+                    <table id="ticketTable" class="table table-bordered display nowrap">
+                        <thead>
+                            <tr>
+                                <th>${ticketType === 'byPriority' ? 'Prioridad' :
+                                    ticketType === 'byStatus' ? 'Estado' :
+                                    ticketType === 'byAssignment' ? 'Asignado a' :
+                                    ticketType === 'byTitle' ? 'Título' :
+                                    ticketType === 'byUser' ? 'Usuario' :
+                                    'Técnico'}</th>
+                                <th>Cantidad de Tickets</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
 
-                // Ajustar columnas según el tipo de ticket
-                if (ticketType === 'byPriority') {
-                    content += `
-                        <th>Prioridad</th>
-                        <th>Cantidad de Tickets</th>
+                                data.data.forEach(item => {
+                                    content += `
+                        <tr>
+                            <td>${item.priority || item.status || item.technician_name || item.ticket_name || item.user_name || 'Desconocido'}</td>
+                            <td>${item.total_tickets}</td>
+                        </tr>
                     `;
-                    data.data.forEach(priority => {
-                        content += `
-                            <tr>
-                                <td>${priority.priority || 'No disponible'}</td>
-                                <td>${priority.total_tickets}</td>
-                            </tr>
-                        `;
-                    });
-                } else if (ticketType === 'byStatus') {
-                    content += `
-                        <th>Estado</th>
-                        <th>Cantidad de Tickets</th>
-                    `;
-                    data.data.forEach(status => {
-                        content += `
-                            <tr>
-                                <td>${status.status || 'Estado desconocido'}</td>
-                                <td>${status.total_tickets}</td>
-                            </tr>
-                        `;
-                    });
-                } else if (ticketType === 'byAssignment') {
-                    content += `
-                        <th>Asignado a</th>
-                        <th>Cantidad de Tickets</th>
-                    `;
-                    data.data.forEach(assigned => {
-                        content += `
-                            <tr>
-                                <td>${assigned.technician_name || 'Sin asignar'}</td>
-                                <td>${assigned.total_tickets}</td>
-                            </tr>
-                        `;
-                    });
-                } else if (ticketType === 'byTitle') {
-                    content += `
-                        <th>Título</th>
-                        <th>Total</th>
-                    `;
-                    data.data.forEach(ticket => {
-                        content += `
-                            <tr>
-                                <td>${ticket.ticket_name || 'Sin título'}</td>
-                                <td>${ticket.total_tickets}</td>
-                            </tr>
-                        `;
-                    });
-                } else if (ticketType === 'byUser') {
-                    content += `
-                        <th>Usuario</th>
-                        <th>Cantidad de Tickets</th>
-                    `;
-                    data.data.forEach(user => {
-                        content += `
-                            <tr>
-                                <td>${user.user_name || 'Usuario desconocido'}</td>
-                                <td>${user.total_tickets}</td>
-                            </tr>
-                        `;
-                    });
-                } else if (ticketType === 'byTechnician') {
-                    content += `
-                        <th>Usuario</th>
-                        <th>Cantidad de Tickets</th>
-                    `;
-                    data.data.forEach(technician => {
-                        content += `
-                            <tr>
-                                <td>${technician.technician_name || 'Usuario desconocido'}</td>
-                                <td>${technician.total_tickets}</td>
-                            </tr>
-                        `;
-                    });
-                }
+                });
 
-                
-
-                content += '</tr></thead><tbody></tbody></table>';
+                content += `</tbody></table>`;
 
                 // Mostrar el contenido en la vista
                 resultContent.innerHTML = content;
                 errorContainer.classList.add('d-none');
+
+                // Inicializar DataTables con botones de exportación y sin buscador ni paginación
+                $(document).ready(function() {
+                    $('#ticketTable').DataTable({
+                        dom: 'Bfrtip',
+                        paging: false,
+                        searching: false,
+                        info: false,
+                        ordering: false,
+                        buttons: [{
+                                extend: 'excelHtml5',
+                                text: 'Exportar a Excel',
+                                messageTop: 'Reporte de Tickets',
+                                className: 'btn btn-green-600'
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                text: 'Exportar a PDF',
+                                messageTop: 'Reporte de Tickets',
+                                className: 'btn btn-cyan-800'
+                            },
+                            {
+                                extend: 'print',
+                                text: 'Imprimir',
+                                messageTop: 'Reporte de Tickets',
+                                className: 'btn btn-red-800'
+                            }
+                        ],
+                        language: {
+                            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/Spanish.json"
+                        }
+                    });
+                });
+
             },
             error: function(error) {
                 console.error(error);

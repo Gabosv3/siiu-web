@@ -1,132 +1,203 @@
 @extends('layouts.user_type.auth')
 
-@section('title','SIIU-asd' )
-
+@section('title', 'SIIU-asd')
 
 @section('content')
 <?php
-$fechaActual = date("j M, Y"); // M: mes (e.g. Jan), j: día del mes (1-31), Y: año (4 dígitos)
+$fechaActual = date("j M, Y");
 ?>
 
-
-
 <div class="container">
-    <div class="row ">
+    <div class="row">
         <div class="col-xl-4 col-lg-4">
             <div class="card l-bg-blue-dark">
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-users"></i></div>
-                    <div class="mb-4">
-                        <h5 class="card-title mb-0">Usuarios</h5>
-                    </div>
-                    <div class="row align-items-center mb-2 d-flex">
-                        <div class="col-8">
-                            <h2 class="d-flex align-items-center mb-0">
-                                {{ $userCount }}
-                            </h2>
-                        </div>
-                        <div class="col-4 text-right">
-                            <span><?= $fechaActual ?></span>
-                        </div>
-                    </div>
-                    <div class="progress mt-1 " data-height="8" style="height: 8px;">
-                        <div class="progress-bar l-bg-green" role="progressbar" data-width="25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
-                    </div>
+                    <h5 class="card-title mb-0">Usuarios</h5>
+                    <h2 class="d-flex align-items-center mb-0">
+                        {{ $userCount }}
+                    </h2>
                 </div>
             </div>
         </div>
+
         <div class="col-xl-4 col-lg-4">
             <div class="card l-bg-green-dark">
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-ticket-alt"></i></div>
-                    <div class="mb-4">
-                        <h5 class="card-title mb-0">Ticket Resolved</h5>
-                    </div>
-                    <div class="row align-items-center mb-2 d-flex">
-                        <div class="col-8">
-                            <h2 class="d-flex align-items-center mb-0">
-                                578
-                            </h2>
-                        </div>
-                        <div class="col-4 text-right">
-                            <span>10% <i class="fa fa-arrow-up"></i></span>
-                        </div>
-                    </div>
-                    <div class="progress mt-1 " data-height="8" style="height: 8px;">
-                        <div class="progress-bar l-bg-orange" role="progressbar" data-width="25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
-                    </div>
+                    <h5 class="card-title mb-0">Tickets Abiertos</h5>
+                    <h2 class="d-flex align-items-center mb-0">
+                        {{ $openTickets }}
+                    </h2>
                 </div>
             </div>
         </div>
+
         <div class="col-xl-4 col-lg-4">
             <div class="card l-bg-orange-dark">
                 <div class="card-statistic-3 p-4">
-                    <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
-                    <div class="mb-4">
-                        <h5 class="card-title mb-0">Revenue Today</h5>
-                    </div>
-                    <div class="row align-items-center mb-2 d-flex">
-                        <div class="col-8">
-                            <h2 class="d-flex align-items-center mb-0">
-                                $11.61k
-                            </h2>
-                        </div>
-                        <div class="col-4 text-right">
-                            <span>2.5% <i class="fa fa-arrow-up"></i></span>
-                        </div>
-                    </div>
-                    <div class="progress mt-1 " data-height="8" style="height: 8px;">
-                        <div class="progress-bar l-bg-cyan" role="progressbar" data-width="25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
-                    </div>
+                    <div class="card-icon card-icon-large"><i class="fas fa-ticket-alt"></i></div>
+                    <h5 class="card-title mb-0">Tickets Cerrados</h5>
+                    <h2 class="d-flex align-items-center mb-0">
+                        {{ $closedTickets }}
+                    </h2>
                 </div>
             </div>
         </div>
+        <div class="col-xl-6 col-lg-6">
+            <div class="card l-bg-purple-dark">
+                <div class="card-statistic-3 p-4">
+                    <div class="card-icon card-icon-large"><i class="fas fa-user-tie"></i></div>
+                    <h5 class="card-title mb-0">Técnico con más Tickets</h5>
+                    <h2 class="d-flex align-items-center mb-0">
+                        {{ $topTechnician->user->name ?? 'N/A' }} ({{ $topTechnician->tickets_count ?? 0 }})
+                    </h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-lg-6">
+            <div class="card l-bg-purple-dark">
+                <div class="card-statistic-3 p-4">
+                    <div class="card-icon card-icon-large"><i class="fas  fa-exclamation-triangle "></i></div>
+                    <h5 class="card-title mb-0">Problema mas Frecuente</h5>
+                    <h2 class="d-flex align-items-center mb-0">
+                        No enciende la computadora (3)
+                    </h2>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="row">
-        <!-- Contenedor para el gráfico de usuarios creados por día -->
         <div class="col-xl-6 col-lg-6">
             <canvas id="usersByDayChart"></canvas>
         </div>
 
+        <div class="col-xl-6 col-lg-6">
+            <canvas id="hardwareByCategoryChart"></canvas>
+        </div>
+
     </div>
+
+    <div class="row">
+
+        <div class="col-xl-4 col-lg-4">
+            <canvas id="ticketsByPriorityChart"></canvas>
+        </div>
+
+        <div class="col-xl-4 col-lg-4">
+            <canvas id="hardwareWithConflictsChart"></canvas>
+        </div>
+        <div class="col-xl-4 col-lg-4">
+            <canvas id="hardwareWithWarrantyChart"></canvas>
+        </div>
+    </div>
+
+   
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // Obtener los datos de usuarios creados por día desde PHP usando json_encode()
-    var dates = <?php echo json_encode($dates); ?>;
-    var counts = <?php echo json_encode($counts); ?>;
-    
+    let dates = <?php echo json_encode($dates); ?>;
+    let counts = <?php echo json_encode($counts); ?>;
 
-    // Crear gráfico de línea para usuarios creados por día
-    var ctx2 = document.getElementById('usersByDayChart').getContext('2d');
-    var usersByDayChart = new Chart(ctx2, {
+    let ctx2 = document.getElementById('usersByDayChart').getContext('2d');
+    new Chart(ctx2, {
         type: 'bar',
         data: {
-            labels: dates, // Fechas en el eje X
+            labels: dates,
             datasets: [{
-                label: 'Usuarios creados por día',
-                data: counts, // Conteo de usuarios por día
+                label: 'Usuarios creados por mes',
+                data: counts,
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1,
-                fill: true,
             }]
         },
         options: {
             scales: {
                 y: {
                     beginAtZero: true
-                },
-                x: {
-                    type: 'category', // Usamos 'category' si no queremos formato de tiempo
                 }
             }
         }
     });
+
+    let ticketPriorities = <?php echo json_encode($ticketPriorities); ?>;
+    let labels = Object.keys(ticketPriorities);
+    let data = Object.values(ticketPriorities);
+
+    let ctx3 = document.getElementById('ticketsByPriorityChart').getContext('2d');
+    new Chart(ctx3, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Tickets por Prioridad en Proceso',
+                data: data,
+                backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0'],
+            }]
+        }
+    });
+
+    let hardwareByCategory = <?php echo json_encode($hardwareByCategory); ?>;
+
+    // Extraer las etiquetas (nombres de las categorías) y los valores (totales de hardware)
+    let hardwareLabels = hardwareByCategory.map(item => item.category_name);
+    let hardwareData = hardwareByCategory.map(item => item.total);
+
+    console.log(hardwareData); // Esto debería mostrar las cantidades de hardware por categoría
+
+    let ctx4 = document.getElementById('hardwareByCategoryChart').getContext('2d');
+    new Chart(ctx4, {
+        type: 'bar',
+        data: {
+            labels: hardwareLabels, // Usamos los nombres de las categorías como etiquetas
+            datasets: [{
+                label: 'Hardware por Categoría',
+                data: hardwareData, // Usamos las cantidades de hardware
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true // Asegurarse de que el eje Y comience en 0
+                },
+            },
+            
+        }
+    });
+
+
+    let hardwareWithConflicts = <?php echo json_encode($hardwareWithConflicts); ?>;
+    let ctx5 = document.getElementById('hardwareWithConflictsChart').getContext('2d');
+    new Chart(ctx5, {
+        type: 'pie',
+        data: {
+            labels: ['Con Conflictos', 'Sin Conflictos'],
+            datasets: [{
+                data: [hardwareWithConflicts, <?php echo e($totalHardware - $hardwareWithConflicts); ?>],
+                backgroundColor: ['#ff9f40', '#36a2eb'],
+            }]
+        }
+    });
+
+    let hardwareWithWarranty = <?php echo json_encode($hardwareWithWarranty); ?>;
+    let ctx6 = document.getElementById('hardwareWithWarrantyChart').getContext('2d');
+    new Chart(ctx6, {
+        type: 'pie',
+        data: {
+            labels: ['Con Garantía', 'Sin Garantía'],
+            datasets: [{
+                data: [hardwareWithWarranty, <?php echo e($totalHardware - $hardwareWithWarranty); ?>],
+                backgroundColor: ['#4bc0c0', '#ffcd56'],
+            }]
+        }
+    });
 </script>
-
-
 @endsection

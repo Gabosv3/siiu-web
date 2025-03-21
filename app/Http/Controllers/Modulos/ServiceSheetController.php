@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Modulos;
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\Category;
+use App\Models\EquipmentHistory;
 use App\Models\Hardware;
 use App\Models\ServiceSheet;
 use App\Models\Supply;
+use App\Models\Ticket;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -48,7 +50,7 @@ class ServiceSheetController extends Controller
 
         $request->validate([
             'date' => 'nullable|date',
-            'department_id' => 'required|exists:departamentos,id',
+            'department_id' => 'required|exists:departaments,id',
             'user_id' => 'required|exists:users,id',
             'technician_id' => 'required|exists:users,id',
             'ticket_id' => 'required|exists:tickets,id',
@@ -68,7 +70,7 @@ class ServiceSheetController extends Controller
 
         $serviceSheet = new ServiceSheet();
         $serviceSheet->date = $request->date;
-        $serviceSheet->departament_id = $request->department_id;
+        $serviceSheet->department_id = $request->department_id;
         $serviceSheet->user_id = $request->user_id;
         $serviceSheet->technician_id = $request->technician_id;
         $serviceSheet->ticket_id = $request->ticket_id;
@@ -76,9 +78,27 @@ class ServiceSheetController extends Controller
         $serviceSheet->supplies_data = json_decode($request->supplies_data, true); // Decodificar JSON a array
         $serviceSheet->description = $request->description;
         $serviceSheet->observations = $request->observations;
-        $serviceSheet->save();
+        
+        if ($serviceSheet->save()) {
+            // Obtener el nombre del usuario si existe
+            $userName = optional($serviceSheet->user)->name ?? 'Desconocido';
+        
+            EquipmentHistory::create([
+                'hardware_id' => $serviceSheet->hardware_id,
+                'user_id' => $serviceSheet->user_id,
+                'action' => 'Asociación a hoja de servicio',
+                'description' => "Equipo asociado a la hoja de servicio ID: {$serviceSheet->id} para el usuario: {$userName}.",
+                'performed_at' => now(),
+            ]);
+            $ticket = Ticket::findOrFail($serviceSheet->ticket_id);
+            $ticket->update([
+                'status' => 'resuelto', // Cambiar el estado a "resuelto"
+            ]);
 
-        return redirect()->route('service_sheets.index')->with('success', 'Hoja de servicio creada exitosamente.');
+        }
+
+        $id = $serviceSheet->ticket_id;
+        return redirect()->route('service-sheet.create', ['id' => $id])->with('success', 'Hoja de servicio creada exitosamente.');
     }
 
     /**

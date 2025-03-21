@@ -348,7 +348,8 @@
                         <!-- Selección de usuarios -->
                         <div class="mb-3">
                             <label for="user_ids" class="form-label">Encargados:</label>
-                            <select class="form-control" id="user_ids" name="user_ids[]" multiple>
+                            <select class="form-control" id="user_ids" name="user_id" >
+                                <option value="">Sin encargado</option>
                                 @foreach ($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}, {{ $user->email }}
                                 </option>
@@ -514,7 +515,7 @@
                     type: 'POST',
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
-                        user_ids: userIds,
+                        user_id: userIds,
                         departament_id: departmentId,
                         hardware_id: equipmentId,
                     },
@@ -573,17 +574,17 @@
         // Función para imprimir contenido (ejemplo: etiquetas)
         function printDiv(divId) {
             var contenido = document.getElementById(divId).innerHTML;
-            var ventana = window.open('', '_blank');
-            ventana.document.write('<html><head><title>Imprimir Código de Barras</title>');
+            var ventana = window.open('',);
+
             ventana.document.write(`
                 <style>
-                    /* Configuración para impresión de ticket de 50x30mm */
+                    /* Configuración para impresión de ticket de 40x30mm */
                     @page {
-                        size: 50mm 30mm;
+                        size: 40mm 30mm;
                         margin: 0;
                     }
                     body {
-                        width: 50mm;
+                        width: 40mm;
                         height: 30mm;
                         margin: 0;
                         font-family: Arial, sans-serif;
@@ -608,7 +609,6 @@
             `);
             ventana.document.write('</head><body>');
             ventana.document.write('<div class="print-content">' + contenido + '</div>');
-            ventana.document.write('<div class="sistemas-info">Sistemas Informáticos</div>');
             ventana.document.write('</body></html>');
             ventana.document.close();
             ventana.print();

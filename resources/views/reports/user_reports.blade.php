@@ -45,10 +45,6 @@
             <div class="d-grid gap-2">
                 <button class="btn" style="background-color: #A52A2A; color: white;"
                     id="generateReportBtn">Consultar</button>
-                <button class="btn" style="background-color: #8B0000; color: white;"
-                    onclick="generateReport('pdf')">Generar PDF</button>
-                <button class="btn" style="background-color: #B5651D; color: white;"
-                    onclick="generateReport('excel')">Exportar a Excel</button>
             </div>
         </div>
     </div>
@@ -166,55 +162,51 @@
                 const resultContent = document.getElementById('resultContent');
                 reportTitle.textContent = 'Reporte de Usuarios'  ;
 
-                // Construir el contenido del reporte en formato de tabla
-                let content = '<table class="table table-bordered"><thead><tr>';
+                let content = `
+                    <table id="reportTable" class="table table-bordered display nowrap mx-3">
+                        <thead>
+                            <tr>
+                                <th>${reportType === 'usersByDepartment' ? 'Departamento' :
+                                    reportType === 'ticketsByUser' ? 'Usuario' : 'Usuario'}</th>
+                                <th>${reportType === 'usersByDepartment' ? 'Usuarios' :
+                                    reportType === 'ticketsByUser' ? 'Tickets Generados' : 'Equipos Asignados'}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
 
-                if (reportType === 'usersByDepartment') {
+                data.data.forEach(item => {
                     content += `
-                        <th>Departamento</th>
-                        <th>Usuarios</th>
+                        <tr>
+                            <td>${item.name}</td>
+                             <td>${item.users_count ?? item.tickets_count ?? item.hardware_count ?? 0}</td>
+                        </tr>
                     `;
-                    data.data.forEach(department => {
-                        content += `
-                            <tr>
-                                <td>${department.name}</td>
-                                <td>${department.users_count}</td>
-                            </tr>
-                        `;
-                    });
-                } else if (reportType === 'ticketsByUser') {
-                    content += `
-                        <th>Usuario</th>
-                        <th>Tickets Generados</th>
-                    `;
-                    data.data.forEach(user => {
-                        content += `
-                            <tr>
-                                <td>${user.name}</td>
-                                <td>${user.tickets_count}</td>
-                            </tr>
-                        `;
-                    });
-                } else if (reportType === 'hardwareByUser') {
-                    content += `
-                        <th>Usuario</th>
-                        <th>Equipos Asignados</th>
-                    `;
-                    data.data.forEach(user => {
-                        content += `
-                            <tr>
-                                <td>${user.name}</td>
-                                <td>${user.hardware_count}</td>
-                            </tr>
-                        `;
-                    });
-                }
+                });
 
-                content += '</tr></thead><tbody></tbody></table>';
+                content += `</tbody></table>`;
 
                 // Mostrar el contenido en la vista
                 resultContent.innerHTML = content;
                 errorContainer.classList.add('d-none');
+
+                // Inicializar DataTables con botones de exportación y sin paginación ni buscador
+                $(document).ready(function() {
+                    $('#reportTable').DataTable({
+                        dom: 'Bfrtip',
+                        paging: false,
+                        searching: false,
+                        info: false,
+                        ordering: false,
+                        buttons: [
+                            { extend: 'excelHtml5', text: 'Exportar a Excel', messageTop: 'Reporte de Usuarios' ,  className: 'btn btn-green-600' },
+                            { extend: 'pdfHtml5', text: 'Exportar a PDF', messageTop: 'Reporte de Usuarios', className: 'btn btn-cyan-800' },
+                            { extend: 'print', text: 'Imprimir', messageTop: 'Reporte de Usuarios' , className: 'btn btn-red-800' }
+                        ],
+                        language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/Spanish.json" }
+                    });
+                });
+
             },
             error: function(error) {
                 console.error('Error al generar el reporte:', error);

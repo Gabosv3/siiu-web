@@ -36,7 +36,7 @@
         var password = document.getElementById('password').value;
         var password_confirmation = document.getElementById('password_confirmation').value;
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&.])[A-Za-z\d@$!%*#?&.]{8,}$/;
 
         if (name.length < 8) {
             Swal.fire({

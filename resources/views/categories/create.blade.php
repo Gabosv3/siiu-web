@@ -15,30 +15,40 @@
         <div class="col-md-6">
             <div class="mb-3">
                 <label for="name" class="form-label">NOMBRE:</label>
-                <input type="text" class="form-control" id="name" name="name" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required>
+                <input type="text" class="form-control" id="name" name="name" 
+                       value="{{ old('name') }}" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required>
                 <div class="invalid-feedback">
                     Por favor, ingrese un nombre válido (solo letras y espacios).
                 </div>
+                @error('name')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">
                 <label for="description" class="form-label">DESCRIPCION:</label>
-                <textarea class="form-control" id="description" name="description" required></textarea>
+                <textarea class="form-control" id="description" name="description" required>{{ old('description') }}</textarea>
                 <div class="invalid-feedback">
                     Por favor, ingrese una descripción.
                 </div>
+                @error('description')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">TIPO:</label>
-                <select name="type" class="form-control" id="type" required>
-                    <option value="" disabled selected> Seleccione una tipo</option>
-                    <option value="Equipo">Equipo</option>
-                    <option value="Insumo">Insumo</option>
 
+            <div class="mb-3">
+                <label for="type" class="form-label">TIPO:</label>
+                <select name="type" class="form-control" id="type" required>
+                    <option value="" disabled selected> Seleccione un tipo</option>
+                    <option value="Equipo" {{ old('type') == 'Equipo' ? 'selected' : '' }}>Equipo</option>
+                    <option value="Insumo" {{ old('type') == 'Insumo' ? 'selected' : '' }}>Insumo</option>
                 </select>
                 <div class="invalid-feedback">
-                    Por favor, seleccione una tipo.
+                    Por favor, seleccione un tipo.
                 </div>
+                @error('type')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">
@@ -47,7 +57,11 @@
                 <div class="invalid-feedback">
                     Por favor, seleccione una imagen.
                 </div>
+                @error('image')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
+            
             <div class="col-md-12 text-end">
                 <button type="submit" class="btn btn-primary">CREAR</button>
             </div>

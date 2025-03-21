@@ -48,7 +48,7 @@ class TicketAssignedNotification extends Notification
     {
         return [
             'ticket_id' => $this->ticket->id,
-            'message' => 'Tu ticket #' . $this->ticket->id . ' ha sido asignado a ' . $this->technician->name,
+            'message' => 'Tu ticket #' . $this->ticket->id . ' ha sido asignado a ' . $this->technician->user->name,
             'url' => url('/mytickets/' . $this->ticket->id),
         ];
     }

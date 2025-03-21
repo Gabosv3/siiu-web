@@ -44,7 +44,8 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof AuthorizationException) {
-            return response()->view('layouts.Errors.403', [], 403);
+            // Agregar el mensaje a la sesión
+            return response()->view('layouts.Errors.403', ['message' => 'No tienes permiso para realizar esta acción.'], 403);
         }
 
         if ($exception instanceof TokenMismatchException) {

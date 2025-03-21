@@ -1,4 +1,4 @@
-<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 ps bg-white" >
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 ps bg-white">
   <div class="sidenav-header">
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
     <a class="align-items-center d-flex m-0 navbar-brand text-wrap" href="{{ route('dashboard') }}" id="btn-module-dashboard">
@@ -28,62 +28,66 @@
           </div>
           <span class="nav-link-text ms-1">Dashboard</span>
         </a>
-      </li> 
+      </li>
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Inventario</h6>
       </li>
       <li class="nav-item">
+        @can('hardware.index')
         <a class="nav-link {{ (Request::is('inventarios/hardware*')  || Request::is('inventarios') ? 'active' : '') }}" href="{{ url('inventarios') }}" id="btn-module-mantenimiento">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-desktop ps-2 pe-2 text-center text-dark {{ Request::is('inventarios/hardware*') || Request::is('inventarios') ? 'text-white' : 'text-dark' }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Equipos</span>
         </a>
+        @endcan
       </li>
       <li class="nav-item">
+        @can('supply.index')
         <a class="nav-link {{ (Request::is('inventarios/suppliesforcategory*')  || Request::is('inventarios/supplies*') ? 'active' : '') }}" href="{{ url('inventarios/suppliesforcategory') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-cart-plus ps-2 pe-2 text-center text-dark {{ (Request::is('inventarios/suppliesforcategory*') || Request::is('inventarios/supplies*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Insumos</span>
         </a>
+        @endcan
       </li>
       <li class="nav-item">
+        @can('softwares.index')
         <a class="nav-link {{ (Request::is('inventarios/softwares*') ? 'active' : '') }}" href="{{ url('inventarios/softwares') }}" id="btn-module-departamentos">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-list-alt ps-2 pe-2 text-center text-dark {{ (Request::is('inventarios/softwares*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Softwares</span>
         </a>
+        @endcan
       </li>
       <li class="nav-item">
+        @can('licencias.index')
         <a class="nav-link {{ (Request::is('inventarios/licenses*') ? 'active' : '') }}" href="{{ url('inventarios/licenses') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fas fa-shield-alt ps-2 pe-2 text-center text-dark {{ (Request::is('inventarios/licenses*') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Licencias</span>
         </a>
+        @endcan
       </li>
+
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('inventarios/shelves') ? 'active' : '') }}" href="{{ url('inventarios/shelves') }}">
-          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-cubes ps-2 pe-2 text-center text-dark {{ (Request::is('inventarios/shelves') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
-          </div>
-          <span class="nav-link-text ms-1">estanterías</span>
-        </a>
-      </li>
-      <li class="nav-item">
+        @can('modelos.index')
         <a class="nav-link {{ (Request::is('inventarios/models*')  ? 'active' : '') }}" href="{{ url('inventarios/models') }}" id="btn-module-mantenimiento">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa-solid fa-shapes ps-2 pe-2 text-center text-dark {{ Request::is('inventarios/models*')  ? 'text-white' : 'text-dark' }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Modelos</span>
         </a>
+        @endcan
       </li>
-      
-      
-      
-      
+
+
+
+
+
     </ul>
 
   </div>

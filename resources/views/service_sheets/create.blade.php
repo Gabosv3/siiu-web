@@ -30,7 +30,7 @@
                         // IDs
                         $departamentoId = $data->ticket->user->departament->id ?? null;
                         $usuarioId = $data->ticket->user->id;
-                        $tecnicoId = $data->technician->user->id;
+                        $tecnicoId = $data->technician->id;
 
                         // Nombres
                         $departamentoNombre = $data->ticket->user->departament->name ?? 'No especificado';
@@ -443,4 +443,19 @@
         });
     });
 </script>
+
+@if(session('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: "{{ session('success') }}",
+                timer: 3000, // Tiempo de duración de la alerta en milisegundos
+                showConfirmButton: false, // Elimina el botón de confirmación
+                position: 'top-right', // Posición de la alerta
+            });
+        });
+    </script>
+@endif
 @endsection

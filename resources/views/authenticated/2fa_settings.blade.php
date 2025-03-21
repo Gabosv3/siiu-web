@@ -34,7 +34,7 @@
                         @elseif(!$data['user']->loginSecurity->google2fa_enable)
                             <!-- Mostrar QR y formulario para habilitar 2FA -->
                             1. Escanea este código QR con tu aplicación Google Authenticator. Alternativamente, puedes usar el código: <code>{{ $data['secret'] }}</code><br/>
-                            <img src="data:image/svg+xml;base64,{{ base64_encode($data['google2fa_url']) }}" alt="Código QR">
+                            <img src="{{ $data['google2fa_url'] }}" alt="Código QR">
                             <br/><br/>
                             2. Ingresa el código de la aplicación Google Authenticator:<br/><br/>
                             <form class="form-horizontal" method="POST" action="{{ route('enable2fa') }}">

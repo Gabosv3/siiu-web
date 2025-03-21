@@ -4,7 +4,9 @@
 
 <h1>Listado de Softwares</h1>
 
-<a href="{{ route('softwares.create') }}" class="btn btn-primary mb-3">Agregar Software</a>
+@can('softwares.create')
+    <a href="{{ route('softwares.create') }}" class="btn btn-primary mb-3">Agregar Software</a>
+@endcan
 
 
 <form method="GET" action="{{ route('softwares.index') }}" class="mb-4">
@@ -70,11 +72,14 @@
                 <td>{{ $software->software_name }}</td>
                 <td>{{ $software->deleted_at }}</td>
                 <td>
+                    @can('softwares.restore')
                     <form action="{{ route('softwares.restore', $software->id) }}" class="formulario-restaurar" method="POST">
                         @csrf
                         @method('PUT')
                         <button id="btn-restore-software" class="btn btn-cyan-800 mb-3" type="submit">Restaurar</button>
                     </form>
+                    @endcan
+
                 </td>
                 @else
                 <td>{{ $software->id }}</td>
@@ -85,18 +90,28 @@
                     @if ($software->type == 'free')
                     No usa licencia
                     @else
+                    @can('licencias.index')
                     <a title="Ver Licencias" href="{{ route('licenses.index', ['software_id' => $software->id]) }}" class="btn btn-cyan-800">
                         <i class="fa fa-key"></i>
                     </a>
+                    @endcan
+
                     @endif
                 </td>
                 <td>
-                    <a href="{{ route('softwares.show', $software->id) }}" title="Ver Software" class="btn btn-cyan-800">
+                    @can('softwares.index')
+                    <a href="{{ route('softwares.index', $software->id) }}" title="Ver Software" class="btn btn-cyan-800">
                         <i class="bx bxs-show"></i>
                     </a>
+                    @endcan
+
+                    @can('softwares.edit')
                     <a href="{{ route('softwares.edit', $software->id) }}" title="Editar Software" class="btn btn-green-600">
                         <i class='bx bxs-edit-alt'></i>
                     </a>
+                    @endcan
+
+                    @can('softwares.destroy')
                     <form action="{{ route('softwares.destroy', $software->id) }}" method="POST" style="display:inline;" class="formulario-eliminar">
                         @csrf
                         @method('DELETE')
@@ -104,6 +119,7 @@
                             <i class="bx bxs-trash"></i>
                         </button>
                     </form>
+                    @endcan
                 </td>
                 @endif
             </tr>

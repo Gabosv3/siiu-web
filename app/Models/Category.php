@@ -29,16 +29,27 @@ class Category extends Model
      * tres dígitos.
      */
     protected static function boot()
-    {
-        parent::boot();
+{
+    parent::boot();
 
-        static::creating(function ($categoria) {
-            $maxId = self::max('id') + 1; // Obtener el ID máximo y sumarle 1
-            $prefix = strtoupper(substr($categoria->name, 0, 3)); // Primeras tres letras del nombre en mayúsculas
-            $codigo = str_pad($maxId, 3, '0', STR_PAD_LEFT); // Número de tres dígitos
-            $categoria->code = $prefix . '-' . $codigo; // Asignar el código generado
-        });
-    }
+    static::creating(function ($categoria) {
+        $prefix = strtoupper(substr($categoria->name, 0, 3)); // Primeras tres letras del nombre en mayúsculas
+        $maxId = self::max('id') + 1; // Obtener el ID máximo y sumarle 1
+        $codigoBase = str_pad($maxId, 3, '0', STR_PAD_LEFT); // Número de tres dígitos
+        $codigo = $prefix . '-' . $codigoBase; // Código generado
+
+        // Verificar si el código ya existe, incluyendo los eliminados con soft delete
+        while (self::withTrashed()->where('code', $codigo)->exists()) {
+            $maxId++; // Incrementar el ID
+            $codigoBase = str_pad($maxId, 3, '0', STR_PAD_LEFT); // Volver a generar el número
+            $codigo = $prefix . '-' . $codigoBase; // Nuevo código
+        }
+
+        // Asignar el código generado
+        $categoria->code = $codigo;
+    });
+}
+
 
 
     /**

@@ -21,11 +21,13 @@ use PhpOffice\PhpSpreadsheet\Writer\Pdf;
 
 class ReportsController extends Controller
 {
-    /**public function __construct()
+    public function __construct()
     {
-        $this->middleware('can:reports.index')->only('index');
-        $this->middleware('can:reports.user_reports')->only('getUserReports');
-    }**/
+        $this->middleware('can:reportes.index')->only('index');
+        $this->middleware('can:reportes.usuarios')->only('userReport');
+        $this->middleware('can:reportes.insumo')->only('getSupplyData');
+        $this->middleware('can:reportes.tickets')->only('getTicketData');
+    }
 
     /**
      * Muestra la vista principal del módulo de reportes.
@@ -134,6 +136,11 @@ class ReportsController extends Controller
         }
     }
 
+    /**
+     * Muestra la vista de reportes de insumos.
+     *
+     * @return \Illuminate\View\View
+     */
     public function getInsumosReport()
     {
         $categories = Category::all();  // Obtener todas las categorías

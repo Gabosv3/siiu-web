@@ -44,6 +44,7 @@ class RoleSeeder extends Seeder
                 ['name' => 'role.edit', 'description' => 'Editar Roles', 'roles' => ['SuperAdmin']],
                 ['name' => 'role.destroy', 'description' => 'Eliminar Roles', 'roles' => ['SuperAdmin']],
                 ['name' => 'role.restore', 'description' => 'Restaurar Roles', 'roles' => ['SuperAdmin']],
+                ['name' => 'role.clone', 'description' => 'Clonar Roles', 'roles' => ['SuperAdmin']],
             ],
             'Departamentos' => [
                 ['name' => 'departamentos.index', 'description' => 'Ver Departamentos', 'roles' => ['SuperAdmin', 'Administrador']],
@@ -70,7 +71,7 @@ class RoleSeeder extends Seeder
                 ['name' => 'dashboard', 'description' => 'Ver Dashboard', 'roles' => ['SuperAdmin', 'Administrador']],
                 ['name' => 'Mantenimiento', 'description' => 'Ver Mantenimiento', 'roles' => ['SuperAdmin', 'Administrador']],
                 ['name' => 'Inventarios', 'description' => 'Ver Inventarios', 'roles' => ['SuperAdmin', 'Administrador']],
-                ['name' => 'Historial', 'description' => 'Ver Historial', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'Escaner', 'description' => 'Escanear', 'roles' => ['SuperAdmin', 'Administrador']],
             ],
             'Técnicos' => [
                 ['name' => 'technicians.index', 'description' => 'Ver Técnicos', 'roles' => ['SuperAdmin', 'Administrador']],
@@ -79,12 +80,12 @@ class RoleSeeder extends Seeder
                 ['name' => 'technicians.destroy', 'description' => 'Eliminar Técnicos', 'roles' => ['SuperAdmin']],
                 ['name' => 'technicians.restore', 'description' => 'Restaurar Técnicos', 'roles' => ['SuperAdmin']],
             ],
-            'Hardware' => [
-                ['name' => 'hardware.index', 'description' => 'Ver Hardware', 'roles' => ['SuperAdmin', 'Administrador']],
-                ['name' => 'hardware.create', 'description' => 'Crear Hardware', 'roles' => ['SuperAdmin', 'Administrador']],
-                ['name' => 'hardware.edit', 'description' => 'Editar Hardware', 'roles' => ['SuperAdmin']],
-                ['name' => 'hardware.destroy', 'description' => 'Eliminar Hardware', 'roles' => ['SuperAdmin']],
-                ['name' => 'hardware.restore', 'description' => 'Restaurar Hardware', 'roles' => ['SuperAdmin']],
+            'Equipos' => [
+                ['name' => 'hardware.index', 'description' => 'Ver Equipo', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'hardware.create', 'description' => 'Crear Equipo', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'hardware.edit', 'description' => 'Editar Equipo', 'roles' => ['SuperAdmin']],
+                ['name' => 'hardware.destroy', 'description' => 'Eliminar Equipo', 'roles' => ['SuperAdmin']],
+                ['name' => 'hardware.restore', 'description' => 'Restaurar Equipo', 'roles' => ['SuperAdmin']],
             ],'Softwares' => [
                 ['name' => 'softwares.index', 'description' => 'Ver Softwares', 'roles' => ['SuperAdmin', 'Administrador']],
                 ['name' => 'softwares.create', 'description' => 'Crear Softwares', 'roles' => ['SuperAdmin', 'Administrador']],
@@ -103,12 +104,12 @@ class RoleSeeder extends Seeder
                 ['name' => 'supply.edit', 'description' => 'Editar Insumos', 'roles' => ['SuperAdmin']],
                 ['name' => 'supply.destroy', 'description' => 'Eliminar Insumos', 'roles' => ['SuperAdmin']],
                 ['name' => 'supply.restore', 'description' => 'Restaurar Insumos', 'roles' => ['SuperAdmin']],
-            ],'Estanterias' => [
-                ['name' => 'estanterias.index', 'description' => 'Ver Estanterias', 'roles' => ['SuperAdmin', 'Administrador']],
-                ['name' => 'estanterias.create', 'description' => 'Crear Estanterias', 'roles' => ['SuperAdmin', 'Administrador']],
-                ['name' => 'estanterias.edit', 'description' => 'Editar Estanterias', 'roles' => ['SuperAdmin']],
-                ['name' => 'estanterias.destroy', 'description' => 'Eliminar Estanterias', 'roles' => ['SuperAdmin']],
-                ['name' => 'estanterias.restore', 'description' => 'Restaurar Estanterias', 'roles' => ['SuperAdmin']],
+            ],'Modelos' => [
+                ['name' => 'modelos.index', 'description' => 'Ver Modelos', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'modelos.create', 'description' => 'Crear Modelos', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'modelos.edit', 'description' => 'Editar Modelos', 'roles' => ['SuperAdmin']],
+                ['name' => 'modelos.destroy', 'description' => 'Eliminar Modelos', 'roles' => ['SuperAdmin']],
+                ['name' => 'modelos.restore', 'description' => 'Restaurar Modelos', 'roles' => ['SuperAdmin']],
             ],'Asignaciones' => [
                 ['name' => 'asignar.index', 'description' => 'Ver Asignaciones', 'roles' => ['SuperAdmin', 'Administrador']],
                 ['name' => 'asignar.create', 'description' => 'Crear Asignaciones', 'roles' => ['SuperAdmin', 'Administrador']],
@@ -124,10 +125,16 @@ class RoleSeeder extends Seeder
             ],'Tickets de Soporte' => [
                 ['name' => 'support_tickets.index', 'description' => 'Ver Tickets de Soporte', 'roles' => ['SuperAdmin', 'Administrador']],
                 ['name' => 'support_tickets.create', 'description' => 'Crear Tickets de Soporte', 'roles' => ['SuperAdmin', 'Administrador']],
-                ['name' => 'support_tickets.edit', 'description' => 'Editar Tickets de Soporte', 'roles' => ['SuperAdmin']],
-                ['name' => 'support_tickets.destroy', 'description' => 'Eliminar Tickets de Soporte', 'roles' => ['SuperAdmin']],
-                ['name' => 'support_tickets.restore', 'description' => 'Restaurar Tickets de Soporte', 'roles' => ['SuperAdmin']],
-            ],
+                
+            ], 'caracteristicas' => [
+                ['name' => 'characteristic.index', 'description' => 'Ver Caracteristicas', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'characteristic.create', 'description' => 'Crear Caracteristicas', 'roles' => ['SuperAdmin', 'Administrador']],
+            ],'Reportes' => [
+                ['name' => 'reportes.index', 'description' => 'Ver Reportes ', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'reportes.insumo', 'description' => 'Ver Reportes de Insumos', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'reportes.usuarios', 'description' => 'Ver Reportes de usuarios', 'roles' => ['SuperAdmin', 'Administrador']],
+                ['name' => 'reportes.tickets', 'description' => 'Ver Reportes de tickets', 'roles' => ['SuperAdmin', 'Administrador']],
+            ]
         ];
 
         // Crear o actualizar permisos y asignar roles
